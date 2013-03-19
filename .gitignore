@@ -1,0 +1,22 @@
+# User Settings Files
+*.suo
+*.user
+*.cache
+
+# Build Folders
+bin/
+obj/
+
+# Test Results
+TestResults
+TestResult.xml
+
+# Nuget Packages
+packages/
+
+# Git-Related Files
+*.orig
+*.patch
+
+# OS X Files
+.DS_Store
