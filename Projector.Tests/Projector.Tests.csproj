@@ -52,6 +52,7 @@
     <Compile Include="Utility\CellListTests.cs" />
     <Compile Include="Utility\CellTests.cs" />
     <Compile Include="Utility\CollectionDebugViewTests.cs" />
+    <Compile Include="Utility\ConcurrentTests.cs" />
     <Compile Include="Utility\ErrorTests.cs" />
   </ItemGroup>
   <ItemGroup>
