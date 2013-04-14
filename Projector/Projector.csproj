@@ -48,6 +48,8 @@
     <Compile Include="Utility\CollectionDebugView.cs" />
     <Compile Include="Utility\Concurrent.cs" />
     <Compile Include="Utility\Error.cs" />
+    <Compile Include="Utility\TypeExtensions.cs" />
+    <Compile Include="Utility\TypePrettyName.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

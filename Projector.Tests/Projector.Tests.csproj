@@ -53,7 +53,9 @@
     <Compile Include="Utility\CellTests.cs" />
     <Compile Include="Utility\CollectionDebugViewTests.cs" />
     <Compile Include="Utility\ConcurrentTests.cs" />
+    <Compile Include="Utility\TypePrettyNameTests.cs" />
     <Compile Include="Utility\ErrorTests.cs" />
+    <Compile Include="Utility\TypeExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Projector\Projector.csproj">
