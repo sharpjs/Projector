@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using NUnit.Framework;
-
-namespace Projector.Utility
+﻿namespace Projector.Utility
 {
+    using System;
+    using System.Threading;
+    using NUnit.Framework;
+
     [TestFixture]
     public class ConcurrentTests
     {
@@ -17,19 +17,19 @@ namespace Projector.Utility
             var location = null as object;
             var results  = new object[TaskCount];
 
-            Parallel.For(0, TaskCount, i =>
+            GuaranteedParallel(i =>
             {
                 results[i] = Concurrent.Ensure(ref location, new object());
             });
 
             Assert.That(location, Is.Not.Null);
-            Assert.That(results, Is.All.SameAs(location));
+            Assert.That(results,  Is.All.SameAs(location));
         }
 
         [Test]
         public void Lock_Unlock()
         {
-            Parallel.For(0, TaskCount, UseLock);
+            GuaranteedParallel(UseLock);
         }
 
         private static void UseLock(int i)
@@ -46,6 +46,31 @@ namespace Projector.Utility
             {
                 Concurrent.Unlock(ref sharedLock, token);
             }
+        }
+
+        private static void GuaranteedParallel(Action<int> action)
+        {
+            // RATIONALE: Parallel.For does NOT guarantee multithreading.
+            if (action == null)
+                throw Error.ArgumentNull("action");
+
+            var threads = new Thread[TaskCount];
+            int i;
+
+            for (i = 0; i < threads.Length; i++)
+            {
+                var index = i; // avoid "closure over loop variable" bug
+                threads[i] = new Thread(() => action(index))
+                {
+                    IsBackground = true
+                };
+            }
+
+            for (i = 0; i < threads.Length; i++)
+                threads[i].Start();
+
+            for (i = 0; i < threads.Length; i++)
+                threads[i].Join();
         }
     }
 }
