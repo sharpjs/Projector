@@ -85,7 +85,17 @@
         }
 
         [Test]
-        public void ToString_Single()
+        public void ToString_Single_Null()
+        {
+            var cell = Cell.Cons(null as string);
+
+            var text = cell.ToString();
+
+            Assert.That(text, Is.EqualTo("[(null)]"));
+        }
+
+        [Test]
+        public void ToString_Single_NotNulll()
         {
             var cell = Cell.Cons("a");
 
