@@ -4,7 +4,7 @@
     using System.Text;
     using System.Collections.Generic;
     using System.Globalization;
-    //using Projector.ObjectModel;
+    using Projector.ObjectModel;
 
     internal static class Error
     {
@@ -140,17 +140,18 @@
         //    return new ProjectionException(message);
         //}
 
-        //internal static Exception MetadataNotFound(Type type, ProjectionObject projectionObject)
-        //{
-        //    var message = string.Format
-        //    (
-        //        "Projection metadata not found: {0}",
-        //        type.GetPrettyName(true)
-        //        // TODO: projectionObject
-        //    );
+        internal static Exception AssociatedObjectNotFound(object key, Type type, ProjectionObject projectionObject)
+        {
+            var message = string.Format
+            (
+                "Associated object not found for key '{0}' in {1}.  Expected type: {2}",
+                key,
+                projectionObject.ToString(),
+                type.GetPrettyName(qualified: true)
+            );
 
-        //    throw new KeyNotFoundException(message);
-        //}
+            return new KeyNotFoundException(message);
+        }
 
         //internal static Exception NoStorageProvider()
         //{
