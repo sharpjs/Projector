@@ -24,7 +24,7 @@
     ///       
     ///     Setting and retrieving associated objects is thread-safe,
     ///     but enumerating them is not thread-safe.
-    ///	  </para>
+    ///   </para>
     /// </remarks>
     /// <threadsafety static="true" insteance="true"/>
     public abstract class ProjectionObject
@@ -78,10 +78,10 @@
         /// <typeparam name="T">The type of the associated object.</typeparam>
         /// <param name="key">The key identifying the associated object.</param>
         /// <returns>
-        ///	  <c>true</c> if an object of type <typeparamref name="T"/>
-        ///	    identified by <paramref name="key"/> is associated with this object;
-        ///	  <c>false</c> otherwise.
-        ///	</returns>
+        ///   <c>true</c> if an object of type <typeparamref name="T"/>
+        ///     identified by <paramref name="key"/> is associated with this object;
+        ///   <c>false</c> otherwise.
+        /// </returns>
         /// <exception cref="System.ArgumentNullException">
         ///   <paramref name="key"/> is <c>null</c>.
         /// </exception>
@@ -140,10 +140,10 @@
         ///   This parameter is passed uninitialized.
         /// </param>
         /// <returns>
-        ///	  <c>true</c> if an object of type <typeparamref name="T"/>
-        ///	    identified by <paramref name="key"/> is associated with this object;
-        ///	  <c>false</c> otherwise.
-        ///	</returns>
+        ///   <c>true</c> if an object of type <typeparamref name="T"/>
+        ///     identified by <paramref name="key"/> is associated with this object;
+        ///   <c>false</c> otherwise.
+        /// </returns>
         /// <exception cref="System.ArgumentNullException">
         ///   <paramref name="key"/> is <c>null</c>.
         /// </exception>

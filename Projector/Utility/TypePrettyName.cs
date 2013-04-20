@@ -1,25 +1,25 @@
 ﻿namespace Projector
 {
-	using System;
-	using System.Text;
+    using System;
+    using System.Text;
 
     internal static class TypePrettyName
     {
-		public static string GetPrettyName(this Type type, bool qualified)
-		{
-			if (type == null)
-				throw Error.ArgumentNull("type");
+        public static string GetPrettyName(this Type type, bool qualified)
+        {
+            if (type == null)
+                throw Error.ArgumentNull("type");
 
-			if (!type.IsGenericType && !type.IsArray && !type.IsNested && !type.IsByRef)
-				return qualified ? type.FullName : type.Name;
+            if (!type.IsGenericType && !type.IsArray && !type.IsNested && !type.IsByRef)
+                return qualified ? type.FullName : type.Name;
 
-			if (type.IsGenericParameter)
-				return type.Name;
+            if (type.IsGenericParameter)
+                return type.Name;
 
             return new StringBuilder(64)
                 .AppendPrettyNameCore(type, new PrettyNameContext(type, qualified))
                 .ToString();
-		}
+        }
 
         private static StringBuilder AppendPrettyName
             (this StringBuilder name, Type type, PrettyNameContext context)
@@ -27,9 +27,9 @@
             return name.AppendPrettyNameCore(type, new PrettyNameContext(type, context.IsQualified));
         }
 
-		private static StringBuilder AppendPrettyNameCore
+        private static StringBuilder AppendPrettyNameCore
             (this StringBuilder name, Type type, PrettyNameContext context)
-		{
+        {
             // Suffixes (array, ref, pointer)
             if (type.IsArray)
                 return name
@@ -47,26 +47,26 @@
                     .Append('*');
 
             // Prefixes (nesting, namespace)
-			if (type.IsNested)
-				name.AppendPrettyNameCore(type.DeclaringType, context)
-					.Append('.');
-			else if (context.IsQualified)
-				name.Append(type.Namespace)
-					.Append('.');
+            if (type.IsNested)
+                name.AppendPrettyNameCore(type.DeclaringType, context)
+                    .Append('.');
+            else if (context.IsQualified)
+                name.Append(type.Namespace)
+                    .Append('.');
 
             // Name and arguments
-			if (type.IsGenericType)
-				return name
+            if (type.IsGenericType)
+                return name
                     .Append(type.Name.WithoutGenericSuffix())
-					.AppendPrettyArguments(type, context);
-			else
-				return name
+                    .AppendPrettyArguments(type, context);
+            else
+                return name
                     .Append(type.Name);
-		}
+        }
 
-		private static StringBuilder AppendPrettyArguments
+        private static StringBuilder AppendPrettyArguments
             (this StringBuilder name, Type type, PrettyNameContext context)
-		{
+        {
             // No args remain (ex: non-generic nested in generic)
             var count = context.GetGenericArgumentCount(type);
             if (count == 0)
@@ -82,31 +82,31 @@
             // Partially or fully closed types
             name.Append('<');
 
-			for (var i = 0; i < count; i++)
-			{
+            for (var i = 0; i < count; i++)
+            {
                 var arg = context.GetNextGenericArgument();
                 if (arg.IsGenericParameter)
                 {
-				    if (i != 0) name.Append(',');
+                    if (i != 0) name.Append(',');
                 }
                 else
                 {
-    				if (i != 0) name.Append(',').Append(' ');
+                    if (i != 0) name.Append(',').Append(' ');
                     name.AppendPrettyName(arg, context);
                 }
-			}
+            }
 
-			return name.Append('>');
-		}
+            return name.Append('>');
+        }
 
-		private static string WithoutGenericSuffix(this string name)
-		{
-			var index = name.IndexOf('`');
+        private static string WithoutGenericSuffix(this string name)
+        {
+            var index = name.IndexOf('`');
 
-			return index == -1
-				? name
-				: name.Substring(0, index);
-		}
+            return index == -1
+                ? name
+                : name.Substring(0, index);
+        }
 
         private sealed class PrettyNameContext
         {
