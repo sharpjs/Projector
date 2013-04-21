@@ -47,7 +47,11 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\TestExtensions.cs" />
+    <Compile Include="Helpers\MockTraits.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />
+    <Compile Include="ObjectModel\TraitModel\AnnotationSetTests.cs" />
+    <Compile Include="ObjectModel\TraitModel\BehaviorSetTests.cs" />
+    <Compile Include="ObjectModel\TraitModel\TraitOptionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\CellEnumeratorTests.cs" />
     <Compile Include="Utility\CellListTests.cs" />

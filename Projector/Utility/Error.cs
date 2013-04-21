@@ -58,15 +58,10 @@
             return new InvalidOperationException("The enumerator has no current item.");
         }
 
-        //internal static Exception ReadOnlyProfile()
-        //{
-        //    return new InvalidOperationException("The projection profile is read-only.");
-        //}
-
-        //internal static Exception ReadOnlyTraits()
-        //{
-        //    return new InvalidOperationException("The trait container is read-only.");
-        //}
+        internal static Exception ReadOnlyTraits()
+        {
+            return new InvalidOperationException("The trait container is read-only.");
+        }
 
         //internal static Exception TraitApplicatorDisposed()
         //{
@@ -228,9 +223,9 @@
         //    throw new NotImplementedException();
         //}
 
-        //internal static Exception TodoError()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        internal static Exception TodoError()
+        {
+            return new NotImplementedException("Work in progress.");
+        }
     }
 }
