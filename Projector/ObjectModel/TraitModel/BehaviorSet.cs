@@ -4,19 +4,12 @@
 
     internal sealed class BehaviorSet : TraitSet<IProjectionBehavior>
     {
-        public BehaviorSet()
-            : base() { }
-
-        public BehaviorSet(BehaviorSet parent)
-            : base(parent) { }
-
         internal override void Apply(IProjectionBehavior trait)
         {
             if (traits == null)
             {
                 // Add first behavior
                 traits = Cell.Cons(trait);
-                ownedCount++;
             }
             else
             {
@@ -40,17 +33,12 @@
 
             var current    = traits;
             var previous   = null as Cell<IProjectionBehavior>;
-            var index      = 0;
             var stage      = 0;
             var behavior   = traits.Item;
-            var shared     = null as Cell<IProjectionBehavior>;
             var targetType = 0 != (state & MergeStates.Removing) ? targetBehavior.GetType() : null;
 
             for (;;)
             {
-                if (index == ownedCount)
-                    shared = previous;
-
                 switch (stage)
                 {
                     case 0: // Find insert and remove points
@@ -61,11 +49,7 @@
                                 return;
 
                             // Insert
-                            if (index > ownedCount)
-                                previous = shared = CopyShared(shared, current);
                             previous = Link(previous, Cell.Cons(targetBehavior, current));
-                            ownedCount++;
-                            index++;
                             state |= MergeStates.Inserted;
 
                             if (0 == (state & MergeStates.Removed))
@@ -102,11 +86,7 @@
                 if (0 != (state & MergeStates.Removing) && behavior.GetType() == targetType)
                 {
                     // Remove
-                    if (index > ownedCount)
-                        previous = shared = CopyShared(shared, current);
                     current = Link(previous, current.Next);
-                    if (index < ownedCount)
-                        ownedCount--;
 
                     if (stage == 0)
                         // Still need find insert point
@@ -120,7 +100,6 @@
                     // Advance to next behavior
                     previous = current;
                     current  = current.Next;
-                    index++;
                 }
 
                 if (current == null)
@@ -132,11 +111,8 @@
             if (0 != (state & MergeStates.Inserted))
                 return;
 
-            // Insert at end of behaviors list (unnecessary operations removed)
-            if (index > ownedCount)
-                previous = CopyShared(shared, null);
-            Link(previous, Cell.Cons(targetBehavior, null));
-            ownedCount++;
+            // Insert at end of behaviors list
+            Link(previous, Cell.Cons(targetBehavior));
         }
 
         [Flags]
