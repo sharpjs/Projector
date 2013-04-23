@@ -56,7 +56,7 @@
 
                             if (removal != RemovalState.Removed)
                                 // Still looking for something to remove, or if the inserted behavior was already present
-                                { stage++; goto case 1; }
+                                { stage = 1; goto case 1; }
                             else
                                 // Already found remove point; our work is done here
                                 return;
@@ -68,7 +68,7 @@
                         {
                             if (removal == RemovalState.Removing)
                                 // Still looking for something to remove
-                                stage++;
+                                stage = 2;
                             else
                                 // Already have insert, not removing; we're done
                                 return;
