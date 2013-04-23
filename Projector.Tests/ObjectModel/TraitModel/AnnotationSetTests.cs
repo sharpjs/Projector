@@ -12,8 +12,10 @@
         {
             var set = AnnotationSet();
 
-            Assert.That(set,       Is.Empty);
-            Assert.That(set.First, Is.Null);
+            Assert.That(set.EnumerateGeneric(),    Is.Empty);
+            Assert.That(set.EnumerateNongeneric(), Is.Empty);
+            Assert.That(set.First,                 Is.Null);
+            Assert.That(set.ToString(),            Is.EqualTo("[]"));
         }
 
         [Test]
@@ -23,10 +25,12 @@
 
             var set = AnnotationSet(a);
 
-            Assert.That(set,            HasAnnotations(a));
-            Assert.That(set.First,      Is.Not.Null);
-            Assert.That(set.First.Item, Is.SameAs(a));
-            Assert.That(set.First.Next, Is.Null);
+            Assert.That(set.EnumerateGeneric(),    HasAnnotations(a));
+            Assert.That(set.EnumerateNongeneric(), HasAnnotations(a));
+            Assert.That(set.First,                 Is.Not.Null);
+            Assert.That(set.First.Item,            Is.SameAs(a));
+            Assert.That(set.First.Next,            Is.Null);
+            Assert.That(set.ToString(),            Is.EqualTo(set.First.ToString()));
         }
 
         [Test]
