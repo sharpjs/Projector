@@ -1,7 +1,7 @@
 ﻿namespace Projector.Tests.ObjectModel
 {
-    using System.Linq;
     using NUnit.Framework;
+    using NUnit.Framework.Constraints;
     using Projector.ObjectModel;
 
     [TestFixture]
@@ -10,184 +10,177 @@
         [Test]
         public void Initial()
         {
-            var set = new BehaviorSet();
+            var set = BehaviorSet();
 
             Assert.That(set,       Is.Empty);
             Assert.That(set.First, Is.Null);
         }
 
         [Test]
-        public void AddFirst()
+        public void Apply_One()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { }
-            };
+            var a = new BehaviorA { };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a);
 
-            Assert.That(set,            Is.EqualTo(behaviors));
+            Assert.That(set,            HasBehaviors(a));
             Assert.That(set.First,      Is.Not.Null);
-            Assert.That(set.First.Item, Is.SameAs(behaviors[0]));
+            Assert.That(set.First.Item, Is.SameAs(a));
+            Assert.That(set.First.Next, Is.Null);
         }
 
         [Test]
-        public void AddSameInstance()
+        public void Apply_SameInstance_FirstForPriority()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { }
-            };
+            var a = new BehaviorA { };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a, a);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(a));
         }
 
         [Test]
-        public void AddSameInstance_AllowMultiple()
+        public void Apply_SameInstance_FirstForPriority_AllowMultiple()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { AllowMultiple = true }
-            };
+            var a = new BehaviorA { AllowMultiple = true };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a, a);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(a));
         }
 
         [Test]
-        public void AddSameType_AtHigherPriority()
+        public void Apply_SameInstance_NotFirstForPriority()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2 },
-                new BehaviorA { Priority = 1 }
-            };
+            var a = new BehaviorA { };
+            var b = new BehaviorB { };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[1]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a, b, a);
 
-            Assert.That(set, Is.EqualTo(behaviors.Take(1)));
+            Assert.That(set, HasBehaviors(a, b));
         }
 
         [Test]
-        public void AddSameType_AtHigherPriority_AllowMultiple()
+        public void Apply_SameInstance_NotFirstForPriority_AllowMultiple()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2, AllowMultiple = true },
-                new BehaviorA { Priority = 1, AllowMultiple = true }
-            };
+            var a = new BehaviorA { AllowMultiple = true };
+            var b = new BehaviorB { AllowMultiple = true };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[1]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a, b, a);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(a, b));
         }
 
         [Test]
-        public void AddSameType_AtLowerPriority()
+        public void Apply_SameType_AtHigherPriority()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2 },
-                new BehaviorA { Priority = 1 }
-            };
+            var a1 = new BehaviorA { Priority = 1 };
+            var b1 = new BehaviorB { Priority = 1 };
+            var a2 = new BehaviorA { Priority = 2 };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[1]);
+            var set = BehaviorSet(a1, b1, a2);
 
-            Assert.That(set, Is.EqualTo(behaviors.Skip(1)));
+            Assert.That(set, HasBehaviors(a2, b1));
         }
 
         [Test]
-        public void AddSameType_AtLowerPriority_AllowMultiple()
+        public void Apply_SameType_AtHigherPriority_AllowMultiple()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2, AllowMultiple = true },
-                new BehaviorA { Priority = 1, AllowMultiple = true }
-            };
+            var a1 = new BehaviorA { Priority = 1, AllowMultiple = true };
+            var b1 = new BehaviorB { Priority = 1, AllowMultiple = true };
+            var a2 = new BehaviorA { Priority = 2, AllowMultiple = true };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[1]);
+            var set = BehaviorSet(a1, b1, a2);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(a2, b1, a1));
         }
 
         [Test]
-        public void AddAnotherType_AtHigherPriority()
+        public void Apply_SameType_AtLowerPriority()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorB { Priority = 2 },
-                new BehaviorA { Priority = 1 }
-            };
+            var a2 = new BehaviorA { Priority = 2 };
+            var b2 = new BehaviorB { Priority = 2 };
+            var a1 = new BehaviorA { Priority = 1 };
+            var c0 = new BehaviorC { Priority = 0 };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[1]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a2, b2, c0, a1);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(b2, a1, c0));
         }
 
         [Test]
-        public void AddAnotherType_AtHigherPriority_AllowMultiple()
+        public void Apply_SameType_AtLowerPriority_AllowMultiple()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorB { Priority = 2, AllowMultiple = true },
-                new BehaviorA { Priority = 1, AllowMultiple = true }
-            };
+            var a2 = new BehaviorA { Priority = 2, AllowMultiple = true };
+            var b2 = new BehaviorB { Priority = 2, AllowMultiple = true };
+            var a1 = new BehaviorA { Priority = 1, AllowMultiple = true };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[1]);
-            set.Apply(behaviors[0]);
+            var set = BehaviorSet(a2, b2, a1);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(b2, a2, a1));
         }
 
         [Test]
-        public void AddAnotherType_AtLowerPriority()
+        public void Apply_AnotherType_AtHigherPriority()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2 },
-                new BehaviorB { Priority = 1 }
-            };
+            var a1 = new BehaviorA { Priority = 1 };
+            var b1 = new BehaviorB { Priority = 1 };
+            var c2 = new BehaviorC { Priority = 2 };
 
-            var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[1]);
+            var set = BehaviorSet(a1, b1, c2);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            Assert.That(set, HasBehaviors(c2, b1, a1));
         }
 
         [Test]
-        public void AddAnotherType_AtLowerPriority_AllowMultiple()
+        public void Apply_AnotherType_AtHigherPriority_AllowMultiple()
         {
-            var behaviors = new IProjectionBehavior[]
-            {
-                new BehaviorA { Priority = 2, AllowMultiple = true },
-                new BehaviorB { Priority = 1, AllowMultiple = true }
-            };
+            var a1 = new BehaviorA { Priority = 1, AllowMultiple = true };
+            var b1 = new BehaviorB { Priority = 1, AllowMultiple = true };
+            var c2 = new BehaviorC { Priority = 2, AllowMultiple = true };
 
+            var set = BehaviorSet(a1, b1, c2);
+
+            Assert.That(set, HasBehaviors(c2, b1, a1));
+        }
+
+        [Test]
+        public void Apply_AnotherType_AtLowerPriority()
+        {
+            var a2 = new BehaviorA { Priority = 2 };
+            var b2 = new BehaviorB { Priority = 2 };
+            var c1 = new BehaviorC { Priority = 1 };
+
+            var set = BehaviorSet(a2, b2, c1);
+
+            Assert.That(set, HasBehaviors(b2, a2, c1));
+        }
+
+        [Test]
+        public void Apply_AnotherType_AtLowerPriority_AllowMultiple()
+        {
+            var a2 = new BehaviorA { Priority = 2, AllowMultiple = true };
+            var b2 = new BehaviorB { Priority = 2, AllowMultiple = true };
+            var c1 = new BehaviorC { Priority = 1, AllowMultiple = true };
+
+            var set = BehaviorSet(a2, b2, c1);
+
+            Assert.That(set, HasBehaviors(b2, a2, c1));
+        }
+
+        private static BehaviorSet BehaviorSet(params IProjectionBehavior[] behaviors)
+        {
             var set = new BehaviorSet();
-            set.Apply(behaviors[0]);
-            set.Apply(behaviors[1]);
 
-            Assert.That(set, Is.EqualTo(behaviors));
+            foreach (var behavior in behaviors)
+                set.Apply(behavior);
+
+            return set;
+        }
+
+        private static Constraint HasBehaviors(params IProjectionBehavior[] behaviors)
+        {
+            return Is.EqualTo(behaviors);
         }
     }
 }

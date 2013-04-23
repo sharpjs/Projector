@@ -111,13 +111,17 @@
 
     internal class AnnotationA : MockAnnotation { }
     internal class AnnotationB : MockAnnotation { }
+    internal class AnnotationC : MockAnnotation { }
 
     internal class AnnotationAAttribute : MockAnnotationAttribute { }
     internal class AnnotationBAttribute : MockAnnotationAttribute { }
+    internal class AnnotationCAttribute : MockAnnotationAttribute { }
 
     internal class BehaviorA : MockBehavior { }
     internal class BehaviorB : MockBehavior { }
+    internal class BehaviorC : MockBehavior { }
 
     internal class BehaviorAAttribute : MockBehaviorAttribute { }
     internal class BehaviorBAttribute : MockBehaviorAttribute { }
+    internal class BehaviorCAttribute : MockBehaviorAttribute { }
 }

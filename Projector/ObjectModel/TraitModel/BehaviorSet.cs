@@ -14,28 +14,30 @@
             else
             {
                 // Merge subsequent behavior
-                var state = trait.GetTraitOptions().AllowMultiple
-                    ? MergeStates.None
-                    : MergeStates.Removing;
-                MergeBehavior(trait, trait.Priority, state);
+                var removal = trait.GetTraitOptions().AllowMultiple
+                    ? RemovalState.None
+                    : RemovalState.Removing;
+                MergeBehavior(trait, trait.Priority, removal);
             }
         }
 
-        private void MergeBehavior(IProjectionBehavior targetBehavior, int targetPriority, MergeStates state)
+        private void MergeBehavior(IProjectionBehavior targetBehavior, int targetPriority, RemovalState removal)
         {
             // CASES:
-            // 0: Merging same behavior instance: NOP. (same instance will also  have same priority)
+            // 0: Merging same behavior instance: MOVE to head of its priority group (REMOVE & INSERT)
             // 1: Merging same behavior type,     allowing multiple: INSERT
             // 2: Merging same behavior type, NOT allowing multiple: REPLACE (REMOVE & INSERT)
             // 3: Merging different behavior type: INSERT
             //
             // Assume: behaviors != null
+            // Note: same instance will also have same priority
 
             var current    = traits;
             var previous   = null as Cell<IProjectionBehavior>;
             var stage      = 0;
             var behavior   = traits.Item;
-            var targetType = 0 != (state & MergeStates.Removing) ? targetBehavior.GetType() : null;
+            var targetType = (removal == RemovalState.Removing) ? targetBehavior.GetType() : null;
+            var inserted   = false;
 
             for (;;)
             {
@@ -44,16 +46,16 @@
                     case 0: // Find insert and remove points
                         if (behavior.Priority <= targetPriority)
                         {
-                            if (behavior.Priority == targetPriority && behavior == targetBehavior)
-                                // Same behavior is already present; nothing to do
+                            if (behavior == targetBehavior)
+                                // Same behavior is already first for its priority; nothing to do
                                 return;
 
                             // Insert
                             previous = Link(previous, Cell.Cons(targetBehavior, current));
-                            state |= MergeStates.Inserted;
+                            inserted = true;
 
-                            if (0 == (state & MergeStates.Removed))
-                                // Still looking for something to remove, or if the same behavior is already present
+                            if (removal != RemovalState.Removed)
+                                // Still looking for something to remove, or if the inserted behavior was already present
                                 { stage++; goto case 1; }
                             else
                                 // Already found remove point; our work is done here
@@ -61,10 +63,10 @@
                         }
                         break;
 
-                    case 1: // Find remove point, check if same behavior is already present
+                    case 1: // Find remove point, check if inserted behavior was already present
                         if (behavior.Priority != targetPriority)
                         {
-                            if (0 != (state & MergeStates.Removing))
+                            if (removal == RemovalState.Removing)
                                 // Still looking for something to remove
                                 stage++;
                             else
@@ -73,7 +75,8 @@
                         }
                         else if (behavior == targetBehavior)
                         {
-                            // Same behavior is already present; nothing to do
+                            // Inserted behavior was already present; remove old cell
+                            Link(previous, current.Next);
                             return;
                         }
                         break;
@@ -83,14 +86,14 @@
                         break;
                 }
 
-                if (0 != (state & MergeStates.Removing) && behavior.GetType() == targetType)
+                if (removal == RemovalState.Removing && behavior.GetType() == targetType)
                 {
                     // Remove
                     current = Link(previous, current.Next);
 
                     if (stage == 0)
                         // Still need find insert point
-                        state = MergeStates.Removed; //removing = false;
+                        removal = RemovalState.Removed;
                     else
                         // Already have insert and remove points; we're done
                         return;
@@ -108,20 +111,17 @@
                 behavior = current.Item;
             }
 
-            if (0 != (state & MergeStates.Inserted))
+            if (inserted)
                 return;
 
-            // Insert at end of behaviors list
             Link(previous, Cell.Cons(targetBehavior));
         }
 
-        [Flags]
-        private enum MergeStates
+        private enum RemovalState
         {
-            None     = 0x00,
-            Removing = 0x01,
-            Removed  = 0x02,
-            Inserted = 0x04
+            None     = 0,
+            Removing = 1,
+            Removed  = 2
         }
     }
 }
