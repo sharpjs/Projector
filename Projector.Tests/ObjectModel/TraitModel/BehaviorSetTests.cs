@@ -30,7 +30,7 @@
         }
 
         [Test]
-        public void Apply_SameInstance_FirstForPriority()
+        public void Apply_SameInstance()
         {
             var a = new BehaviorA { };
 
@@ -40,7 +40,7 @@
         }
 
         [Test]
-        public void Apply_SameInstance_FirstForPriority_AllowMultiple()
+        public void Apply_SameInstance_AllowMultiple()
         {
             var a = new BehaviorA { AllowMultiple = true };
 
@@ -50,7 +50,7 @@
         }
 
         [Test]
-        public void Apply_SameInstance_NotFirstForPriority()
+        public void Apply_AnotherType_ThenSameInstance()
         {
             var a = new BehaviorA { };
             var b = new BehaviorB { };
@@ -61,7 +61,7 @@
         }
 
         [Test]
-        public void Apply_SameInstance_NotFirstForPriority_AllowMultiple()
+        public void Apply_AnotherType_ThenSameInstance_AllowMultiple()
         {
             var a = new BehaviorA { AllowMultiple = true };
             var b = new BehaviorB { AllowMultiple = true };
@@ -96,16 +96,41 @@
         }
 
         [Test]
+        public void Apply_SameType_AtMiddlePriority()
+        {
+            var a2 = new BehaviorA { Priority = 2 };
+            var b2 = new BehaviorB { Priority = 2 };
+            var c0 = new BehaviorC { Priority = 0 };
+            var a1 = new BehaviorA { Priority = 1 };
+
+            var set = BehaviorSet(a2, b2, c0, a1);
+
+            Assert.That(set, HasBehaviors(b2, a1, c0));
+        }
+
+        [Test]
+        public void Apply_SameType_AtMiddlePriority_AllowMultiple()
+        {
+            var a2 = new BehaviorA { Priority = 2, AllowMultiple = true };
+            var b2 = new BehaviorB { Priority = 2, AllowMultiple = true };
+            var c0 = new BehaviorC { Priority = 0, AllowMultiple = true };
+            var a1 = new BehaviorA { Priority = 1, AllowMultiple = true };
+
+            var set = BehaviorSet(a2, b2, c0, a1);
+
+            Assert.That(set, HasBehaviors(b2, a2, a1, c0));
+        }
+
+        [Test]
         public void Apply_SameType_AtLowerPriority()
         {
             var a2 = new BehaviorA { Priority = 2 };
             var b2 = new BehaviorB { Priority = 2 };
             var a1 = new BehaviorA { Priority = 1 };
-            var c0 = new BehaviorC { Priority = 0 };
 
-            var set = BehaviorSet(a2, b2, c0, a1);
+            var set = BehaviorSet(a2, b2, a1);
 
-            Assert.That(set, HasBehaviors(b2, a1, c0));
+            Assert.That(set, HasBehaviors(b2, a1));
         }
 
         [Test]
@@ -142,6 +167,30 @@
             var set = BehaviorSet(a1, b1, c2);
 
             Assert.That(set, HasBehaviors(c2, b1, a1));
+        }
+
+        [Test]
+        public void Apply_AnotherType_AtMiddlePriority()
+        {
+            var a0 = new BehaviorA { Priority = 0 };
+            var b2 = new BehaviorB { Priority = 2 };
+            var c1 = new BehaviorC { Priority = 1 };
+
+            var set = BehaviorSet(a0, b2, c1);
+
+            Assert.That(set, HasBehaviors(b2, c1, a0));
+        }
+
+        [Test]
+        public void Apply_AnotherType_AtMiddlePriority_AllowMultiple()
+        {
+            var a0 = new BehaviorA { Priority = 0, AllowMultiple = true };
+            var b2 = new BehaviorB { Priority = 2, AllowMultiple = true };
+            var c1 = new BehaviorC { Priority = 1, AllowMultiple = true };
+
+            var set = BehaviorSet(a0, b2, c1);
+
+            Assert.That(set, HasBehaviors(b2, c1, a0));
         }
 
         [Test]

@@ -4,6 +4,8 @@
 
     internal sealed class BehaviorSet : TraitSet<IProjectionBehavior>
     {
+        private enum RemovalState { None, Removing, Removed }
+
         internal override void Apply(IProjectionBehavior trait)
         {
             if (traits == null)
@@ -115,13 +117,6 @@
                 return;
 
             Link(previous, Cell.Cons(targetBehavior));
-        }
-
-        private enum RemovalState
-        {
-            None     = 0,
-            Removing = 1,
-            Removed  = 2
         }
     }
 }
