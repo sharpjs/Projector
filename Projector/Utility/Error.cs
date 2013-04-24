@@ -83,15 +83,15 @@
         //    return new ProjectionException(message);
         //}
 
-        //internal static Exception UnsupportedCollectionType(Type clrType)
-        //{
-        //    var message = string.Format
-        //    (
-        //        "Unsupported collection type: {0}",
-        //        clrType.FullName
-        //    );
-        //    return new NotSupportedException(message);
-        //}
+        internal static Exception UnsupportedCollectionType(Type type)
+        {
+            var message = string.Format
+            (
+                "Unsupported collection type: {0}",
+                type.GetPrettyName(true)
+            );
+            return new NotSupportedException(message);
+        }
 
         //internal static Exception AttributeConflict(ProjectionType projectionType, Type attributeType)
         //{
