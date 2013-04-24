@@ -214,7 +214,7 @@
             {
                 if ((cell = nextPass1Type) != null)
                 {
-                    cell.Item.InitializePass1(); // pass profiles here?
+                    cell.Item.InitializePass1();
                     nextPass1Type = cell.Next;
                     continue;
                 }
@@ -228,7 +228,7 @@
 
                 if ((cell = nextPass3Type) != null)
                 {
-                    cell.Item.InitializePass3(); // TODO: Fix
+                    cell.Item.InitializePass3();
                     nextPass3Type = cell.Next;
                     continue;
                 }
@@ -266,7 +266,7 @@
         {
             switch (type.Classify())
             {
-                //case TypeKind.Simple:     return new ProjectorSimpleType     (type, this);
+                case TypeKind.Opaque:     return new ProjectorOpaqueType     (type, this);
                 //case TypeKind.Structure:  return new ProjectionStructureType (type, this);
                 //case TypeKind.Array:      return new ProjectionArrayType     (type, this);
                 //case TypeKind.List:       return new ProjectionListType      (type, this);

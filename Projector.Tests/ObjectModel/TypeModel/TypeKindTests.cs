@@ -1,4 +1,4 @@
-﻿namespace Projector.Tests.ObjectModel
+﻿namespace Projector.ObjectModel
 {
     using NUnit.Framework;
     using Projector.ObjectModel;
