@@ -279,7 +279,10 @@
 
         internal sealed class FakeProjectionObject : ProjectionObject
         {
-            // ...
+            public override ProjectionFactory Factory
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
 
         internal sealed class FakeAssociatedObject { }

@@ -44,10 +44,10 @@
 
         internal ProjectionObject() { }
 
-        ///// <summary>
-        /////   Gets the factory that created this object.
-        ///// </summary>
-        //public abstract ProjectionFactory Factory { get; }
+        /// <summary>
+        ///   Gets the factory that created this object.
+        /// </summary>
+        public abstract ProjectionFactory Factory { get; }
 
         /// <summary>
         ///   Gets the objects associated with this object.
