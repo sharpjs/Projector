@@ -55,7 +55,7 @@
     <Compile Include="ObjectModel\TraitModel\TraitSet.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionMetaObject.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionType.cs" />
-    <Compile Include="ObjectModel\TypeModel\ProjectorOpaqueType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueType.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Cell.cs" />

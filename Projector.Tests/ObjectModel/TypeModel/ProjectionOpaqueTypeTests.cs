@@ -11,6 +11,12 @@
         private readonly ProjectionType Type = TypeOf<OpaqueType>();
 
         [Test]
+        public void ConcreteType()
+        {
+            Assert.That(Type, Is.InstanceOf<ProjectionOpaqueType>()); ;
+        }
+
+        [Test]
         public void Kind()
         {
             Assert.That(Type.Kind, Is.EqualTo(TypeKind.Opaque));
