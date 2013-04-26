@@ -11,17 +11,13 @@
         private static ProjectionFactory defaultFactory;
 
         private readonly Dictionary<Type, ProjectionType> types;
+        private readonly CellList<ProjectionType>         incompleteTypes;
         private readonly ReaderWriterLockSlim             typesLock;
         //private readonly ProjectionAssemblyFactory        assemblyFactory;
         //private readonly ProjectionProvider[]             providers;
         //private readonly ProjectionProviderCollection     providersPublic;
         //private readonly ITraitResolver                   resolver;
         //private readonly ProjectionOptions                options;
-
-        private readonly CellList<ProjectionType> incompleteTypes;
-        private          Cell    <ProjectionType> nextPass1Type;
-        private          Cell    <ProjectionType> nextPass2Type;
-        private          Cell    <ProjectionType> nextPass3Type;
 
         //public ProjectionFactory() : this(null) { }
 
@@ -37,9 +33,9 @@
 
             types            = new Dictionary<Type, ProjectionType>();
             typesLock        = new ReaderWriterLockSlim();
+            incompleteTypes  = new CellList<ProjectionType>();
             //assemblyFactory  =     ProjectionAssemblyFactory.PerType(options);
             //providersPublic  = new ProjectionProviderCollection(providers);
-            incompleteTypes  = new CellList<ProjectionType>();
         }
 
         /// <summary>
@@ -210,32 +206,25 @@
             var projectionType = CreateProjectionType(type);
 
             Cell<ProjectionType> cell;
-            for (;;)
-            {
-                if ((cell = nextPass1Type) != null)
-                {
-                    cell.Item.InitializePass1();
-                    nextPass1Type = cell.Next;
-                    continue;
-                }
 
-                if ((cell = nextPass2Type) != null)
-                {
-                    cell.Item.InitializePass2();
-                    nextPass2Type = cell.Next;
-                    continue;
-                }
+            cell = incompleteTypes.Head;
+            do cell.Item.InitializePass1();
+            while (null != (cell = cell.Next));
 
-                if ((cell = nextPass3Type) != null)
-                {
-                    cell.Item.InitializePass3();
-                    nextPass3Type = cell.Next;
-                    continue;
-                }
+            cell = incompleteTypes.Head;
+            do cell.Item.InitializePass2();
+            while (null != (cell = cell.Next));
 
-                incompleteTypes.Clear();
-                return projectionType;
-            }
+            cell = incompleteTypes.Head;
+            do cell.Item.InitializePass3();
+            while (null != (cell = cell.Next));
+
+            cell = incompleteTypes.Head;
+            do cell.Item.InitializePass4();
+            while (null != (cell = cell.Next));
+
+            incompleteTypes.Clear();
+            return projectionType;
         }
 
         internal ProjectionType GetProjectionTypeUnsafe(Type type)
@@ -251,29 +240,19 @@
             switch (type.Classify())
             {
                 case TypeKind.Opaque:     return new ProjectionOpaqueType    (type, this);
-                //case TypeKind.Structure:  return new ProjectionStructureType (type, this);
-                //case TypeKind.Array:      return new ProjectionArrayType     (type, this);
-                //case TypeKind.List:       return new ProjectionListType      (type, this);
-                //case TypeKind.Set:        return new ProjectionSetType       (type, this);
-                //case TypeKind.Dictionary: return new ProjectionDictionaryType(type, this);
+              //case TypeKind.Structure:  return new ProjectionStructureType (type, this);
+                case TypeKind.Array:      return new ProjectionArrayType     (type, this);
+                case TypeKind.List:       return new ProjectionListType      (type, this);
+                case TypeKind.Set:        return new ProjectionSetType       (type, this);
+                case TypeKind.Dictionary: return new ProjectionDictionaryType(type, this);
                 default: throw Error.InternalError("invalid type kind");
             }
         }
 
         internal void RegisterProjectionType(ProjectionType projectionType)
         {
+            incompleteTypes.Enqueue(projectionType);
             types[projectionType.UnderlyingType] = projectionType;
-
-            var cell = incompleteTypes.Enqueue(projectionType);
-
-            if (nextPass1Type == null)
-                nextPass1Type = cell;
-
-            if (nextPass2Type == null)
-                nextPass2Type = cell;
-
-            if (nextPass3Type == null)
-                nextPass3Type = cell;
         }
 
         private void RemoveIncompleteTypes()
@@ -281,8 +260,6 @@
             ProjectionType projectionType;
             while (incompleteTypes.TryTake(out projectionType))
                 types.Remove(projectionType);
-
-            nextPass1Type = nextPass2Type = nextPass3Type = null;
         }
 
         //internal ProjectionConstructor ImplementProjectionType(ProjectionStructureType projectionType)

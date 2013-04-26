@@ -9,17 +9,11 @@
         private readonly BehaviorSet   behaviors;
         private          bool          isReadOnly;
 
-        // Constructor: Set readonlies, get safe metaobjects (i.e. won't cause cycles)
+        // Constructor: Set readonlies, get other metaobjects
         internal ProjectionMetaObject()
         {
             annotations = new AnnotationSet();
             behaviors   = new BehaviorSet  ();
-        }
-
-        // Init pass 0: Get other metaobjects (e.g. might cause cycles)
-        internal virtual void InitializePass0()
-        {
-            // Do nothing
         }
 
         // Init pass 1: Compute traits

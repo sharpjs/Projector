@@ -11,7 +11,7 @@
         private readonly ProjectionType Type = TypeOf<OpaqueType>();
 
         [Test]
-        public void ConcreteType()
+        public void Metatype()
         {
             Assert.That(Type, Is.InstanceOf<ProjectionOpaqueType>()); ;
         }
@@ -26,6 +26,18 @@
         public void IsVirtualizable()
         {
             Assert.That(Type.IsVirtualizable, Is.False);
+        }
+
+        [Test]
+        public void KeyType()
+        {
+            Assert.That(Type.KeyType, Is.Null);
+        }
+
+        [Test]
+        public void ItemType()
+        {
+            Assert.That(Type.ItemType, Is.Null);
         }
     }
 }

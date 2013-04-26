@@ -73,6 +73,32 @@
         }
 
         /// <summary>
+        ///   For a collection type, gets the type of keys used to access items in the collection;
+        ///   otherwise, null.
+        /// </summary>
+        /// <remarks>
+        ///   The type is a collection type if <see cref="TypeKindExtensions.IsCollection"/>
+        ///   returns true for the value of <see cref="Kind"/>.
+        /// </remarks>
+        public virtual ProjectionType KeyType
+        {
+            get { return null; }
+        }
+
+        /// <summary>
+        ///   For a collection type, gets the type of items in the collection;
+        ///   otherwise, null.
+        /// </summary>
+        /// <remarks>
+        ///   The type is a collection type if <see cref="TypeKindExtensions.IsCollection"/>
+        ///   returns true for the value of <see cref="Kind"/>.
+        /// </remarks>
+        public virtual ProjectionType ItemType
+        {
+            get { return null; }
+        }
+
+        /// <summary>
         ///   Converts an <see cref="ProjectionType"/> to its underlying <c>System.Type</c>.
         /// </summary>
         /// <param name="projectionType">The <see cref="ProjectionType"/> to convert.</param>

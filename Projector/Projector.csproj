@@ -53,7 +53,12 @@
     <Compile Include="ObjectModel\TraitModel\TraitApplicator.cs" />
     <Compile Include="ObjectModel\TraitModel\TraitOptions.cs" />
     <Compile Include="ObjectModel\TraitModel\TraitSet.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionArrayType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionCollectionType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionDictionaryType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionListType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionMetaObject.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionSetType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueType.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
