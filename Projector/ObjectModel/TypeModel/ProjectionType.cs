@@ -98,6 +98,16 @@
             get { return null; }
         }
 
+        public virtual ProjectionTypeCollection BaseTypes
+        {
+            get { return ProjectionTypeCollection.Empty; }
+        }
+
+        public virtual ProjectionPropertyCollection Properties
+        {
+            get { return ProjectionPropertyCollection.Empty; }
+        }
+
         /// <summary>
         ///   Converts an <see cref="ProjectionType"/> to its underlying <c>System.Type</c>.
         /// </summary>

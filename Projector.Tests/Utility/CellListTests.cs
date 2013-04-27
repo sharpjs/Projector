@@ -540,7 +540,6 @@
         {
             public override void SetUp()
             {
-                string item;
                 List = new CellList<string>();
                 List.Enqueue("a");
                 List.Enqueue("b");

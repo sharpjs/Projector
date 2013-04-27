@@ -46,7 +46,11 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\ProjectionExceptionTests.cs" />
     <Compile Include="Core\ProjectionFactoryTests.cs" />
+    <Compile Include="Core\Traits\InheritFromAttributeTests.cs" />
+    <Compile Include="Core\Traits\OverrideAttributeTests.cs" />
+    <Compile Include="Core\Traits\SuppressAttributeTests.cs" />
     <Compile Include="Helpers\TestExtensions.cs" />
     <Compile Include="Helpers\MockTraits.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />

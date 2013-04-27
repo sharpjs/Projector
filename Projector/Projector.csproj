@@ -43,7 +43,11 @@
     </Compile>
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
+    <Compile Include="Core\ProjectionException.cs" />
     <Compile Include="Core\ProjectionFactory.cs" />
+    <Compile Include="Core\Traits\InheritFromAttribute.cs" />
+    <Compile Include="Core\Traits\OverrideAttribute.cs" />
+    <Compile Include="Core\Traits\SuppressAttribute.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObject.cs" />
     <Compile Include="ObjectModel\Interfaces\IProjectionBehavior.cs" />
     <Compile Include="ObjectModel\Interfaces\ITraitBuilder.cs" />
@@ -58,9 +62,16 @@
     <Compile Include="ObjectModel\TypeModel\ProjectionDictionaryType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionListType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionMetaObject.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionProperty.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionPropertyCollection.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionPropertyTraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionSetType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionStructureType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionTypeCollection.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionTypeTraitAggregator.cs" />
+    <Compile Include="ObjectModel\TypeModel\TraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Cell.cs" />
@@ -69,10 +80,15 @@
     <Compile Include="Utility\CollectionDebugView.cs" />
     <Compile Include="Utility\Concurrent.cs" />
     <Compile Include="Utility\Error.cs" />
+    <Compile Include="Utility\MemberKey.cs" />
+    <Compile Include="Utility\MemberKeyComparer.cs" />
+    <Compile Include="Utility\StringExtensions.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
     <Compile Include="Utility\TypePrettyName.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ObjectModel\Invocations\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
