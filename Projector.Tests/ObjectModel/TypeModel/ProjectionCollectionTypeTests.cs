@@ -10,7 +10,7 @@
     public static class ProjectionCollectionTypeTests
     {
         [TestFixture]
-        public class ArrayType : SupportedCollectionType<Item[]>
+        public class ArrayType : SupportedType<Item[]>
         {
             public ArrayType()
             {
@@ -23,7 +23,7 @@
         }
 
         [TestFixture]
-        public class IEnumerableType : SupportedCollectionType<IEnumerable<Item>>
+        public class IEnumerableType : SupportedType<IEnumerable<Item>>
         {
             public IEnumerableType()
             {
@@ -36,7 +36,7 @@
         }
 
         [TestFixture]
-        public class ICollectionType : SupportedCollectionType<ICollection<Item>>
+        public class ICollectionType : SupportedType<ICollection<Item>>
         {
             public ICollectionType()
             {
@@ -49,7 +49,7 @@
         }
 
         [TestFixture]
-        public class IListType : SupportedCollectionType<IList<Item>>
+        public class IListType : SupportedType<IList<Item>>
         {
             public IListType()
             {
@@ -62,7 +62,7 @@
         }
 
         [TestFixture]
-        public class IBindingListType : SupportedCollectionType<IBindingList<Item>>
+        public class IBindingListType : SupportedType<IBindingList<Item>>
         {
             public IBindingListType()
             {
@@ -75,7 +75,7 @@
         }
 
         [TestFixture]
-        public class ISetType : SupportedCollectionType<ISet<Item>>
+        public class ISetType : SupportedType<ISet<Item>>
         {
             public ISetType()
             {
@@ -88,7 +88,7 @@
         }
 
         [TestFixture]
-        public class IBindingSetType : SupportedCollectionType<IBindingSet<Item>>
+        public class IBindingSetType : SupportedType<IBindingSet<Item>>
         {
             public IBindingSetType()
             {
@@ -101,7 +101,7 @@
         }
 
         [TestFixture]
-        public class IDictionaryType : SupportedCollectionType<IDictionary<Key, Item>>
+        public class IDictionaryType : SupportedType<IDictionary<Key, Item>>
         {
             public IDictionaryType()
             {
@@ -114,29 +114,29 @@
         }
 
         // System.Collections.Generic
-        [TestFixture] public class ListType                 : UnsupportedCollectionType<List                <     Item>> { }
-        [TestFixture] public class StackType                : UnsupportedCollectionType<Stack               <     Item>> { }
-        [TestFixture] public class QueueType                : UnsupportedCollectionType<Queue               <     Item>> { }
-        [TestFixture] public class LinkedListType           : UnsupportedCollectionType<LinkedList          <     Item>> { }
-        [TestFixture] public class HashSetType              : UnsupportedCollectionType<HashSet             <     Item>> { }
-        [TestFixture] public class SortedSetType            : UnsupportedCollectionType<SortedSet           <     Item>> { }
-        [TestFixture] public class DictionaryType           : UnsupportedCollectionType<Dictionary          <Key, Item>> { }
-        [TestFixture] public class SortedDictionaryType     : UnsupportedCollectionType<SortedDictionary    <Key, Item>> { }
-        [TestFixture] public class SortedListType           : UnsupportedCollectionType<SortedList          <Key, Item>> { }
+        [TestFixture] public class ListType                 : UnsupportedType<List                <     Item>> { }
+        [TestFixture] public class StackType                : UnsupportedType<Stack               <     Item>> { }
+        [TestFixture] public class QueueType                : UnsupportedType<Queue               <     Item>> { }
+        [TestFixture] public class LinkedListType           : UnsupportedType<LinkedList          <     Item>> { }
+        [TestFixture] public class HashSetType              : UnsupportedType<HashSet             <     Item>> { }
+        [TestFixture] public class SortedSetType            : UnsupportedType<SortedSet           <     Item>> { }
+        [TestFixture] public class DictionaryType           : UnsupportedType<Dictionary          <Key, Item>> { }
+        [TestFixture] public class SortedDictionaryType     : UnsupportedType<SortedDictionary    <Key, Item>> { }
+        [TestFixture] public class SortedListType           : UnsupportedType<SortedList          <Key, Item>> { }
         // System.Collections.Concurrent
-        [TestFixture] public class ConcurrentBagType        : UnsupportedCollectionType<ConcurrentBag       <     Item>> { }
-        [TestFixture] public class ConcurrentStackType      : UnsupportedCollectionType<ConcurrentStack     <     Item>> { }
-        [TestFixture] public class ConcurrentQueueType      : UnsupportedCollectionType<ConcurrentQueue     <     Item>> { }
-        [TestFixture] public class ConcurrentDictionaryType : UnsupportedCollectionType<ConcurrentDictionary<Key, Item>> { }
+        [TestFixture] public class ConcurrentBagType        : UnsupportedType<ConcurrentBag       <     Item>> { }
+        [TestFixture] public class ConcurrentStackType      : UnsupportedType<ConcurrentStack     <     Item>> { }
+        [TestFixture] public class ConcurrentQueueType      : UnsupportedType<ConcurrentQueue     <     Item>> { }
+        [TestFixture] public class ConcurrentDictionaryType : UnsupportedType<ConcurrentDictionary<Key, Item>> { }
         // System.ComponentModel
-        [TestFixture] public class BindingListType          : UnsupportedCollectionType<BindingList         <     Item>> { }
+        [TestFixture] public class BindingListType          : UnsupportedType<BindingList         <     Item>> { }
         // System.Linq
-        [TestFixture] public class LookupType               : UnsupportedCollectionType<Lookup              <Key, Item>> { }
+        [TestFixture] public class LookupType               : UnsupportedType<Lookup              <Key, Item>> { }
 
         public sealed class Key  { }
         public sealed class Item { }
 
-        public abstract class SupportedCollectionType<TCollection> : ProjectionTestsBase
+        public abstract class SupportedType<TCollection> : ProjectionTestsBase
         {
             private readonly ProjectionType Type = TypeOf<TCollection>();
 
@@ -177,7 +177,7 @@
             }
         }
 
-        public abstract class UnsupportedCollectionType<TCollection> : ProjectionTestsBase
+        public abstract class UnsupportedType<TCollection> : ProjectionTestsBase
         {
             [Test]
             public void Construct()
