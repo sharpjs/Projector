@@ -46,6 +46,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\ProjectionFactoryTests.cs" />
     <Compile Include="Helpers\TestExtensions.cs" />
     <Compile Include="Helpers\MockTraits.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />

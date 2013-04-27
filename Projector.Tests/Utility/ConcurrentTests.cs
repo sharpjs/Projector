@@ -1,4 +1,4 @@
-﻿namespace Projector.Utility
+﻿namespace Projector
 {
     using System;
     using System.Threading;
@@ -7,17 +7,18 @@
     [TestFixture]
     public class ConcurrentTests
     {
-        private const  int    TaskCount = 16;
+        public const int ThreadCount = 16;
+
         private static object sharedLock;
-        private static int    sharedLocation; 
+        private static int    sharedLocation;
 
         [Test]
         public void Ensure()
         {
             var location = null as object;
-            var results  = new object[TaskCount];
+            var results  = new object[ThreadCount];
 
-            GuaranteedParallel(i =>
+            ParallelInvoke(i =>
             {
                 results[i] = Concurrent.Ensure(ref location, new object());
             });
@@ -29,7 +30,7 @@
         [Test]
         public void Lock_Unlock()
         {
-            GuaranteedParallel(UseLock);
+            ParallelInvoke(UseLock);
         }
 
         private static void UseLock(int i)
@@ -48,13 +49,13 @@
             }
         }
 
-        private static void GuaranteedParallel(Action<int> action)
+        public static void ParallelInvoke(Action<int> action)
         {
             // RATIONALE: Parallel.For does NOT guarantee multithreading.
             if (action == null)
                 throw Error.ArgumentNull("action");
 
-            var threads = new Thread[TaskCount];
+            var threads = new Thread[ThreadCount];
             int i;
 
             for (i = 0; i < threads.Length; i++)

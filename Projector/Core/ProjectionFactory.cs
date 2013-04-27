@@ -239,13 +239,13 @@
         {
             switch (type.Classify())
             {
+                default:
                 case TypeKind.Opaque:     return new ProjectionOpaqueType    (type, this);
               //case TypeKind.Structure:  return new ProjectionStructureType (type, this);
                 case TypeKind.Array:      return new ProjectionArrayType     (type, this);
                 case TypeKind.List:       return new ProjectionListType      (type, this);
                 case TypeKind.Set:        return new ProjectionSetType       (type, this);
                 case TypeKind.Dictionary: return new ProjectionDictionaryType(type, this);
-                default: throw Error.InternalError("invalid type kind");
             }
         }
 
