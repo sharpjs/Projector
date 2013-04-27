@@ -208,19 +208,19 @@
             Cell<ProjectionType> cell;
 
             cell = incompleteTypes.Head;
-            do cell.Item.InitializePass1();
+            do cell.Item.ComputeTraits();
             while (null != (cell = cell.Next));
 
             cell = incompleteTypes.Head;
-            do cell.Item.InitializePass2();
+            do cell.Item.FreezeTraits();
             while (null != (cell = cell.Next));
 
             cell = incompleteTypes.Head;
-            do cell.Item.InitializePass3();
+            do cell.Item.InvokeInitializers();
             while (null != (cell = cell.Next));
 
             cell = incompleteTypes.Head;
-            do cell.Item.InitializePass4();
+            do cell.Item.InvokeLateInitializers();
             while (null != (cell = cell.Next));
 
             incompleteTypes.Clear();

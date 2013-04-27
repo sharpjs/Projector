@@ -3,30 +3,27 @@
     using System;
     using System.Collections.Generic;
 
-    internal sealed class ProjectionTypeTraitAggregator : TraitAggregator<ProjectionStructureType, Type>
+    internal sealed class ProjectionTypeTraitAggregator : TraitAggregator<ProjectionType, Type>
     {
-        public ProjectionTypeTraitAggregator(ProjectionStructureType type)
+        public ProjectionTypeTraitAggregator(ProjectionType type)
             : base(type) { }
 
-        protected override object[] GetDeclaredTraits(ProjectionStructureType projectionType)
+        protected override object[] GetDeclaredTraits(ProjectionType projectionType)
         {
             return projectionType.UnderlyingType.GetCustomAttributes(false);
         }
 
-        protected override object[] GetInheritableTraits(ProjectionStructureType projectionType)
+        protected override object[] GetInheritableTraits(ProjectionType projectionType)
         {
             return projectionType.InheritableTraits;
         }
 
-        protected override IEnumerable<ProjectionStructureType> GetInheritanceSources(ProjectionStructureType projectionType)
+        protected override IEnumerable<ProjectionType> GetInheritanceSources(ProjectionType projectionType)
         {
-            // TODO: Don't require structure types here
-            return System.Linq.Enumerable.Cast<ProjectionStructureType>(
-            projectionType.BaseTypes
-            );
+            return projectionType.BaseTypes;
         }
 
-        protected override Type GetSourceKey(ProjectionStructureType projectionType)
+        protected override Type GetSourceKey(ProjectionType projectionType)
         {
             return projectionType.UnderlyingType;
         }

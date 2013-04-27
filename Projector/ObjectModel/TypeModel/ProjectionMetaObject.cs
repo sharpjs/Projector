@@ -16,26 +16,26 @@
             behaviors   = new BehaviorSet  ();
         }
 
-        // Init pass 1: Compute traits
-        internal virtual void InitializePass1()
+        // Initialization Pass 1
+        internal virtual void ComputeTraits()
         {
             // Do nothing
         }
 
-        // Init pass 2: Freeze traits
-        internal void InitializePass2()
+        // Initialization Pass 2
+        internal virtual void FreezeTraits()
         {
             isReadOnly = true;
         }
 
-        // Init pass 3: Invoke initializers
-        internal virtual void InitializePass3()
+        // Initialization Pass 3
+        internal virtual void InvokeInitializers()
         {
             // Do nothing
         }
 
-        // Init pass 3: Invoke late initializers
-        internal virtual void InitializePass4()
+        // Initialization Pass 4
+        internal virtual void InvokeLateInitializers()
         {
             // Do nothing
         }

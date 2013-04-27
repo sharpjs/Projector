@@ -47,7 +47,7 @@
             this.overrides = aggregator.CollectOverrides();
         }
 
-        internal override void InitializePass1()
+        internal override void ComputeTraits()
         {
             aggregator.CollectDeclaredTraits();
             aggregator.CollectInheritedTraits();
@@ -58,14 +58,14 @@
             aggregator = null;
         }
 
-        internal override void InitializePass3()
+        internal override void InvokeInitializers()
         {
             //new ProjectionPropertyInitializerInvocation
             //    (this, FirstBehavior)
             //    .Proceed();
         }
 
-        internal override void InitializePass4()
+        internal override void InvokeLateInitializers()
         {
             //new ProjectionPropertyLateInitializerInvocation
             //    (this, FirstBehavior)

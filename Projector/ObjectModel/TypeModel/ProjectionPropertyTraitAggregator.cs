@@ -27,7 +27,7 @@
             this.properties         = properties;
         }
 
-        public System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty> Overrides
+        private System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty> Overrides
         {
             get { return overrides == null ? NoOverrides : overrides.AsReadOnly(); }
         }

@@ -12,7 +12,6 @@
 
         //private ProjectionConstructor constructor;
         //private object                constructorLock;
-        private object[]              inheritableTraits;
 
         internal ProjectionStructureType(Type type, ProjectionFactory factory)
             : base(type, TypeKind.Structure, factory)
@@ -32,31 +31,40 @@
             properties = CollectProperties(type, basePropertyCount);
         }
 
-        internal override void InitializePass1()
+        internal override void ComputeTraits()
         {
-            inheritableTraits = CollectTraitsCore();
+            base.ComputeTraits();
 
             foreach (var property in properties)
                 if (property.DeclaringType == this)
-                    property.InitializePass1();
+                    property.ComputeTraits();
         }
 
-        internal override void InitializePass3()
+        internal override void FreezeTraits()
         {
-            InvokeInitializersCore();
+            base.FreezeTraits();
 
             foreach (var property in properties)
                 if (property.DeclaringType == this)
-                    property.InitializePass3();
+                    property.FreezeTraits();
         }
 
-        internal override void InitializePass4()
+        internal override void InvokeInitializers()
         {
-            InvokeLateInitializersCore();
+            base.InvokeInitializers();
 
             foreach (var property in properties)
                 if (property.DeclaringType == this)
-                    property.InitializePass4();
+                    property.InvokeInitializers();
+        }
+
+        internal override void InvokeLateInitializers()
+        {
+            base.InvokeLateInitializers();
+
+            foreach (var property in properties)
+                if (property.DeclaringType == this)
+                    property.InvokeLateInitializers();
         }
 
         /// <summary>
@@ -79,12 +87,6 @@
         public override bool IsVirtualizable
         {
             get { return true; }
-        }
-
-        // Traits inherited by derived types
-        internal object[] InheritableTraits
-        {
-            get { return inheritableTraits; }
         }
 
         //internal Projection CreateProjection(ProjectionInstance instance)
@@ -204,33 +206,6 @@
             foreach (var baseType in baseTypes)
             foreach (var property in baseType.Properties)
                 collection.Add(property, false);
-        }
-
-        private object[] CollectTraitsCore()
-        {
-            var aggregator = new ProjectionTypeTraitAggregator(this);
-
-            aggregator.CollectDeclaredTraits();
-            aggregator.CollectInheritedTraits();
-            aggregator.ApplyDeferredTraits();
-
-            return aggregator.InheritableTraits;
-        }
-
-        private void InvokeInitializersCore()
-        {
-            //var traits = this.GetTraits(profile);
-
-            //new TypeInitializerInvocation
-            //    (this, traits, Traits.FirstBehavior)
-            //    .Proceed();
-        }
-
-        private void InvokeLateInitializersCore()
-        {
-            //new TypeLateInitializerInvocation
-            //    (this, traits, Traits.FirstBehavior)
-            //    .Proceed();
         }
     }
 }

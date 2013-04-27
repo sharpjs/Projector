@@ -60,13 +60,8 @@
 
         internal static Exception ReadOnlyTraits()
         {
-            return new InvalidOperationException("The trait container is read-only.");
+            return new InvalidOperationException("Traits for the object are frozen.");
         }
-
-        //internal static Exception TraitApplicatorDisposed()
-        //{
-        //    return new ObjectDisposedException("applicator", "Cannot access a disposed trait applicator.");
-        //}
 
         //internal static Exception AssemblyModeAlreadyConfigured()
         //{
