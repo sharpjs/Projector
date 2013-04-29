@@ -159,21 +159,33 @@
             }
 
             [Test]
-            public void KeyType()
+            public void CollectionKeyType()
             {
-                Assert.That(Type.KeyType, Is.SameAs(ExpectedKeyType));
+                Assert.That(Type.CollectionKeyType, Is.SameAs(ExpectedKeyType));
             }
 
             [Test]
-            public void ItemType()
+            public void CollectionItemType()
             {
-                Assert.That(Type.ItemType, Is.SameAs(ExpectedItemType));
+                Assert.That(Type.CollectionItemType, Is.SameAs(ExpectedItemType));
             }
 
             [Test]
             public void IsVirtualizable()
             {
                 Assert.That(Type.IsVirtualizable, Is.EqualTo(ExpectedIsVirtualizable));
+            }
+
+            [Test]
+            public void BaseStructureTypes()
+            {
+                Assert.That(Type.BaseStructureTypes, Is.Empty);
+            }
+
+            [Test]
+            public void Properties()
+            {
+                Assert.That(Type.Properties, Is.Empty);
             }
         }
 

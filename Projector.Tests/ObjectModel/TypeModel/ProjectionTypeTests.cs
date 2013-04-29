@@ -14,7 +14,7 @@
         public new void Factory()
         {
             Assert.That(Type.Factory, Is.SameAs(ProjectionTestsBase.Factory));
-            // Factory always gets the factory that created the type
+            // Always gets the factory that created the type
         }
 
         [Test]

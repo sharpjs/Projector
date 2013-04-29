@@ -14,19 +14,9 @@
             return Factory.GetProjectionType(typeof(T));
         }
 
-        //protected static ProjectionStructureType ProjectionTypeOf<T>()
+        //protected static ProjectionTypeCollection<ProjectionStructureType> BaseStructureTypesOf<T>()
         //{
-        //    return TypeOf<T>().AsProjectionType;
-        //}
-
-        //protected static ProjectionCollectionType CollectionTypeOf<T>()
-        //{
-        //    return TypeOf<T>().AsCollectionType;
-        //}
-
-        //protected static ProjectionTypeCollection<ProjectionStructureType> BaseTypesOf<T>()
-        //{
-        //    return ProjectionTypeOf<T>().BaseTypes;
+        //    return ProjectionTypeOf<T>().BaseStructureTypes;
         //}
 
         //protected static ProjectionPropertyCollection PropertiesOf<T>()

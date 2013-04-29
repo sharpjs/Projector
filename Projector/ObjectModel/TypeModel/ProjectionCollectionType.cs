@@ -23,12 +23,12 @@
 
         protected abstract void GetSubtypes(out Type keyType, out Type itemType);
 
-        public override ProjectionType KeyType
+        public override ProjectionType CollectionKeyType
         {
             get { return keyType; }
         }
 
-        public override ProjectionType ItemType
+        public override ProjectionType CollectionItemType
         {
             get { return itemType; }
         }

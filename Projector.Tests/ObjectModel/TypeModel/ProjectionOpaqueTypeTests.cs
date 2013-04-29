@@ -29,15 +29,21 @@
         }
 
         [Test]
-        public void KeyType()
+        public void CollectionKeyType()
         {
-            Assert.That(Type.KeyType, Is.Null);
+            Assert.That(Type.CollectionKeyType, Is.Null);
         }
 
         [Test]
-        public void ItemType()
+        public void CollectionItemType()
         {
-            Assert.That(Type.ItemType, Is.Null);
+            Assert.That(Type.CollectionItemType, Is.Null);
+        }
+
+        [Test]
+        public void Properties()
+        {
+            Assert.That(Type.Properties, Is.Empty);
         }
     }
 }

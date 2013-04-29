@@ -67,17 +67,11 @@
                     property.InvokeLateInitializers();
         }
 
-        /// <summary>
-        /// Gets the base types declared and inherited by the type.
-        /// </summary>
-        public override ProjectionTypeCollection BaseTypes
+        public override ProjectionTypeCollection BaseStructureTypes
         {
             get { return baseTypes; }
         }
 
-        /// <summary>
-        /// Gets the properties declared and inherited by the type.
-        /// </summary>
         public override ProjectionPropertyCollection Properties
         {
             get { return properties; }
@@ -130,9 +124,9 @@
             }
         }
 
-        private static ProjectionStructureType[] GetProjectionTypes(Type[] interfaces, ProjectionFactory factory)
+        private static ProjectionType[] GetProjectionTypes(Type[] interfaces, ProjectionFactory factory)
         {
-            var baseTypes = new ProjectionStructureType[interfaces.Length];
+            var baseTypes = new ProjectionType[interfaces.Length];
 
             for (var i = 0; i < interfaces.Length; i++)
             {
@@ -146,7 +140,7 @@
             return baseTypes;
         }
 
-        private static HashSet<ProjectionType> GetImmediateBaseTypes(ProjectionStructureType[] baseTypes)
+        private static HashSet<ProjectionType> GetImmediateBaseTypes(ProjectionType[] baseTypes)
         {
             var result = new HashSet<ProjectionType>();
 
@@ -154,7 +148,7 @@
                 result.Add(baseType);
 
             foreach (var baseType in baseTypes)
-                result.ExceptWith(baseType.BaseTypes);
+                result.ExceptWith(baseType.BaseStructureTypes);
 
             return result;
         }
@@ -165,9 +159,9 @@
             var collection = new ProjectionTypeCollection(baseTypes.Count);
             var count      = 0;
 
-            foreach (ProjectionStructureType baseType in baseTypes)
+            foreach (var baseType in baseTypes)
             {
-                count += baseType.properties.Count;
+                count += baseType.Properties.Count;
                 collection.Add(baseType);
             }
 

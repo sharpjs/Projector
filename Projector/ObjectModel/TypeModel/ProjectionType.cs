@@ -1,6 +1,7 @@
 ﻿namespace Projector.ObjectModel
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
 
     [DebuggerDisplay(@"\{Name = {Name}, FullName = {FullName}\}")]
@@ -106,7 +107,7 @@
         ///   The type is a collection type if <see cref="TypeKindExtensions.IsCollection"/>
         ///   returns true for the value of <see cref="Kind"/>.
         /// </remarks>
-        public virtual ProjectionType KeyType
+        public virtual ProjectionType CollectionKeyType
         {
             get { return null; }
         }
@@ -119,16 +120,24 @@
         ///   The type is a collection type if <see cref="TypeKindExtensions.IsCollection"/>
         ///   returns true for the value of <see cref="Kind"/>.
         /// </remarks>
-        public virtual ProjectionType ItemType
+        public virtual ProjectionType CollectionItemType
         {
             get { return null; }
         }
 
-        public virtual ProjectionTypeCollection BaseTypes
+        /// <summary>
+        ///   For a structure type, gets the base types declared by the type;
+        ///   otherwise, empty.
+        /// </summary>
+        public virtual ProjectionTypeCollection BaseStructureTypes
         {
             get { return ProjectionTypeCollection.Empty; }
         }
 
+        /// <summary>
+        ///   For a structure type, gets the properties declared and inherited by the type;
+        ///   otherwise, empty.
+        /// </summary>
         public virtual ProjectionPropertyCollection Properties
         {
             get { return ProjectionPropertyCollection.Empty; }
