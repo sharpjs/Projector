@@ -14,19 +14,25 @@
             return Factory.GetProjectionType(typeof(T));
         }
 
-        //protected static ProjectionTypeCollection<ProjectionStructureType> BaseStructureTypesOf<T>()
-        //{
-        //    return ProjectionTypeOf<T>().BaseStructureTypes;
-        //}
+        protected static ProjectionTypeCollection BaseStructureTypesOf<T>()
+        {
+            return TypeOf<T>().BaseStructureTypes;
+        }
 
-        //protected static ProjectionPropertyCollection PropertiesOf<T>()
-        //{
-        //    return ProjectionTypeOf<T>().Properties;
-        //}
+        protected static ProjectionPropertyCollection PropertiesOf<T>()
+        {
+            return TypeOf<T>().Properties;
+        }
 
-        //protected static ProjectionProperty PropertyOf<T>(string name)
-        //{
-        //    return PropertiesOf<T>()[name];
-        //}
+        // HACK: Gotta figure out which way I want to go here...
+        internal static ProjectionStructureType ProjectionTypeOf<T>()
+        {
+            return (ProjectionStructureType) TypeOf<T>();
+        }
+
+        protected static ProjectionProperty PropertyOf<T>(string name)
+        {
+            return PropertiesOf<T>()[name];
+        }
     }
 }

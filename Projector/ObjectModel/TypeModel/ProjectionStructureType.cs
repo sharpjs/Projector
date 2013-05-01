@@ -77,7 +77,6 @@
             get { return properties; }
         }
 
-        /// <inheritdoc/>
         public override bool IsVirtualizable
         {
             get { return true; }

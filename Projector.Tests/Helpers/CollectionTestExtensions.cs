@@ -3,7 +3,7 @@
     using System.Collections;
     using System.Collections.Generic;
 
-    public static class TestExtensions
+    public static class CollectionTestExtensions
     {
         public static IList<T> EnumerateGeneric<T>(this IEnumerable<T> source)
         {

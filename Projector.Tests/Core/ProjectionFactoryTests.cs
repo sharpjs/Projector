@@ -1,4 +1,4 @@
-﻿namespace Projector.Tests.Core
+﻿namespace Projector
 {
     using System;
     using NUnit.Framework;

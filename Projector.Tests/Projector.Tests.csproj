@@ -51,13 +51,15 @@
     <Compile Include="Core\Traits\InheritFromAttributeTests.cs" />
     <Compile Include="Core\Traits\OverrideAttributeTests.cs" />
     <Compile Include="Core\Traits\SuppressAttributeTests.cs" />
-    <Compile Include="Helpers\TestExtensions.cs" />
+    <Compile Include="Helpers\CollectionTestExtensions.cs" />
     <Compile Include="Helpers\MockTraits.cs" />
+    <Compile Include="Helpers\NUnitExtensions.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />
     <Compile Include="ObjectModel\TraitModel\AnnotationSetTests.cs" />
     <Compile Include="ObjectModel\TraitModel\BehaviorSetTests.cs" />
     <Compile Include="ObjectModel\TraitModel\TraitOptionsTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionCollectionTypeTests.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionTraitTestsBase.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionStructureTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionTestsBase.cs" />
