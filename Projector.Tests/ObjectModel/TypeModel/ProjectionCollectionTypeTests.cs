@@ -177,9 +177,9 @@
             }
 
             [Test]
-            public void BaseStructureTypes()
+            public void BaseTypes()
             {
-                Assert.That(Type.BaseStructureTypes, Is.Empty);
+                Assert.That(Type.BaseTypes, Is.Empty);
             }
 
             [Test]

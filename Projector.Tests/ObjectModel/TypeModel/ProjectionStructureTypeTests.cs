@@ -68,7 +68,7 @@
             [Test]
             public void BaseTypes()
             {
-                Assert.That(TypeOf<IAny>().BaseStructureTypes, Is.Empty);
+                Assert.That(TypeOf<IAny>().BaseTypes, Is.Empty);
             }
         }
 
@@ -83,9 +83,9 @@
             private readonly ProjectionType Type = TypeOf<IDerived>();
 
             [Test]
-            public void BaseStructureTypes()
+            public void BaseTypes()
             {
-                Assert.That(Type.BaseStructureTypes, Is.EquivalentTo(new[] { TypeOf<IBaseA>(), TypeOf<IBaseB>() }));
+                Assert.That(Type.BaseTypes, Is.EquivalentTo(new[] { TypeOf<IBaseA>(), TypeOf<IBaseB>() }));
             }
         }
 

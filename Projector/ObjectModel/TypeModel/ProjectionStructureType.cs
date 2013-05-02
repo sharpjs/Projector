@@ -67,7 +67,7 @@
                     property.InvokeLateInitializers();
         }
 
-        public override ProjectionTypeCollection BaseStructureTypes
+        public override ProjectionTypeCollection BaseTypes
         {
             get { return baseTypes; }
         }
@@ -147,7 +147,7 @@
                 result.Add(baseType);
 
             foreach (var baseType in baseTypes)
-                result.ExceptWith(baseType.BaseStructureTypes);
+                result.ExceptWith(baseType.BaseTypes);
 
             return result;
         }

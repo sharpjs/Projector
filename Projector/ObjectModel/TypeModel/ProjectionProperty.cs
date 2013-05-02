@@ -16,7 +16,6 @@
         private readonly RuntimeMethodHandle      setterHandle;
         private readonly OverrideCollection       overrides;
         private ProjectionPropertyTraitAggregator aggregator;
-        private object[]                          inheritableTraits;
 
         //[Flags]
         //private enum Flags
@@ -47,15 +46,11 @@
             this.overrides = aggregator.CollectOverrides();
         }
 
-        internal override void ComputeTraits()
+        internal override TraitAggregator CreateTraitAggregator()
         {
-            aggregator.CollectDeclaredTraits();
-            aggregator.CollectInheritedTraits();
-            aggregator.ApplyDeferredTraits();
-
-            inheritableTraits = aggregator.InheritableTraits;
-
+            var value = aggregator;
             aggregator = null;
+            return value;
         }
 
         internal override void InvokeInitializers()
@@ -122,12 +117,6 @@
         //{
         //    get { return 0 != (flags & Flags.Volatile); }
         //}
-
-        // Traits inherited by overriding properties
-        internal object[] InheritableTraits
-        {
-            get { return inheritableTraits; }
-        }
 
         public override string ToString()
         {

@@ -10,7 +10,6 @@
         private readonly Type              type;
         private readonly TypeKind          kind;
         private readonly ProjectionFactory factory;
-        private          object[]          inheritableTraits;
 
         internal ProjectionType(Type type, TypeKind kind, ProjectionFactory factory)
             //: base(factory)
@@ -20,15 +19,9 @@
             this.factory = factory;
         }
 
-        internal override void ComputeTraits()
+        internal override TraitAggregator CreateTraitAggregator()
         {
-            var aggregator = new ProjectionTypeTraitAggregator(this);
-
-            aggregator.CollectDeclaredTraits();
-            aggregator.CollectInheritedTraits();
-            aggregator.ApplyDeferredTraits();
-
-            inheritableTraits = aggregator.InheritableTraits;
+            return new ProjectionTypeTraitAggregator(this);
         }
 
         internal override void InvokeInitializers()
@@ -129,7 +122,7 @@
         ///   For a structure type, gets the base types declared by the type;
         ///   otherwise, empty.
         /// </summary>
-        public virtual ProjectionTypeCollection BaseStructureTypes
+        public virtual ProjectionTypeCollection BaseTypes
         {
             get { return ProjectionTypeCollection.Empty; }
         }
@@ -141,12 +134,6 @@
         public virtual ProjectionPropertyCollection Properties
         {
             get { return ProjectionPropertyCollection.Empty; }
-        }
-
-        // Traits inherited by derived types
-        internal object[] InheritableTraits
-        {
-            get { return inheritableTraits; }
         }
 
         /// <summary>

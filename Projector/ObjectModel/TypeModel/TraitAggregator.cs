@@ -6,7 +6,16 @@
     // Algorithm for multiple inheritance of traits.
     // Each subclass provides the strategy for working with a particular metatype
     //
-    internal abstract class TraitAggregator<TMetaObject, TSourceKey>
+    internal abstract class TraitAggregator
+    {
+        public abstract void CollectDeclaredTraits();
+        public abstract void CollectInheritedTraits();
+        public abstract void ApplyDeferredTraits();
+
+        public abstract object[] InheritableTraits { get; }
+    }
+
+    internal abstract class TraitAggregator<TMetaObject, TSourceKey> : TraitAggregator
         where TMetaObject : ProjectionMetaObject // which receives the aggregated traits
         // && TSourceKey  : unique identifier for TMetaObject from which traits are inherited
     {
@@ -30,14 +39,14 @@
             get { return target; }
         }
 
-        public void CollectDeclaredTraits()
+        public override void CollectDeclaredTraits()
         {
             foreach (var trait in GetDeclaredTraits(target))
                 if (trait != null && ShouldCollect(trait))
                     AddTrait(trait, true);
         }
 
-        public void CollectInheritedTraits()
+        public override void CollectInheritedTraits()
         {
             foreach (var source in GetInheritanceSources(target))
             foreach (var trait  in GetInheritableTraits (source))
@@ -45,14 +54,14 @@
                     AddTrait(trait, false);
         }
 
-        public void ApplyDeferredTraits()
+        public override void ApplyDeferredTraits()
         {
             if (singletonTraits != null)
                 foreach (var item in singletonTraits.Values)
                     target.Apply(item.Trait);
         }
 
-        public object[] InheritableTraits
+        public override object[] InheritableTraits
         {
             get { return inheritableTraits == null ? NoTraits : inheritableTraits.ToArray(); }
         }

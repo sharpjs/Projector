@@ -20,7 +20,7 @@
 
         protected override IEnumerable<ProjectionType> GetInheritanceSources(ProjectionType projectionType)
         {
-            return projectionType.BaseStructureTypes;
+            return projectionType.BaseTypes;
         }
 
         protected override Type GetSourceKey(ProjectionType projectionType)
