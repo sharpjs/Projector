@@ -2,6 +2,7 @@
 {
     using System;
 
+    [Serializable]
     [AttributeUsage(AttributeTargets.Interface | AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
     public class InheritFromAttribute : Attribute
     {
