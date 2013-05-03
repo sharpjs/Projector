@@ -1,0 +1,16 @@
+Projector Notes
+
+1. HASHTABLE FOR THREAD-SAFE, GROW-ONLY CACHES
+
+Why Hashtable?
+- Unlike generic dictionary, it supports single-reader/multi-writer concurrency.
+- Hashtable + Monitor is faster than Dictionary + ReaderWriterLockSlim
+    My benchmarks: cache miss is ~89% time, cache hit is ~36% time (.NET 4.0)
+- Sometimes we actually DO want to store any type of object.
+
+Why no remove?
+- http://blogs.msdn.com/b/brada/archive/2003/04/13/49969.aspx
+- "The document says Hashtable is thread-safe for a single writer and concurrent readers,
+     but unfortunately the current implementation doesn’t completely hold that up."
+- "Remove and Clear are the only functions which will free a bucket."
+- "You can get a value which belongs to another key."

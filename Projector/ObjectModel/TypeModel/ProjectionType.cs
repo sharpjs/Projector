@@ -27,14 +27,14 @@
         internal override void InvokeInitializers()
         {
             //new TypeInitializerInvocation
-            //    (this, traits, Traits.FirstBehavior)
+            //    (this, FirstBehavior)
             //    .Proceed();
         }
 
         internal override void InvokeLateInitializers()
         {
             //new TypeLateInitializerInvocation
-            //    (this, traits, Traits.FirstBehavior)
+            //    (this, FirstBehavior)
             //    .Proceed();
         }
 

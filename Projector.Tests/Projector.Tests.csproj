@@ -52,6 +52,7 @@
     <Compile Include="Core\Traits\OverrideAttributeTests.cs" />
     <Compile Include="Core\Traits\SuppressAttributeTests.cs" />
     <Compile Include="Helpers\CollectionTestExtensions.cs" />
+    <Compile Include="Helpers\ExperimentTests.cs" />
     <Compile Include="Helpers\MockTraits.cs" />
     <Compile Include="Helpers\NUnitExtensions.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />

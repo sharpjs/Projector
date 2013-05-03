@@ -1,16 +1,15 @@
 ﻿namespace Projector.ObjectModel
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading;
+    using System.Collections;
 
     internal static class TraitOptions
     {
-        private static readonly Dictionary<Type, ITraitOptions>
-            Options = new Dictionary<Type, ITraitOptions>();
+        private static readonly Hashtable
+            Options = new Hashtable();
 
-        private static readonly ReaderWriterLockSlim
-            OptionsLock = new ReaderWriterLockSlim();
+        private static readonly object
+            OptionsLock = new object();
 
         private static readonly ITraitOptions
             Default = new DefaultValues();
@@ -33,28 +32,18 @@
             var type = attribute.GetType();
             ITraitOptions options;
 
-            // TODO: Do we really need thread safety here?  I think only one thread ever calls here.
-            OptionsLock.EnterReadLock();
-            try
+            if (null != (options = Options[type] as ITraitOptions))
+                return options;
+
+            var newOptions = GetTraitOptionsFromAttributeUsage(type);
+
+            lock (OptionsLock)
             {
-                if (Options.TryGetValue(type, out options))
+                if (null != (options = Options[type] as ITraitOptions))
                     return options;
-            }
-            finally
-            {
-                OptionsLock.ExitReadLock();
-            }
 
-            options = GetTraitOptionsFromAttributeUsage(type);
-
-            OptionsLock.EnterWriteLock();
-            try
-            {
-                return Options[type] = options;
-            }
-            finally
-            {
-                OptionsLock.ExitWriteLock();
+                Options[type] = newOptions;
+                return newOptions;
             }
         }
 

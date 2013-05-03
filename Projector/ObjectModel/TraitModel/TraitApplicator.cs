@@ -1,6 +1,5 @@
 ﻿namespace Projector.ObjectModel
 {
-    // TODO: Is this type useful any more?
     public struct TraitApplicator
     {
         private readonly ProjectionMetaObject target;
