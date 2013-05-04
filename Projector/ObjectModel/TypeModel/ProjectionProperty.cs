@@ -36,11 +36,11 @@
             this.name           = property.Name;
             this.declaringType  = declaringType;
             this.propertyType   = factory.GetProjectionTypeUnsafe(property.PropertyType);
-            this.getterHandle   = property.GetGetMethod().MethodHandle;
-            this.setterHandle   = property.GetSetMethod().MethodHandle;
 
-            if (property.CanRead ) flags |= Flags.CanRead;
-            if (property.CanWrite) flags |= Flags.CanWrite;
+            var getter = property.GetGetMethod();
+            var setter = property.GetSetMethod();
+            if (getter != null) { getterHandle = getter.MethodHandle; flags |= Flags.CanRead;  }
+            if (setter != null) { setterHandle = setter.MethodHandle; flags |= Flags.CanWrite; }
 
             aggregator = new ProjectionPropertyTraitAggregator(this, property, properties);
             this.overrides = aggregator.CollectOverrides();
@@ -118,29 +118,25 @@
         //    get { return 0 != (flags & Flags.Volatile); }
         //}
 
+        public MethodInfo UnderlyingGetter
+        {
+            get { return CanRead ? GetMethod(getterHandle, declaringType) : null; }
+        }
+
+        public MethodInfo UnderlyingSetter
+        {
+            get { return CanWrite ? GetMethod(setterHandle, declaringType) : null; }
+        }
+
+        private static MethodInfo GetMethod(RuntimeMethodHandle handle, ProjectionType declaringType)
+        {
+            var typeHandle = declaringType.UnderlyingType.TypeHandle;
+            return (MethodInfo) MethodBase.GetMethodFromHandle(handle, typeHandle);
+        }
+
         public override string ToString()
         {
             return string.Concat(declaringType.ToString(), ".", name);
         }
-
-        public MethodBase UnderlyingGetter
-        {
-            get { return getterHandle != null ? MethodBase.GetMethodFromHandle(getterHandle) : null; }
-        }
-
-        public MethodBase UnderlyingSetter
-        {
-            get { return setterHandle != null ? MethodBase.GetMethodFromHandle(setterHandle) : null; }
-        }
-
-        public PropertyInfo GetUnderlyingProperty()
-        {
-            return declaringType.UnderlyingType.GetProperty(name, PublicDeclaredBinding);
-        }
-
-        private BindingFlags PublicDeclaredBinding
-             = BindingFlags.Instance
-             | BindingFlags.Public
-             | BindingFlags.DeclaredOnly;
     }
 }

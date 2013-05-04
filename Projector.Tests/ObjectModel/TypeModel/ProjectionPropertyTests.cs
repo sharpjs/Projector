@@ -1,5 +1,6 @@
 ﻿namespace Projector.Tests.ObjectModel
 {
+    using System.Reflection;
     using NUnit.Framework;
     using Projector.ObjectModel;
 
@@ -70,6 +71,133 @@
             public void CanWrite()
             {
                 Assert.That(Property.CanWrite, Is.True);
+            }
+
+            [Test]
+            public void UnderlyingGetter()
+            {
+                Assert.That(Property.UnderlyingGetter,
+                    Is.SameAs(typeof(IFoo).GetProperty("PropertyA").GetGetMethod()));
+            }
+
+            [Test]
+            public void UnderlyingSetter()
+            {
+                Assert.That(Property.UnderlyingSetter,
+                    Is.SameAs(typeof(IFoo).GetProperty("PropertyA").GetSetMethod()));
+            }
+        }
+
+        [TestFixture]
+        public class ForReadOnlyProperty
+        {
+            public interface IFoo
+            {
+                string PropertyA { get; }
+            }
+
+            private readonly ProjectionProperty
+                Property = PropertyOf<IFoo>("PropertyA");
+
+
+            [Test]
+            public void CanRead()
+            {
+                Assert.That(Property.CanRead, Is.True);
+            }
+
+            [Test]
+            public void CanWrite()
+            {
+                Assert.That(Property.CanWrite, Is.False);
+            }
+
+            [Test]
+            public void UnderlyingGetter()
+            {
+                Assert.That(Property.UnderlyingGetter,
+                    Is.SameAs(typeof(IFoo).GetProperty("PropertyA").GetGetMethod()));
+            }
+
+            [Test]
+            public void UnderlyingSetter()
+            {
+                Assert.That(Property.UnderlyingSetter, Is.Null);
+            }
+        }
+
+        [TestFixture]
+        public class ForWriteOnlyProperty
+        {
+            public interface IFoo
+            {
+                string PropertyA { set; }
+            }
+
+            private readonly ProjectionProperty
+                Property = PropertyOf<IFoo>("PropertyA");
+
+            [Test]
+            public void CanRead()
+            {
+                Assert.That(Property.CanRead, Is.False);
+            }
+
+            [Test]
+            public void CanWrite()
+            {
+                Assert.That(Property.CanWrite, Is.True);
+            }
+
+            [Test]
+            public void UnderlyingGetter()
+            {
+                Assert.That(Property.UnderlyingGetter, Is.Null);
+            }
+
+            [Test]
+            public void UnderlyingSetter()
+            {
+                Assert.That(Property.UnderlyingSetter, 
+                    Is.SameAs(typeof(IFoo).GetProperty("PropertyA").GetSetMethod()));
+            }
+        }
+
+        [TestFixture]
+        public class ForPropertyInGenericType
+        {
+            public interface IGeneric<T>
+            {
+                T PropertyA { get; set; }
+            }
+
+            private readonly ProjectionProperty
+                Property = PropertyOf<IGeneric<string>>("PropertyA");
+
+            [Test]
+            public void CanRead()
+            {
+                Assert.That(Property.CanRead, Is.True);
+            }
+
+            [Test]
+            public void CanWrite()
+            {
+                Assert.That(Property.CanWrite, Is.True);
+            }
+
+            [Test]
+            public void UnderlyingGetter()
+            {
+                Assert.That(Property.UnderlyingGetter,
+                    Is.SameAs(typeof(IGeneric<string>).GetProperty("PropertyA").GetGetMethod()));
+            }
+
+            [Test]
+            public void UnderlyingSetter()
+            {
+                Assert.That(Property.UnderlyingSetter,
+                    Is.SameAs(typeof(IGeneric<string>).GetProperty("PropertyA").GetSetMethod()));
             }
         }
 
