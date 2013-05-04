@@ -60,6 +60,7 @@
     <Compile Include="ObjectModel\TraitModel\BehaviorSetTests.cs" />
     <Compile Include="ObjectModel\TraitModel\TraitOptionsTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionCollectionTypeTests.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionPropertyTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionTraitTestsBase.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionStructureTypeTests.cs" />

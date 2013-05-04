@@ -9,25 +9,25 @@
     public sealed class ProjectionProperty : ProjectionMetaObject
     {
         private readonly string                   name;
-        //private readonly Flags                    flags;
         private readonly ProjectionStructureType  declaringType;
         private readonly ProjectionType           propertyType;
         private readonly RuntimeMethodHandle      getterHandle;
         private readonly RuntimeMethodHandle      setterHandle;
         private readonly OverrideCollection       overrides;
         private ProjectionPropertyTraitAggregator aggregator;
+        private Flags                             flags;
 
-        //[Flags]
-        //private enum Flags
-        //{
-        //    CanRead   = 0x00000001,
-        //    CanWrite  = 0x00000002,
-        //    Shared    = 0x00000004,
-        //    Reference = 0x00000008,
-        //    Volatile  = 0x00000010,
-        //    Eager     = 0x00000020,
-        //    Default   = 0x00000100,
-        //}
+        [Flags]
+        private enum Flags
+        {
+            CanRead   = 0x00000001,
+            CanWrite  = 0x00000002,
+            Shared    = 0x00000004,
+            Reference = 0x00000008,
+            Volatile  = 0x00000010,
+            Eager     = 0x00000020,
+            Default   = 0x00000100,
+        }
 
         internal ProjectionProperty(PropertyInfo property, ProjectionStructureType declaringType,
             ProjectionPropertyCollection properties, ProjectionFactory factory)
@@ -39,8 +39,8 @@
             this.getterHandle   = property.GetGetMethod().MethodHandle;
             this.setterHandle   = property.GetSetMethod().MethodHandle;
 
-            //if (property.CanRead ) flags |= Flags.CanRead;
-            //if (property.CanWrite) flags |= Flags.CanWrite;
+            if (property.CanRead ) flags |= Flags.CanRead;
+            if (property.CanWrite) flags |= Flags.CanWrite;
 
             aggregator = new ProjectionPropertyTraitAggregator(this, property, properties);
             this.overrides = aggregator.CollectOverrides();
@@ -93,15 +93,15 @@
             get { return declaringType.Factory; }
         }
 
-        //public bool CanRead
-        //{
-        //    get { return 0 != (flags & Flags.CanRead); }
-        //}
+        public bool CanRead
+        {
+            get { return 0 != (flags & Flags.CanRead); }
+        }
 
-        //public bool CanWrite
-        //{
-        //    get { return 0 != (flags & Flags.CanWrite); }
-        //}
+        public bool CanWrite
+        {
+            get { return 0 != (flags & Flags.CanWrite); }
+        }
 
         //public bool IsShared
         //{
