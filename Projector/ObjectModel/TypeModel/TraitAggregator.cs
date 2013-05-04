@@ -42,7 +42,7 @@
         public override void CollectDeclaredTraits()
         {
             foreach (var trait in GetDeclaredTraits(target))
-                if (trait != null && ShouldCollect(trait))
+                if (trait != null && ShouldCollect(trait)) // TODO: Can take out null check?
                     AddTrait(trait, true);
         }
 
@@ -50,7 +50,7 @@
         {
             foreach (var source in GetInheritanceSources(target))
             foreach (var trait  in GetInheritableTraits (source))
-                if (trait != null && ShouldInherit(trait.GetType(), source))
+                if (trait != null && ShouldInherit(trait.GetType(), source)) // TODO: Can take out null check?
                     AddTrait(trait, false);
         }
 

@@ -5,6 +5,7 @@
 
     internal static class TraitOptions
     {
+        // Why Hashtable + Monitor lock?  See NOTES.
         private static readonly Hashtable
             Options = new Hashtable();
 

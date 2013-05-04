@@ -29,17 +29,8 @@
     /// <threadsafety static="true" insteance="true"/>
     public abstract class ProjectionObject
     {
-        // Why Hashtable?
-        // - Unlike generic dictionary, it supports single-reader/multi-writer concurrency
-        // - We actually DO want to store any type of object.
-        //
-        // Why no remove?
-        // - http://blogs.msdn.com/b/brada/archive/2003/04/13/49969.aspx
-        // - "The document says Hashtable is thread-safe for a single writer and concurrent readers,
-        //      but unfortunately the current implementation doesn’t completely hold that up."
-        // - "Remove and Clear are the only functions which will free a bucket."
-        // - "You can get a value which belongs to another key."
-        //
+        // Why Hashtable?  See NOTES.
+        // TODO: Either add locking, or correct false comments regarding thread safety.
         private Hashtable associations;
 
         internal ProjectionObject() { }
