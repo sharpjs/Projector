@@ -53,6 +53,7 @@
     <Compile Include="Core\Traits\SuppressAttributeTests.cs" />
     <Compile Include="Helpers\CollectionTestExtensions.cs" />
     <Compile Include="Helpers\ExperimentTests.cs" />
+    <Compile Include="Helpers\TestTypes.cs" />
     <Compile Include="Helpers\MockTraits.cs" />
     <Compile Include="Helpers\NUnitExtensions.cs" />
     <Compile Include="ObjectModel\Core\ProjectionObjectTests.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="ObjectModel\TypeModel\ProjectionOpaqueTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionStructureTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionTestsBase.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionTypeCollectionTests.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKindTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
