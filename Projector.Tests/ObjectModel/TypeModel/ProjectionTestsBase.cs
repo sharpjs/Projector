@@ -24,11 +24,10 @@
             return TypeOf<T>().Properties;
         }
 
-        // HACK: Gotta figure out which way I want to go here...
-        internal static ProjectionStructureType ProjectionTypeOf<T>()
-        {
-            return (ProjectionStructureType) TypeOf<T>();
-        }
+        //protected static ProjectionStructureType ProjectionTypeOf<T>()
+        //{
+        //    return (ProjectionStructureType) TypeOf<T>();
+        //}
 
         protected static ProjectionProperty PropertyOf<T>(string name)
         {

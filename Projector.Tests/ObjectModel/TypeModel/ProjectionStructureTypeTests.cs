@@ -96,7 +96,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IEmpty>();
+                return TypeOf<IEmpty>();
             }
         }
 
@@ -109,7 +109,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IFoo>();
+                return TypeOf<IFoo>();
             }
         }
 
@@ -124,7 +124,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IFoo>();
+                return TypeOf<IFoo>();
             }
         }
 
@@ -139,7 +139,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -156,7 +156,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -171,7 +171,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -190,7 +190,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -209,7 +209,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -229,7 +229,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -249,7 +249,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -271,7 +271,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -293,7 +293,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -317,7 +317,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IMoreDerived>();
+                return TypeOf<IMoreDerived>();
             }
         }
 
@@ -341,7 +341,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IMoreDerived>();
+                return TypeOf<IMoreDerived>();
             }
         }
 
@@ -368,7 +368,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -402,7 +402,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -438,7 +438,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -458,7 +458,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
 
@@ -480,7 +480,7 @@
 
             protected override ProjectionMetaObject GetTarget()
             {
-                return ProjectionTypeOf<IDerived>();
+                return TypeOf<IDerived>();
             }
         }
     }

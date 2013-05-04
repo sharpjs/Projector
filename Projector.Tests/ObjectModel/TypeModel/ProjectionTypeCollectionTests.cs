@@ -208,13 +208,13 @@
             [Test]
             public void Contains_ProjectionType()
             {
-                Assert.That(BaseTypes.Contains(ProjectionTypeOf<IBase>()), Is.True);
+                Assert.That(BaseTypes.Contains(TypeOf<IBase>()), Is.True);
             }
 
             [Test]
             public void Item()
             {
-                Assert.That(BaseTypes[typeof(IBase)], Is.SameAs(ProjectionTypeOf<IBase>()));
+                Assert.That(BaseTypes[typeof(IBase)], Is.SameAs(TypeOf<IBase>()));
             }
 
             [Test]
@@ -224,7 +224,7 @@
                 var result = BaseTypes.TryGet(typeof(IBase), out type);
 
                 Assert.That(result, Is.True);
-                Assert.That(type,   Is.SameAs(ProjectionTypeOf<IBase>()));
+                Assert.That(type,   Is.SameAs(TypeOf<IBase>()));
             }
 
             [Test]
@@ -247,7 +247,7 @@
                 BaseTypes.CopyTo(array, 1);
 
                 Assert.That(array[0], Is.Null);
-                Assert.That(array[1], Is.SameAs(ProjectionTypeOf<IBase>()));
+                Assert.That(array[1], Is.SameAs(TypeOf<IBase>()));
                 Assert.That(array[2], Is.Null);
             }
 

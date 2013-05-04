@@ -52,7 +52,7 @@
             [Test]
             public void DeclaringType()
             {
-                Assert.That(Property.DeclaringType, Is.SameAs(ProjectionTypeOf<IFoo>()));
+                Assert.That(Property.DeclaringType, Is.SameAs(TypeOf<IFoo>()));
             }
 
             [Test]
@@ -233,7 +233,7 @@
             [Test]
             public void DeclaringType()
             {
-                Assert.That(Property.DeclaringType, Is.SameAs(ProjectionTypeOf<IDerived>()));
+                Assert.That(Property.DeclaringType, Is.SameAs(TypeOf<IDerived>()));
             }
 
             [Test]
@@ -279,7 +279,7 @@
             [Test]
             public void DeclaringType()
             {
-                Assert.That(Property.DeclaringType, Is.SameAs(ProjectionTypeOf<IDerived>()));
+                Assert.That(Property.DeclaringType, Is.SameAs(TypeOf<IDerived>()));
             }
 
             [Test]
