@@ -20,7 +20,13 @@
                 Property = PropertyOf<IFoo>("PropertyA");
 
             [Test]
-            public void ToString_()
+            public void Factory()
+            {
+                Assert.That(Property.Factory, Is.SameAs(Property.DeclaringType.Factory));
+            }
+
+            [Test]
+            public void ToStringMethod()
             {
                 Assert.That(Property.ToString(), Is.Not.Null);
             }
