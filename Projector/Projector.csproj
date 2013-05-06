@@ -43,8 +43,11 @@
     </Compile>
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
+    <Compile Include="Core\ITraitResolver.cs" />
     <Compile Include="Core\ProjectionException.cs" />
     <Compile Include="Core\ProjectionFactory.cs" />
+    <Compile Include="Core\StandardTraitResolver.cs" />
+    <Compile Include="Core\StandardTraitResolverConfiguration.cs" />
     <Compile Include="Core\Traits\InheritFromAttribute.cs" />
     <Compile Include="Core\Traits\OverrideAttribute.cs" />
     <Compile Include="Core\Traits\SuppressAttribute.cs" />
@@ -74,6 +77,16 @@
     <Compile Include="ObjectModel\TypeModel\TraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs\IPropertyCut.cs" />
+    <Compile Include="Specs\IPropertyScope.cs" />
+    <Compile Include="Specs\ITraitContext.cs" />
+    <Compile Include="Specs\ITraitScope.cs" />
+    <Compile Include="Specs\ITypeCut.cs" />
+    <Compile Include="Specs\ITypeScope.cs" />
+    <Compile Include="Specs\PropertyScope.cs" />
+    <Compile Include="Specs\TraitScope.cs" />
+    <Compile Include="Specs\TraitSpec.cs" />
+    <Compile Include="Specs\TypeScope.cs" />
     <Compile Include="Utility\Cell.cs" />
     <Compile Include="Utility\CellEnumerator.cs" />
     <Compile Include="Utility\CellList.cs" />
