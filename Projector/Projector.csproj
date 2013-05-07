@@ -43,11 +43,14 @@
     </Compile>
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
-    <Compile Include="Core\ITraitResolver.cs" />
+    <Compile Include="Core\TraitResolution\ITraitAggregator.cs" />
+    <Compile Include="Core\TraitResolution\ITraitResolution.cs" />
+    <Compile Include="Core\TraitResolution\ITraitResolver.cs" />
     <Compile Include="Core\ProjectionException.cs" />
     <Compile Include="Core\ProjectionFactory.cs" />
-    <Compile Include="Core\StandardTraitResolver.cs" />
-    <Compile Include="Core\StandardTraitResolverConfiguration.cs" />
+    <Compile Include="Core\TraitResolution\StandardTraitResolution.cs" />
+    <Compile Include="Core\TraitResolution\StandardTraitResolver.cs" />
+    <Compile Include="Core\TraitResolution\StandardTraitResolverConfiguration.cs" />
     <Compile Include="Core\Traits\InheritFromAttribute.cs" />
     <Compile Include="Core\Traits\OverrideAttribute.cs" />
     <Compile Include="Core\Traits\SuppressAttribute.cs" />
@@ -84,9 +87,11 @@
     <Compile Include="Specs\ITypeCut.cs" />
     <Compile Include="Specs\ITypeScope.cs" />
     <Compile Include="Specs\PropertyScope.cs" />
+    <Compile Include="Specs\SharedTraitSpec.cs" />
     <Compile Include="Specs\TraitScope.cs" />
     <Compile Include="Specs\TraitSpec.cs" />
     <Compile Include="Specs\TypeScope.cs" />
+    <Compile Include="Specs\TypeTraitSpec.cs" />
     <Compile Include="Utility\Cell.cs" />
     <Compile Include="Utility\CellEnumerator.cs" />
     <Compile Include="Utility\CellList.cs" />

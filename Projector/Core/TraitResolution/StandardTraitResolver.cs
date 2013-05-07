@@ -1,13 +1,13 @@
 ﻿namespace Projector
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
-    using Projector.ObjectModel;
     using Projector.Specs;
 
     public class StandardTraitResolver : ITraitResolver
     {
-        private readonly Assembly[]  assemblies;
+        private readonly Assembly [] assemblies;
         private readonly TraitSpec[] specs;
 
         public StandardTraitResolver() : this(null) { }
@@ -25,26 +25,32 @@
             }
             else
             {
-                assemblies = new Assembly[0];
+                assemblies = new Assembly [0];
                 specs      = new TraitSpec[0];
             }
         }
 
-        public void Resolve(ProjectionType target, TraitApplicator applicator)
+        public ITraitResolution Resolve(Type type)
         {
-            var type = target.UnderlyingType;
-            ApplyIncludedSpecs(target, applicator);
-            ApplyResolvedSpecs(target, applicator, GetSharedSpecName (type));
-            ApplyResolvedSpecs(target, applicator, GetPerTypeSpecName(type));
+            if (type == null)
+                throw Error.ArgumentNull("type");
+
+            var resolution = new StandardTraitResolution(type);
+
+            AddIncludedSpecs(resolution);
+            AddDetectedSpecs(resolution, GetSharedSpecName (type));
+            AddDetectedSpecs(resolution, GetPerTypeSpecName(type));
+
+            return resolution;
         }
 
-        private void ApplyIncludedSpecs(ProjectionType target, TraitApplicator applicator)
+        private void AddIncludedSpecs(StandardTraitResolution resolution)
         {
             foreach (var spec in specs)
-                spec.Apply(target, applicator);
+                resolution.Add(spec);
         }
 
-        private void ApplyResolvedSpecs(ProjectionType target, TraitApplicator applicator, string name)
+        private void AddDetectedSpecs(StandardTraitResolution resolution, string name)
         {
             foreach (var assembly in assemblies)
             {
@@ -56,7 +62,7 @@
                 if (spec == null)
                     continue;
 
-                spec.Apply(target, applicator);
+                resolution.Add(spec);
             }
         }
 
