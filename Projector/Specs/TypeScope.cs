@@ -7,7 +7,7 @@
     using System.Text;
     using Projector.ObjectModel;
 
-    internal class TypeScope : ITypeCut, ITypeScope
+    internal class TypeScope : TraitScope, ITypeCut, ITypeScope
     {
         public ITypeCut OfKind(TypeKind kind)
         {
@@ -20,11 +20,6 @@
         }
 
         public ITypeCut Matching(Func<Type, bool> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Spec(Action<ITypeScope> spec)
         {
             throw new NotImplementedException();
         }
@@ -44,12 +39,7 @@
             throw new NotImplementedException();
         }
 
-        public ITraitScope Apply(object trait)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ITraitScope Apply(Func<ITraitContext, object> factory)
+        public void Spec(Action<ITypeScope> spec)
         {
             throw new NotImplementedException();
         }

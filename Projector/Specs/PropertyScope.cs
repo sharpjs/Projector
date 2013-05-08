@@ -3,18 +3,29 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
+    using Projector.ObjectModel;
 
-    internal class PropertyScope : IPropertyCut, IPropertyScope
+    internal class PropertyScope : TraitScope, IPropertyCut, IPropertyScope
     {
-        public IPropertyCut OfKind(ObjectModel.TypeKind kind)
+        private TypeKind[] kinds;
+        private string[] names;
+
+
+        public IPropertyCut OfKind(TypeKind kind)
         {
             throw new NotImplementedException();
         }
 
-        public IPropertyCut OfKind(params ObjectModel.TypeKind[] kinds)
+        public IPropertyCut OfKind(params TypeKind[] kinds)
         {
-            throw new NotImplementedException();
+            if (kinds == null)
+                throw Error.ArgumentNull("kinds");
+            if (this.kinds != null)
+                throw Error.TodoError();
+            this.kinds = kinds;
+            return this;
         }
 
         public IPropertyCut Named(string name)
@@ -27,19 +38,18 @@
             throw new NotImplementedException();
         }
 
-        public IPropertyCut Matching(Func<System.Reflection.PropertyInfo, bool> predicate)
+        public IPropertyCut Matching(Func<PropertyInfo, bool> predicate)
         {
             throw new NotImplementedException();
         }
 
-        public ITraitScope Apply(object trait)
+        internal void Collect(ProjectionProperty property, ITraitAggregator aggregator)
         {
-            throw new NotImplementedException();
-        }
-
-        public ITraitScope Apply(Func<ITraitContext, object> factory)
-        {
-            throw new NotImplementedException();
+            var shouldCollect
+                =  (names == null || names.Contains(property.Name))
+                ;
+            if (shouldCollect)
+                base.Collect(aggregator);
         }
     }
 }
