@@ -1,19 +1,17 @@
 ﻿namespace Projector.Specs
 {
     using System;
-    using System.Collections.Generic;
+    using Projector.ObjectModel;
 
     public abstract class TraitSpec
     {
         internal TraitSpec() { }
 
-        internal abstract TypeTraitSpec SpecializeFor(Type type);
-
-        internal static void Collect(List<object> traits, ITraitAggregator aggregator)
-        {
-            if (traits != null)
-                foreach (var trait in traits)
-                    aggregator.Collect(trait);
-        }
+        internal abstract void CollectRelevantScopes
+        (
+            ProjectionType       projectionType,
+            Type                 underlyingType,
+            ITypeScopeAggregator action
+        );
     }
 }

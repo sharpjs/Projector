@@ -7,13 +7,11 @@
     {
         IPropertyCut Properties { get; }
 
-        ITraitScope Property(       string   name );
-        ITraitScope Property(params string[] names);
+        IPropertyScope Property(string name);
     }
 
     public interface ITypeScope<T> : ITraitScope
     {
-        ITraitScope Property(       Expression<Func<T, object>>   property  );
-        ITraitScope Property(params Expression<Func<T, object>>[] properties);
+        IPropertyScope Property(Expression<Func<T, object>> expression);
     }
 }

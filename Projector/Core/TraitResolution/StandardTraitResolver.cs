@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using Projector.ObjectModel;
     using Projector.Specs;
 
     public class StandardTraitResolver : ITraitResolver
@@ -30,16 +31,18 @@
             }
         }
 
-        public ITraitResolution Resolve(Type type)
+        public ITraitResolution Resolve(ProjectionType projectionType, Type underlyingType)
         {
-            if (type == null)
-                throw Error.ArgumentNull("type");
+            if (projectionType == null)
+                throw Error.ArgumentNull("projectionType");
+            if (underlyingType == null)
+                throw Error.ArgumentNull("underlyingType");
 
-            var resolution = new StandardTraitResolution(type);
+            var resolution = new StandardTraitResolution(projectionType, underlyingType);
 
             AddIncludedSpecs(resolution);
-            AddDetectedSpecs(resolution, GetSharedSpecName (type));
-            AddDetectedSpecs(resolution, GetPerTypeSpecName(type));
+            AddDetectedSpecs(resolution, GetSharedSpecName (underlyingType));
+            AddDetectedSpecs(resolution, GetPerTypeSpecName(underlyingType));
 
             return resolution;
         }

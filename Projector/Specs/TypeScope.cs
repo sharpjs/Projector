@@ -2,59 +2,83 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
-    using System.Text;
+    using System.Reflection;
     using Projector.ObjectModel;
 
-    internal class TypeScope : TraitScope, ITypeCut, ITypeScope
+    internal class TypeScope : TraitScope, ITypeScope
     {
-        public ITypeCut OfKind(TypeKind kind)
-        {
-            throw new NotImplementedException();
-        }
+        private List<PropertyCut>                 generalPropertyScopes;
+        private Dictionary<string, PropertyScope> specificPropertyScopes;
 
-        public ITypeCut OfKind(params TypeKind[] kinds)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ITypeCut Matching(Func<Type, bool> predicate)
-        {
-            throw new NotImplementedException();
-        }
+        internal TypeScope() { }
 
         public IPropertyCut Properties
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                var scopes = generalPropertyScopes
+                    ?? (generalPropertyScopes = new List<PropertyCut>());
+                var scope  = new PropertyCut();
+                scopes.Add(scope);
+                return scope;
+            }
         }
 
-        public ITraitScope Property(string name)
+        public IPropertyScope Property(string name)
         {
-            throw new NotImplementedException();
+            PropertyScope scope;
+            var scopes = specificPropertyScopes
+                ?? (specificPropertyScopes = new Dictionary<string, PropertyScope>());
+            return scopes.TryGetValue(name, out scope)
+                ? scope
+                : scopes[name] = new PropertyScope();
         }
 
-        public ITraitScope Property(params string[] names)
+        internal void Collect(ProjectionProperty property, ITraitAggregator aggregator)
         {
-            throw new NotImplementedException();
+            CollectGeneral (property, aggregator);
+            CollectSpecific(property, aggregator);
         }
 
-        public void Spec(Action<ITypeScope> spec)
+        private void CollectGeneral(ProjectionProperty property, ITraitAggregator aggregator)
         {
-            throw new NotImplementedException();
+            var scopes = generalPropertyScopes;
+            if (scopes != null)
+                foreach (var scope in scopes)
+                    if (scope.AppliesTo(property))
+                        scope.Collect(aggregator);
+        }
+
+        private void CollectSpecific(ProjectionProperty property, ITraitAggregator aggregator)
+        {
+            PropertyScope scope;
+            var scopes = specificPropertyScopes;
+            if (scopes != null && scopes.TryGetValue(property.Name, out scope))
+                scope.Collect(aggregator);
         }
     }
 
     internal class TypeScope<T> : TypeScope, ITypeScope<T>
     {
-        public ITraitScope Property(Expression<Func<T, object>> property)
-        {
-            throw new NotImplementedException();
-        }
+        internal TypeScope() { }
 
-        public ITraitScope Property(params Expression<Func<T, object>>[] properties)
+        public IPropertyScope Property(Expression<Func<T, object>> expression)
         {
-            throw new NotImplementedException();
+            if (expression == null)
+                throw Error.ArgumentNull("property");
+            if (expression.NodeType != ExpressionType.Lambda)
+                throw Error.ArgumentOutOfRange("property");
+
+            var access = expression.Body as MemberExpression;
+            if (access == null)
+                throw Error.ArgumentOutOfRange("property");
+
+            var property = access.Member as PropertyInfo;
+            if (property == null)
+                throw Error.ArgumentOutOfRange("property");
+
+            return Property(property.Name);
         }
     }
 }

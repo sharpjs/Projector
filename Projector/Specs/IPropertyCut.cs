@@ -1,7 +1,6 @@
 ﻿namespace Projector.Specs
 {
     using System;
-    using System.Reflection;
     using Projector.ObjectModel;
 
     public interface IPropertyCut
@@ -12,6 +11,6 @@
         IPropertyCut Named(string name);
         IPropertyCut Named(params string[] names);
 
-        IPropertyCut Matching(Func<PropertyInfo, bool> predicate);
+        IPropertyCut Matching(Func<ProjectionProperty, bool> predicate);
     }
 }

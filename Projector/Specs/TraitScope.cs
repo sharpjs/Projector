@@ -3,32 +3,48 @@
     using System;
     using System.Collections.Generic;
 
+    // A collection of traits that can be passed to an aggregator
     internal class TraitScope : ITraitScope
     {
-        private List<object> traits;
+        private readonly List<object> traits;
+
+        internal TraitScope()
+        {
+            traits = new List<object>();
+        }
 
         public ITraitScope Apply(object trait)
         {
-            return Add(trait);
-        }
+            if (trait == null)
+                throw Error.ArgumentNull("trait");
 
-        public ITraitScope Apply(Func<ITraitContext, object> factory)
-        {
-            return Add(factory);
-        }
-
-        private ITraitScope Add(object trait)
-        {
-            var traits = this.traits;
-            if (traits == null)
-                this.traits = traits = new List<object>();
             traits.Add(trait);
             return this;
         }
 
-        internal virtual void Collect(ITraitAggregator aggregator)
+        public ITraitScope Apply(Func<object> factory)
         {
-            TraitSpec.Collect(traits, aggregator);
+            if (factory == null)
+                throw Error.ArgumentNull("factory");
+
+            traits.Add(factory);
+            return this;
+        }
+
+        internal void Collect(ITraitAggregator aggregator)
+        {
+            foreach (var trait in traits)
+                aggregator.Collect(Realize(trait));
+        }
+
+        private static object Realize(object obj)
+        {
+            var factory = obj as Func<object>;
+            if (factory == null)
+                return obj;
+            if ((obj = factory()) != null)
+                return obj;
+            throw Error.TodoError();
         }
     }
 }

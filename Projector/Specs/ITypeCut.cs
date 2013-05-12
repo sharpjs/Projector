@@ -8,7 +8,7 @@
         ITypeCut OfKind(TypeKind kind);
         ITypeCut OfKind(params TypeKind[] kinds);
 
-        ITypeCut Matching(Func<Type, bool> predicate);
+        ITypeCut Matching(Func<ProjectionType, bool> predicate);
 
         void Spec(Action<ITypeScope> spec);
     }

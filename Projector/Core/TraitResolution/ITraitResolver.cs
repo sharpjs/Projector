@@ -1,9 +1,10 @@
 ﻿namespace Projector
 {
     using System;
+    using Projector.ObjectModel;
 
     public interface ITraitResolver
     {
-        ITraitResolution Resolve(Type type);
+        ITraitResolution Resolve(ProjectionType projectionType, Type underlyingType);
     }
 }
