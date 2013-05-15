@@ -7,7 +7,7 @@
     {
         internal TraitSpec() { }
 
-        internal abstract void CollectRelevantScopes
+        internal abstract void ProvideScopes
         (
             ProjectionType       projectionType,
             Type                 underlyingType,

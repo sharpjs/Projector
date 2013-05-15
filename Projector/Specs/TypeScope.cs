@@ -35,27 +35,27 @@
                 : scopes[name] = new PropertyScope();
         }
 
-        internal void Collect(ProjectionProperty property, ITraitAggregator aggregator)
+        internal void ProvideTraits(ProjectionProperty property, ITraitAggregator aggregator)
         {
-            CollectGeneral (property, aggregator);
-            CollectSpecific(property, aggregator);
+            ProvideGeneralTraits (property, aggregator);
+            ProvideSpecificTraits(property, aggregator);
         }
 
-        private void CollectGeneral(ProjectionProperty property, ITraitAggregator aggregator)
+        private void ProvideGeneralTraits(ProjectionProperty property, ITraitAggregator aggregator)
         {
             var scopes = generalPropertyScopes;
             if (scopes != null)
                 foreach (var scope in scopes)
                     if (scope.AppliesTo(property))
-                        scope.Collect(aggregator);
+                        scope.ProvideTraits(aggregator);
         }
 
-        private void CollectSpecific(ProjectionProperty property, ITraitAggregator aggregator)
+        private void ProvideSpecificTraits(ProjectionProperty property, ITraitAggregator aggregator)
         {
             PropertyScope scope;
             var scopes = specificPropertyScopes;
             if (scopes != null && scopes.TryGetValue(property.Name, out scope))
-                scope.Collect(aggregator);
+                scope.ProvideTraits(aggregator);
         }
     }
 

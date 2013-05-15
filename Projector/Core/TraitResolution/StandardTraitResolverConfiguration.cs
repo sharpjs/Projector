@@ -7,6 +7,8 @@
 
     public sealed class StandardTraitResolverConfiguration
     {
+        // TODO: Change to using some UniqueList<T> : IList<T>, ISet<T>
+        // TODO: Only allocate when needed
         private readonly HashSet<Assembly>   assemblySet;
         private readonly List   <Assembly>   assemblyList;
         private readonly HashSet<TraitSpec>  specSet;
@@ -18,6 +20,18 @@
             specSet      = new HashSet<TraitSpec>();
             assemblyList = new List<Assembly>();
             specList     = new List<TraitSpec>();
+        }
+
+        internal IList<Assembly> IncludedAssemblies
+        {
+            get { return assemblyList; }
+            // TODO: Implement setter
+        }
+
+        internal IList<TraitSpec> IncludedSpecs
+        {
+            get { return specList; }
+            // TODO: Implement setter
         }
 
         public StandardTraitResolverConfiguration IncludeAssembly(Assembly assembly)
@@ -67,16 +81,6 @@
         {
             if (specSet .Add(spec))
                 specList.Add(spec);
-        }
-
-        internal Assembly[] GetAssemblies()
-        {
-            return assemblyList.ToArray();
-        }
-
-        internal TraitSpec[] GetSpecs()
-        {
-            return specList.ToArray();
         }
     }
 }

@@ -43,6 +43,7 @@
     </Compile>
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
+    <Compile Include="Core\ProjectionConfiguration.cs" />
     <Compile Include="Core\TraitResolution\ITraitAggregator.cs" />
     <Compile Include="Core\TraitResolution\ITraitResolution.cs" />
     <Compile Include="Core\TraitResolution\ITraitResolver.cs" />

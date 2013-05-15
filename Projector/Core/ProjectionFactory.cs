@@ -3,12 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Threading;
-    //using Projector.Configuration;
     using Projector.ObjectModel;
 
     public class ProjectionFactory
     {
-        private static ProjectionFactory defaultFactory;
+        private static ProjectionFactory defaultInstance;
 
         private readonly Dictionary<Type, ProjectionType> types;
         private readonly CellList<ProjectionType>         incompleteTypes;
@@ -16,26 +15,38 @@
         //private readonly ProjectionAssemblyFactory        assemblyFactory;
         //private readonly ProjectionProvider[]             providers;
         //private readonly ProjectionProviderCollection     providersPublic;
-        //private readonly ITraitResolver                   resolver;
+        private readonly ITraitResolver                   resolver;
         //private readonly ProjectionOptions                options;
 
-        //public ProjectionFactory() : this(null) { }
+        public ProjectionFactory()
+            : this(new ProjectionConfiguration()) { }
 
-        public ProjectionFactory(/*Action<ProjectionConfiguration> configure*/)
+        public ProjectionFactory(Action<ProjectionConfiguration> configure)
+            : this(Configure(configure)) { }
+
+        public ProjectionFactory(ProjectionConfiguration configuration)
         {
-            //var configuration = new ProjectionConfiguration(this);
-            //if (configure != null)
-            //    configure(configuration);
+            if (configuration == null)
+                throw Error.ArgumentNull("configuration");
 
-            //options          = configuration.GetOptions();
-            //providers        = configuration.GetProviders();
-            //resolver         = configuration.GetTraitResolver();
+            //options         = configuration.GetOptions();
+            //providers       = configuration.GetProviders();
+            resolver        = configuration.TraitResolver;
+            types           = new Dictionary<Type, ProjectionType>();
+            typesLock       = new ReaderWriterLockSlim();
+            incompleteTypes = new CellList<ProjectionType>();
+            //assemblyFactory = ProjectionAssemblyFactory.PerType(options);
+            //providersPublic = new ProjectionProviderCollection(providers);
+        }
 
-            types            = new Dictionary<Type, ProjectionType>();
-            typesLock        = new ReaderWriterLockSlim();
-            incompleteTypes  = new CellList<ProjectionType>();
-            //assemblyFactory  =     ProjectionAssemblyFactory.PerType(options);
-            //providersPublic  = new ProjectionProviderCollection(providers);
+        private static ProjectionConfiguration Configure(Action<ProjectionConfiguration> configure)
+        {
+            if (configure == null)
+                throw Error.ArgumentNull("configure");
+
+            var configuration = new ProjectionConfiguration();
+            configure(configuration);
+            return configuration;
         }
 
         /// <summary>
@@ -48,9 +59,8 @@
         {
             get
             {
-                return defaultFactory != null
-                    ? defaultFactory
-                    : Concurrent.Ensure(ref defaultFactory, new ProjectionFactory());
+                return defaultInstance
+                    ?? Concurrent.Ensure(ref defaultInstance, new ProjectionFactory());
             }
         }
 
@@ -147,7 +157,7 @@
 
         //    throw Error.NoStorageProvider();
         //}
-
+            
         //private static IProjectionContext Require(IProjectionContext context)
         //{
         //    if (context != null)

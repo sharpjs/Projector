@@ -5,10 +5,10 @@
 
     public interface ITraitResolution
     {
-        void ResolveTypeTraits(
+        void ProvideTypeTraits(
             ITraitAggregator   aggregator);
 
-        void ResolvePropertyTraits(
+        void ProvidePropertyTraits(
             ProjectionProperty projectionProperty,
             PropertyInfo       underlyingProperty,
             ITraitAggregator   aggregator);

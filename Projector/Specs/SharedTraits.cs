@@ -47,24 +47,24 @@
             return scope as TypeScope<T>;
         }
 
-        internal override void CollectRelevantScopes(
+        internal sealed override void ProvideScopes(
             ProjectionType       projectionType,
             Type                 underlyingType,
             ITypeScopeAggregator aggregator)
         {
-            FindGlobalScope(aggregator);
-            FindGeneralScopes(projectionType, aggregator);
-            FindSpecificScope(underlyingType, aggregator);
+            ProvideGlobalScope  (                aggregator);
+            ProvideGeneralScopes(projectionType, aggregator);
+            ProvideSpecificScope(underlyingType, aggregator);
         }
 
-        private void FindGlobalScope(ITypeScopeAggregator aggregator)
+        private void ProvideGlobalScope(ITypeScopeAggregator aggregator)
         {
             var scope = globalTypeScope;
             if (scope != null)
                 aggregator.Add(scope);
         }
 
-        private void FindGeneralScopes(ProjectionType type, ITypeScopeAggregator aggregator)
+        private void ProvideGeneralScopes(ProjectionType type, ITypeScopeAggregator aggregator)
         {
             var scopes = generalTypeScopes;
             if (scopes != null)
@@ -73,7 +73,7 @@
                         aggregator.Add(scope);
         }
 
-        private void FindSpecificScope(Type type, ITypeScopeAggregator aggregator)
+        private void ProvideSpecificScope(Type type, ITypeScopeAggregator aggregator)
         {
             TypeScope scope;
             var scopes = specificTypeScopes;

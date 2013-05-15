@@ -31,10 +31,10 @@
             return this;
         }
 
-        internal void Collect(ITraitAggregator aggregator)
+        internal void ProvideTraits(ITraitAggregator aggregator)
         {
             foreach (var trait in traits)
-                aggregator.Collect(Realize(trait));
+                aggregator.Add(Realize(trait));
         }
 
         private static object Realize(object obj)

@@ -1,33 +1,56 @@
 ﻿namespace Projector
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using Projector.ObjectModel;
     using Projector.Specs;
 
     public class StandardTraitResolver : ITraitResolver
     {
+        private static StandardTraitResolver defaultInstance;
+
         private readonly Assembly [] assemblies;
         private readonly TraitSpec[] specs;
 
-        public StandardTraitResolver() : this(null) { }
+        public StandardTraitResolver()
+            : this(new StandardTraitResolverConfiguration()) { }
 
         public StandardTraitResolver(Action<StandardTraitResolverConfiguration> configure)
-            : this()
-        {
-            if (configure != null)
-            {
-                var configuration = new StandardTraitResolverConfiguration();
-                configure(configuration);
+            : this(Configure(configure)) { }
 
-                assemblies = configuration.GetAssemblies();
-                specs      = configuration.GetSpecs();
-            }
-            else
+        public StandardTraitResolver(StandardTraitResolverConfiguration configuration)
+        {
+            if (configuration == null)
+                throw Error.ArgumentNull("configuration");
+
+            assemblies = configuration.IncludedAssemblies.ToArray();
+            specs      = configuration.IncludedSpecs     .ToArray();
+        }
+
+        private static StandardTraitResolverConfiguration
+        Configure(Action<StandardTraitResolverConfiguration> configure)
+        {
+            if (configure == null)
+                throw Error.ArgumentNull("configure");
+
+            var configuration = new StandardTraitResolverConfiguration();
+            configure(configuration);
+            return configuration;
+        }
+
+        /// <summary>
+        ///   Gets the default trait resolver.
+        /// </summary>
+        /// <remarks>
+        ///   The default trait resolver takes default values for all configurable parameters.
+        /// </remarks>
+        public static StandardTraitResolver Default
+        {
+            get
             {
-                assemblies = new Assembly [0];
-                specs      = new TraitSpec[0];
+                return defaultInstance
+                    ?? Concurrent.Ensure(ref defaultInstance, new StandardTraitResolver());
             }
         }
 
@@ -40,9 +63,16 @@
 
             var resolution = new StandardTraitResolution(projectionType, underlyingType);
 
-            AddIncludedSpecs(resolution);
-            AddDetectedSpecs(resolution, GetSharedSpecName (underlyingType));
-            AddDetectedSpecs(resolution, GetPerTypeSpecName(underlyingType));
+            if (specs != null)
+            {
+                AddIncludedSpecs(resolution);
+            }
+
+            if (assemblies != null)
+            {
+                AddDetectedSpecs(resolution, GetSharedSpecName(underlyingType));
+                AddDetectedSpecs(resolution, GetPerTypeSpecName(underlyingType));
+            }
 
             return resolution;
         }

@@ -38,7 +38,7 @@
             return scope.Apply(factory);
         }
 
-        internal override void CollectRelevantScopes(
+        internal sealed override void ProvideScopes(
             ProjectionType       projectionType,
             Type                 underlyingType,
             ITypeScopeAggregator aggregator)

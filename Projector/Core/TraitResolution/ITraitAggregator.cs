@@ -2,6 +2,6 @@
 {
     public interface ITraitAggregator
     {
-        void Collect(object trait);
+        void Add(object trait);
     }
 }

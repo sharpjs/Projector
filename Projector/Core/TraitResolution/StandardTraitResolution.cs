@@ -21,7 +21,7 @@
 
         internal void Add(TraitSpec spec)
         {
-            spec.CollectRelevantScopes(projectionType, underlyingType, this);
+            spec.ProvideScopes(projectionType, underlyingType, this);
         }
 
         void ITypeScopeAggregator.Add(TypeScope scope)
@@ -33,17 +33,17 @@
                 .Add(scope);
         }
 
-        public void ResolveTypeTraits(ITraitAggregator aggregator)
+        public void ProvideTypeTraits(ITraitAggregator aggregator)
         {
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)
-                    scope.Collect(aggregator);
+                    scope.ProvideTraits(aggregator);
 
-            CollectAttributes(underlyingType, aggregator);
+            ResolveAttributes(underlyingType, aggregator);
         }
 
-        public void ResolvePropertyTraits(
+        public void ProvidePropertyTraits(
             ProjectionProperty projectionProperty,
             PropertyInfo       underlyingProperty,
             ITraitAggregator   aggregator)
@@ -51,15 +51,15 @@
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)
-                    scope.Collect(projectionProperty, aggregator);
+                    scope.ProvideTraits(projectionProperty, aggregator);
 
-            CollectAttributes(underlyingProperty, aggregator);
+            ResolveAttributes(underlyingProperty, aggregator);
         }
 
-        private static void CollectAttributes(MemberInfo source, ITraitAggregator aggregator)
+        private static void ResolveAttributes(MemberInfo source, ITraitAggregator aggregator)
         {
             foreach (var trait in source.GetCustomAttributes(false))
-                aggregator.Collect(trait);
+                aggregator.Add(trait);
         }
     }
 }
