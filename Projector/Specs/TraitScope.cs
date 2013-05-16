@@ -44,7 +44,7 @@
                 return obj;
             if ((obj = factory()) != null)
                 return obj;
-            throw Error.TodoError();
+            throw Error.TraitFactoryReturnedNull();
         }
     }
 }

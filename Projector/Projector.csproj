@@ -92,6 +92,7 @@
     <Compile Include="Specs\SharedTraits.cs" />
     <Compile Include="Specs\TraitScope.cs" />
     <Compile Include="Specs\TraitSpec.cs" />
+    <Compile Include="Specs\TraitSpecException.cs" />
     <Compile Include="Specs\TypeCut.cs" />
     <Compile Include="Specs\TypeScope.cs" />
     <Compile Include="Specs\TypeTraits.cs" />

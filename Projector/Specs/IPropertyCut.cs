@@ -3,7 +3,7 @@
     using System;
     using Projector.ObjectModel;
 
-    public interface IPropertyCut
+    public interface IPropertyCut : IPropertyScope
     {
         IPropertyCut OfKind(TypeKind kind);
         IPropertyCut OfKind(params TypeKind[] kinds);

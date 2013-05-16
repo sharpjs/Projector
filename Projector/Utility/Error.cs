@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using Projector.ObjectModel;
+    using Projector.Specs;
 
     internal static class Error
     {
@@ -86,6 +87,21 @@
                 type.GetPrettyName(true)
             );
             return new NotSupportedException(message);
+        }
+
+        internal static Exception TraitSpecCreateFailed(Type type, Exception innerException)
+        {
+            var message = string.Format
+            (
+                "Failed to create trait spec instance: {0}",
+                type.GetPrettyName(true)
+            );
+            return new TraitSpecException(message, innerException);
+        }
+
+        internal static Exception TraitFactoryReturnedNull()
+        {
+            return new TraitSpecException("Trait factory returned null.");
         }
 
         // TODO: 'trait' instead of 'attribute'?

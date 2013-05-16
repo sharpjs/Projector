@@ -58,7 +58,7 @@
         public StandardTraitResolverConfiguration IncludeSpec<TSpec>()
             where TSpec : TraitSpec, new()
         {
-            Add(new TSpec());
+            Add(TraitSpec.CreateInstance(typeof(TSpec)));
             return this;
         }
 

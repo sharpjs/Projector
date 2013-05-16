@@ -91,7 +91,7 @@
                 if (type == null || !type.IsSubclassOf(typeof(TraitSpec)))
                     continue;
 
-                var spec = CreateSpec(type);
+                var spec = TraitSpec.CreateInstance(type);
                 if (spec == null)
                     continue;
 
@@ -99,7 +99,7 @@
             }
         }
 
-        private string GetSharedSpecName(Type type)
+        private static string GetSharedSpecName(Type type)
         {
             return string.Concat
             (
@@ -108,7 +108,7 @@
             );
         }
 
-        private string GetPerTypeSpecName(Type type)
+        private static string GetPerTypeSpecName(Type type)
         {
             return string.Concat
             (
@@ -117,18 +117,6 @@
                 type.Name.RemoveInterfacePrefix(),
                 PerTypeSpecSuffix
             );
-        }
-
-        private TraitSpec CreateSpec(Type type)
-        {
-            try
-            {
-                return (TraitSpec) Activator.CreateInstance(type);
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         private const string
