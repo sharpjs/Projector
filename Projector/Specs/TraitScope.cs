@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Projector.ObjectModel;
 
     // A collection of traits that can be passed to an aggregator
     internal class TraitScope : ITraitScope

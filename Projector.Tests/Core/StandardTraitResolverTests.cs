@@ -1,11 +1,10 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using NUnit.Framework;
     using NUnit.Framework.Constraints;
-    using Projector.ObjectModel;
     using Projector.Specs;
 
     public abstract class StandardTraitResolverTests : ProjectionTestsBase

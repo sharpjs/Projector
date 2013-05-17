@@ -2,6 +2,7 @@
 {
     using System;
     using NUnit.Framework;
+    using Projector.ObjectModel;
 
     [TestFixture]
     public class TraitScopeTests

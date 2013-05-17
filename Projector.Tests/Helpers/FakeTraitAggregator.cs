@@ -1,4 +1,4 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     using System.Collections.Generic;
 

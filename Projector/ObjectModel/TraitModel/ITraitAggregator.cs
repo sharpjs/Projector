@@ -1,4 +1,4 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     public interface ITraitAggregator
     {

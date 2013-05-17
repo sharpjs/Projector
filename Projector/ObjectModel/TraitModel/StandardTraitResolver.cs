@@ -1,9 +1,8 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     using System;
     using System.Linq;
     using System.Reflection;
-    using Projector.ObjectModel;
     using Projector.Specs;
 
     public class StandardTraitResolver : ITraitResolver

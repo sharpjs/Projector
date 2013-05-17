@@ -1,9 +1,8 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using Projector.ObjectModel;
     using Projector.Specs;
 
     internal class StandardTraitResolution : ITraitResolution, ITypeScopeAggregator

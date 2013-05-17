@@ -1,7 +1,6 @@
-﻿namespace Projector
+﻿namespace Projector.ObjectModel
 {
     using System;
-    using Projector.ObjectModel;
 
     public interface ITraitResolver
     {
