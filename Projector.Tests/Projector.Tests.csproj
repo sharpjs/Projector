@@ -48,7 +48,7 @@
     </Compile>
     <Compile Include="Core\ProjectionExceptionTests.cs" />
     <Compile Include="Core\ProjectionFactoryTests.cs" />
-    <Compile Include="Core\StandardTraitResolverTests.cs" />
+    <Compile Include="ObjectModel\TraitModel\StandardTraitResolverTests.cs" />
     <Compile Include="Core\Traits\InheritFromAttributeTests.cs" />
     <Compile Include="Core\Traits\OverrideAttributeTests.cs" />
     <Compile Include="Core\Traits\SuppressAttributeTests.cs" />
