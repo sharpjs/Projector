@@ -3,7 +3,10 @@
     /// <summary>
     ///   Represents any structure type.
     /// </summary>
-    public interface IAny { }
+    public interface IAny
+    {
+        string Any { get; set; }
+    }
 
     /// <summary>
     ///   Represents a structure type with no members.

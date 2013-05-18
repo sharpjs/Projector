@@ -2,111 +2,170 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using System.Reflection;
     using NUnit.Framework;
-    using Projector.Specs;
 
-        //[Test]
-        //public void Resolve_NotDetected()
-        //{
-        //    var resolution = Resolve<Fakes.WithoutTraitSpecs.ITypeA>();
+    public abstract class TestCase<T> : ProjectionTestsBase
+    {
+        internal StandardTraitResolution Resolution { get; private set; }
 
-        //    Assert.That(resolution, Is.Not.Null);
+        [SetUp]
+        public void SetUp()
+        {
+            Resolution = CreateResolver()
+                .Resolve(TypeOf<T>(), typeof(T))
+                as StandardTraitResolution;
+        }
 
-        //    Assert.That(resolution.ProjectionType, Is.SameAs(TypeOf<Fakes.WithTraitSpecs.ITypeA>()));
-        //    Assert.That(resolution.UnderlyingType, Is.SameAs(typeof(Fakes.WithTraitSpecs.ITypeA)));
-        //}
+        internal virtual StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver();
+        }
 
-        //[Test]
-        //public void Resolve_DetectedInContainingAssembly()
-        //{
-        //    var resolution = Resolve<Fakes.WithTraitSpecs.ITypeA>();
+        protected List<object> TraitsOfType
+        {
+            get { return CollectTypeTraits(); }
+        }
 
-        //    Assert.That(resolution, Is.Not.Null);
-        //}
+        protected List<object> TraitsOfPropertyA
+        {
+            get { return CollectPropertyTraits("PropertyA"); }
+        }
 
-    //[TestFixture]
-    //public class Empty : ResolutionCase
-    //{
-    //    [Test]
-    //    public void TypeTraits()
-    //    {
-    //        Assert.That(GetTypeTraits(), Is.Empty);
-    //    }
+        protected List<object> TraitsOfPropertyB
+        {
+            get { return CollectPropertyTraits("PropertyB"); }
+        }
 
-    //    [Test]
-    //    public void PropertyTraits()
-    //    {
-    //        Assert.That(GetPropertyATraits(), Is.Empty);
-    //    }
-    //}
+        private List<object> CollectTypeTraits()
+        {
+            var aggregator = new FakeTraitAggregator();
+            Resolution.ProvideTypeTraits(aggregator);
+            return aggregator.Traits;
+        }
 
-    //[TestFixture]
-    //public class Included_TypeSpec_TypeTraits : ResolutionCase
-    //{
-    //    public static readonly object
-    //        TraitA = new object();
+        private List<object> CollectPropertyTraits(string name)
+        {
+            var projectionProperty = PropertyOf<T>(name);
+            var underlyingProperty = typeof(T).GetProperty(name);
+            var aggregator         = new FakeTraitAggregator();
+            Resolution.ProvidePropertyTraits(projectionProperty, underlyingProperty, aggregator);
+            return aggregator.Traits;
+        }
+    }
 
-    //    public class SpecA : TypeTraitSpec<ITypeA>
-    //    {
-    //        public SpecA() { Apply(TraitA); }
-    //    }
+    [TestFixture]
+    public class Invariants : TestCase<IAny>
+    {
+        private readonly ProjectionProperty
+            AnyProjectionProperty = PropertyOf<IAny>("Any");
 
-    //    protected override void Configure(StandardTraitResolverConfiguration configuration)
-    //    {
-    //        configuration.IncludeSpec<SpecA>();
-    //    }
+        private readonly PropertyInfo
+            AnyUnderlyingProperty = typeof(IAny).GetProperty("Any");
 
-    //    [Test]
-    //    public void TypeTraits()
-    //    {
-    //        Assert.That(GetTypeTraits(), HasTraits(TraitA));
-    //    }
-    //}
+        [Test]
+        public void ProjectionType()
+        {
+            Assert.That(Resolution.ProjectionType, Is.SameAs(TypeOf<IAny>()));
+        }
 
-    //public abstract class ResolutionCase
-    //{
-    //    private ITraitResolution resolution;
+        [Test]
+        public void UnderlyingType()
+        {
+            Assert.That(Resolution.UnderlyingType, Is.SameAs(typeof(IAny)));
+        }
 
-    //    protected virtual void Configure(StandardTraitResolverConfiguration configuration) { }
+        [Test]
+        public void ProvidePropertyTraits_NullProjectionProperty()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Resolution.ProvidePropertyTraits(null, AnyUnderlyingProperty, new FakeTraitAggregator())
+            );
+        }
 
-    //    [SetUp]
-    //    public void SetUp()
-    //    {
-    //        resolution = new StandardTraitResolver(Configure)
-    //            .Resolve(TypeOf<ITypeA>(), typeof(ITypeA));
-    //    }
+        [Test]
+        public void ProvidePropertyTraits_NullUnderlyingProperty()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Resolution.ProvidePropertyTraits(AnyProjectionProperty, null, new FakeTraitAggregator())
+            );
+        }
 
-    //    protected List<object> GetTypeTraits()
-    //    {
-    //        var aggregator = new FakeTraitAggregator();
-    //        resolution.ProvideTypeTraits(aggregator);
-    //        return aggregator.Traits;
-    //    }
+        [Test]
+        public void ProvidePropertyTraits_NullAggregator()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Resolution.ProvidePropertyTraits(AnyProjectionProperty, AnyUnderlyingProperty, null)
+            );
+        }
+    }
 
-    //    protected List<object> GetPropertyATraits()
-    //    {
-    //        return GetPropertyTraits("PropertyA");
-    //    }
+    [TestFixture]
+    public class WithNoTraitSpecs : TestCase<Fakes.WithNoTraitSpecs.ITypeA>
+    {
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, Is.Empty);
+        }
 
-    //    protected List<object> GetPropertyBTraits()
-    //    {
-    //        return GetPropertyTraits("PropertyB");
-    //    }
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, Is.Empty);
+        }
+    }
 
-    //    private List<object> GetPropertyTraits(string name)
-    //    {
-    //        var projectionProperty = PropertyOf<ITypeA>(name);
-    //        var underlyingProperty = typeof(ITypeA).GetProperty(name);
-    //        var aggregator         = new FakeTraitAggregator();
-    //        resolution.ProvidePropertyTraits(projectionProperty, underlyingProperty, aggregator);
-    //        return aggregator.Traits;
-    //    }
+    [TestFixture]
+    public class WithDetectedSharedTraitSpec : TestCase<Fakes.WithSharedTraitSpec.ITypeA>
+    {
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                Fakes.WithSharedTraitSpec.Traits.TypeA
+            ));
+        }
 
-    //    protected static Constraint HasTraits(params object[] traits)
-    //    {
-    //        return Is.EqualTo(traits);
-    //    }
-    //}
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                Fakes.WithSharedTraitSpec.Traits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedTypeTraitSpec : TestCase<Fakes.WithTypeTraitSpec.ITypeA>
+    {
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                Fakes.WithTypeTraitSpec.Traits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                Fakes.WithTypeTraitSpec.Traits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithIncludedTraitSpec : TestCase<Fakes.WithNoTraitSpecs.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeSpec<Fakes.OtherTraits>());
+        }
+    }
 }

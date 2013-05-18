@@ -44,6 +44,9 @@
 
         public void ProvideTypeTraits(ITraitAggregator aggregator)
         {
+            if (aggregator == null)
+                throw Error.ArgumentNull("aggregator");
+
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)
@@ -57,6 +60,13 @@
             PropertyInfo       underlyingProperty,
             ITraitAggregator   aggregator)
         {
+            if (projectionProperty == null)
+                throw Error.ArgumentNull("projectionProperty");
+            if (underlyingProperty == null)
+                throw Error.ArgumentNull("underlyingProperty");
+            if (aggregator == null)
+                throw Error.ArgumentNull("aggregator");
+
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)

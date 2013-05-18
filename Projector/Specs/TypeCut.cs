@@ -33,14 +33,6 @@
             return Restrict(predicate);
         }
 
-        public void Spec(Action<ITypeScope> spec)
-        {
-            if (spec == null)
-                throw Error.ArgumentNull("spec");
-
-            spec(this);
-        }
-
         protected TypeCut Restrict(Func<ProjectionType, bool> predicate)
         {
             (predicates ?? (predicates = new List<Func<ProjectionType, bool>>()))

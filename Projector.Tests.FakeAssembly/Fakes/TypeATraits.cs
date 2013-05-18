@@ -1,8 +1,8 @@
-﻿namespace Projector.Fakes.WithTraitSpecs
+﻿namespace Projector.Fakes
 {
     using Projector.Specs;
 
-    public class TypeATraits : TypeTraitSpec<ITypeA>
+    public class TypeATraits : SharedTraits
     {
         public static readonly object[]
             TypeTraits      = { new object(), new object() },

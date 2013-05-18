@@ -1,4 +1,4 @@
-﻿namespace Projector.Fakes.WithTraitSpecs
+﻿namespace Projector.Fakes.WithNoTraitSpecs
 {
     public interface ITypeA
     {

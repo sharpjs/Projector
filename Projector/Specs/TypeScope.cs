@@ -35,6 +35,14 @@
                 : scopes[name] = new PropertyScope();
         }
 
+        public void Spec(Action<ITypeScope> spec)
+        {
+            if (spec == null)
+                throw Error.ArgumentNull("spec");
+
+            spec(this);
+        }
+
         internal void ProvideTraits(ProjectionProperty property, ITraitAggregator aggregator)
         {
             ProvideGeneralTraits (property, aggregator);
@@ -79,6 +87,14 @@
                 throw Error.ArgumentOutOfRange("property");
 
             return Property(property.Name);
+        }
+
+        public new void Spec(Action<ITypeScope<T>> spec)
+        {
+            if (spec == null)
+                throw Error.ArgumentNull("spec");
+
+            spec(this);
         }
     }
 }

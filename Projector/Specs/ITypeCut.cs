@@ -9,7 +9,5 @@
         ITypeCut OfKind(params TypeKind[] kinds);
 
         ITypeCut Matching(Func<ProjectionType, bool> predicate);
-
-        void Spec(Action<ITypeScope> spec);
     }
 }

@@ -39,14 +39,24 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyA.cs" />
-    <Compile Include="Fakes\WithoutTraitSpecs\ITypeA.cs" />
-    <Compile Include="Fakes\WithoutTraitSpecs\ITypeB.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\TypeBTraits.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\ITypeA.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\ITypeB.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\OtherTraits.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\SharedTraits.cs" />
-    <Compile Include="Fakes\WithTraitSpecs\TypeATraits.cs" />
+    <Compile Include="Fakes\WithNoTraitSpecs\ITypeA.cs" />
+    <Compile Include="Fakes\WithNoTraitSpecs\ITypeB.cs" />
+    <Compile Include="Fakes\WithSharedTraitSpec\ITypeA.cs" />
+    <Compile Include="Fakes\WithSharedTraitSpec\ITypeB.cs" />
+    <Compile Include="Fakes\WithSharedTraitSpec\OtherTraits.cs" />
+    <Compile Include="Fakes\WithSharedTraitSpec\SharedTraits.cs" />
+    <Compile Include="Fakes\WithTypeTraitSpec\ITypeA.cs" />
+    <Compile Include="Fakes\WithTypeTraitSpec\ITypeB.cs" />
+    <Compile Include="Fakes\WithSharedTraitSpec\Traits.cs" />
+    <Compile Include="Fakes\WithTypeTraitSpec\OtherTraits.cs" />
+    <Compile Include="Fakes\WithTypeTraitSpec\Traits.cs" />
+    <Compile Include="Fakes\WithTypeTraitSpec\TypeATraits.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\TypeBTraits.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\ITypeA.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\ITypeB.cs" />
+    <Compile Include="Fakes\OtherTraits.cs" />
+    <Compile Include="Fakes\SharedTraits.cs" />
+    <Compile Include="Fakes\TypeATraits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
