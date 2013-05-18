@@ -5,14 +5,14 @@
     using Projector.ObjectModel;
 
     // Trait spec about any types, e.g. DomainSharedTraits
-    public abstract class SharedTraits : TraitSpec
+    public abstract class SharedTraitSpec : TraitSpec
     {
         private TypeScope                   globalTypeScope;
         private List<TypeCut>               generalTypeScopes;
         private Dictionary<Type, TypeScope> specificTypeScopes;
 
         // Consumers implement spec in constructor
-        protected SharedTraits() { }
+        protected SharedTraitSpec() { }
 
         protected ITypeCut Types
         {

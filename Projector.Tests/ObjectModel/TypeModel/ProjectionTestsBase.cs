@@ -1,5 +1,7 @@
 ﻿namespace Projector.ObjectModel
 {
+    using NUnit.Framework;
+    using NUnit.Framework.Constraints;
     using Projector.ObjectModel;
 
     public abstract class ProjectionTestsBase
@@ -32,6 +34,11 @@
         protected static ProjectionProperty PropertyOf<T>(string name)
         {
             return PropertiesOf<T>()[name];
+        }
+
+        protected static Constraint IsSequence(params object[] items)
+        {
+            return Is.EqualTo(items);
         }
     }
 }

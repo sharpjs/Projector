@@ -89,13 +89,13 @@
     <Compile Include="Specs\ITypeScopeAggregator.cs" />
     <Compile Include="Specs\PropertyCut.cs" />
     <Compile Include="Specs\PropertyScope.cs" />
-    <Compile Include="Specs\SharedTraits.cs" />
+    <Compile Include="Specs\SharedTraitSpec.cs" />
     <Compile Include="Specs\TraitScope.cs" />
     <Compile Include="Specs\TraitSpec.cs" />
     <Compile Include="Specs\TraitSpecException.cs" />
     <Compile Include="Specs\TypeCut.cs" />
     <Compile Include="Specs\TypeScope.cs" />
-    <Compile Include="Specs\TypeTraits.cs" />
+    <Compile Include="Specs\TypeTraitSpec.cs" />
     <Compile Include="Utility\Cell.cs" />
     <Compile Include="Utility\CellEnumerator.cs" />
     <Compile Include="Utility\CellList.cs" />
@@ -107,6 +107,7 @@
     <Compile Include="Utility\StringExtensions.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
     <Compile Include="Utility\TypePrettyName.cs" />
+    <Compile Include="Utility\UniqueCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ObjectModel\Invocations\" />

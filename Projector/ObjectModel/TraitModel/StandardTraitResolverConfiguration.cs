@@ -9,29 +9,33 @@
     {
         // TODO: Change to using some UniqueList<T> : IList<T>, ISet<T>
         // TODO: Only allocate when needed
-        private readonly HashSet<Assembly>   assemblySet;
-        private readonly List   <Assembly>   assemblyList;
-        private readonly HashSet<TraitSpec>  specSet;
-        private readonly List   <TraitSpec>  specList;
+        private UniqueCollection<Assembly>  assemblies;
+        private UniqueCollection<TraitSpec> specs;
 
-        internal StandardTraitResolverConfiguration()
+        public ICollection<Assembly> IncludedAssemblies
         {
-            assemblySet  = new HashSet<Assembly>();
-            specSet      = new HashSet<TraitSpec>();
-            assemblyList = new List<Assembly>();
-            specList     = new List<TraitSpec>();
+            get { return assemblies ?? Concurrent.Ensure(ref assemblies, new UniqueCollection<Assembly>()); }
         }
 
-        internal IList<Assembly> IncludedAssemblies
+        public ICollection<TraitSpec> IncludedSpecs
         {
-            get { return assemblyList; }
-            // TODO: Implement setter
+            get { return specs ?? Concurrent.Ensure(ref specs, new UniqueCollection<TraitSpec>()); }
+        }   
+
+        internal Assembly[] GetAssembliesInternal()
+        {
+            var assemblies = this.assemblies;
+            return assemblies == null || assemblies.Count == 0
+                ? null
+                : assemblies.ToArray();
         }
 
-        internal IList<TraitSpec> IncludedSpecs
+        internal TraitSpec[] GetSpecsInternal()
         {
-            get { return specList; }
-            // TODO: Implement setter
+            var specs = this.specs;
+            return specs == null || specs.Count == 0
+                ? null
+                : specs.ToArray();
         }
 
         public StandardTraitResolverConfiguration IncludeAssembly(Assembly assembly)
@@ -39,27 +43,23 @@
             if (assembly == null)
                 throw Error.ArgumentNull("assembly");
 
-            Add(assembly);
-            return this;
+            return Add(assembly);
         }
 
         public StandardTraitResolverConfiguration IncludeAssemblyOf<T>()
         {
-            Add(Assembly.GetAssembly(typeof(T)));
-            return this;
+            return Add(Assembly.GetAssembly(typeof(T)));
         }
 
         public StandardTraitResolverConfiguration IncludeAssemblyOf(Type type)
         {
-            Add(Assembly.GetAssembly(type));
-            return this;
+            return Add(Assembly.GetAssembly(type));
         }
 
         public StandardTraitResolverConfiguration IncludeSpec<TSpec>()
             where TSpec : TraitSpec, new()
         {
-            Add(TraitSpec.CreateInstance(typeof(TSpec)));
-            return this;
+            return Add(TraitSpec.CreateInstance(typeof(TSpec)));
         }
 
         public StandardTraitResolverConfiguration IncludeSpec(TraitSpec spec)
@@ -67,20 +67,27 @@
             if (spec == null)
                 throw Error.ArgumentNull("spec");
 
-            Add(spec);
+            return Add(spec);
+        }
+
+        private StandardTraitResolverConfiguration Add(Assembly assembly)
+        {
+            var assemblies = this.assemblies;
+            if (assemblies == null)
+                assemblies = this.assemblies = new UniqueCollection<Assembly>();
+
+            assemblies.Add(assembly);
             return this;
         }
 
-        private void Add(Assembly assembly)
+        private StandardTraitResolverConfiguration Add(TraitSpec spec)
         {
-            if (assemblySet .Add(assembly))
-                assemblyList.Add(assembly);
-        }
+            var specs = this.specs;
+            if (specs == null)
+                specs = this.specs = new UniqueCollection<TraitSpec>();
 
-        private void Add(TraitSpec spec)
-        {
-            if (specSet .Add(spec))
-                specList.Add(spec);
+            specs.Add(spec);
+            return this;
         }
     }
 }

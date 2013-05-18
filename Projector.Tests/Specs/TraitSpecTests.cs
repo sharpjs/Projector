@@ -45,14 +45,6 @@
             Assert.That(e.InnerException, Is.Not.Null);
         }
 
-        internal class FakeTraitSpec : TraitSpec
-        {
-            internal override void ProvideScopes(ProjectionType projectionType, Type underlyingType, ITypeScopeAggregator action)
-            {
-                // Stub only
-            }
-        }
-
         internal class TraitSpec_ConstructorThrows : FakeTraitSpec
         {
             public TraitSpec_ConstructorThrows() { throw new Exception("MessageA"); }

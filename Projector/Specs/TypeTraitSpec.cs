@@ -4,11 +4,11 @@
     using System.Linq.Expressions;
     using Projector.ObjectModel;
 
-    public abstract class TypeTraits<T> : TraitSpec
+    public abstract class TypeTraitSpec<T> : TraitSpec
     {
         private readonly TypeScope<T> scope;
 
-        internal TypeTraits()
+        protected TypeTraitSpec()
         {
             scope = new TypeScope<T>();
         }

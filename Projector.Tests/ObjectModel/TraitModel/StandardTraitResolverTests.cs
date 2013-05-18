@@ -1,161 +1,156 @@
-﻿namespace Projector.ObjectModel
+﻿namespace Projector.ObjectModel.StandardTraitResolverTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Reflection;
     using NUnit.Framework;
-    using NUnit.Framework.Constraints;
     using Projector.Specs;
 
-    public abstract class StandardTraitResolverTests : ProjectionTestsBase
+    public abstract class TestCase : ProjectionTestsBase
     {
-        [TestFixture]
-        public class Invariants
+        internal StandardTraitResolver Resolver { get; private set; }
+
+        [SetUp]
+        public virtual void SetUp()
         {
-            [Test]
-            public void Construct()
-            {
-                new StandardTraitResolver();
-            }
-
-            [Test]
-            public void Default()
-            {
-                Assert.That(StandardTraitResolver.Default, Is.Not.Null);
-            }
-
-            [Test]
-            public void Construct_NullConfiguration()
-            {
-                Assert.Throws<ArgumentNullException>
-                (
-                    () => new StandardTraitResolver(null as StandardTraitResolverConfiguration)
-                );
-            }
-
-            [Test]
-            public void Construct_NullConfigure()
-            {
-                Assert.Throws<ArgumentNullException>
-                (
-                    () => new StandardTraitResolver(null as Action<StandardTraitResolverConfiguration>)
-                );
-            }
-
-            [Test]
-            public void Resolve_NullProjectionType()
-            {
-                Assert.Throws<ArgumentNullException>
-                (
-                    () => new StandardTraitResolver().Resolve(null, typeof(object))
-                );
-            }
-
-            [Test]
-            public void Resolve_NullUnderlyingType()
-            {
-                Assert.Throws<ArgumentNullException>
-                (
-                    () => new StandardTraitResolver().Resolve(TypeOf<object>(), null)
-                );
-            }
+            Resolver = CreateResolver();
         }
 
-        //[TestFixture]
-        public class Default
+        internal virtual StandardTraitResolver CreateResolver()
         {
-            private readonly StandardTraitResolver
-                Resolver = StandardTraitResolver.Default;
+            return new StandardTraitResolver();
         }
 
-        [TestFixture]
-        public class Empty : ResolutionCase
+        internal StandardTraitResolution Resolve<T>()
         {
-            [Test]
-            public void TypeTraits()
-            {
-                Assert.That(GetTypeTraits(), Is.Empty);
-            }
+            return Resolver.Resolve(TypeOf<T>(), typeof(T)) as StandardTraitResolution;
+        }
+    }
 
-            [Test]
-            public void PropertyTraits()
-            {
-                Assert.That(GetPropertyATraits(), Is.Empty);
-            }
+    [TestFixture]
+    public class Invariants : TestCase
+    {
+        [Test]
+        public void Construct_NullConfiguration()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => new StandardTraitResolver(null as StandardTraitResolverConfiguration)
+            );
         }
 
-        [TestFixture]
-        public class Included_TypeSpec_TypeTraits : ResolutionCase
+        [Test]
+        public void Construct_NullConfigure()
         {
-            public static readonly object
-                TraitA = new object();
-
-            public class SpecA : TypeTraits<ITypeA>
-            {
-                public SpecA() { Apply(TraitA); }
-            }
-
-            protected override void Configure(StandardTraitResolverConfiguration configuration)
-            {
-                configuration.IncludeSpec<SpecA>();
-            }
-
-            [Test]
-            public void TypeTraits()
-            {
-                Assert.That(GetTypeTraits(), HasTraits(TraitA));
-            }
+            Assert.Throws<ArgumentNullException>
+            (
+                () => new StandardTraitResolver(null as Action<StandardTraitResolverConfiguration>)
+            );
         }
 
-        public abstract class ResolutionCase
+        [Test]
+        public void Resolve_NullProjectionType()
         {
-            public interface ITypeA
-            {
-                string PropertyA { get; set; }
-                string PropertyB { get; set; }
-            }
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Resolver.Resolve(null, typeof(object))
+            );
+        }
 
-            private ITraitResolution resolution;
+        [Test]
+        public void Resolve_NullUnderlyingType()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Resolver.Resolve(TypeOf<object>(), null)
+            );
+        }
+    }
 
-            protected virtual void Configure(StandardTraitResolverConfiguration configuration) { }
+    public abstract class Default : TestCase
+    {
+        [Test]
+        public void IncludedAssemblies()
+        {
+            Assert.That(Resolver.IncludedAssemblies, Is.Empty);
+        }
 
-            [SetUp]
-            public void SetUp()
-            {
-                resolution = new StandardTraitResolver(Configure)
-                    .Resolve(TypeOf<ITypeA>(), typeof(ITypeA));
-            }
+        [Test]
+        public void IncludedSpecs()
+        {
+            Assert.That(Resolver.IncludedSpecs, Is.Empty);
+        }
+    }
 
-            protected List<object> GetTypeTraits()
-            {
-                var aggregator = new FakeTraitAggregator();
-                resolution.ProvideTypeTraits(aggregator);
-                return aggregator.Traits;
-            }
+    [TestFixture]
+    public class FromDefaultConstructor : Default
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver();
+        }
+    }
 
-            protected List<object> GetPropertyATraits()
-            {
-                return GetPropertyTraits("PropertyA");
-            }
+    [TestFixture]
+    public class FromDefaultProperty : Default
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return StandardTraitResolver.Default;
+        }
 
-            protected List<object> GetPropertyBTraits()
-            {
-                return GetPropertyTraits("PropertyB");
-            }
+        [Test]
+        public void Default()
+        {
+            Assert.That(StandardTraitResolver.Default, Is.SameAs(Resolver));
+        }
+    }
 
-            private List<object> GetPropertyTraits(string name)
-            {
-                var projectionProperty = PropertyOf<ITypeA>(name);
-                var underlyingProperty = typeof(ITypeA).GetProperty(name);
-                var aggregator         = new FakeTraitAggregator();
-                resolution.ProvidePropertyTraits(projectionProperty, underlyingProperty, aggregator);
-                return aggregator.Traits;
-            }
+    public abstract class Configured : TestCase
+    {
+        internal Assembly  Assembly  { get; private set; }
+        internal TraitSpec TraitSpec { get; private set; }
 
-            protected static Constraint HasTraits(params object[] traits)
-            {
-                return Is.EqualTo(traits);
-            }
+        [SetUp]
+        public override void SetUp()
+        {
+            Assembly  = AssemblyA.Assembly;
+            TraitSpec = new FakeTraitSpec();
+            base.SetUp();
+        }
+
+        [Test]
+        public void IncludedAssemblies()
+        {
+            Assert.That(Resolver.IncludedAssemblies, IsSequence(Assembly));
+        }
+
+        [Test]
+        public void IncludedSpecs()
+        {
+            Assert.That(Resolver.IncludedSpecs, IsSequence(TraitSpec));
+        }
+    }
+
+    [TestFixture]
+    public class FromConfigure : Configured
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(Assembly)
+                .IncludeSpec(TraitSpec));
+        }
+    }
+
+    [TestFixture]
+    public class FromConfiguration : Configured
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            var configuration = new StandardTraitResolverConfiguration()
+                .IncludeAssembly(Assembly)
+                .IncludeSpec(TraitSpec);
+            return new StandardTraitResolver(configuration);
         }
     }
 }

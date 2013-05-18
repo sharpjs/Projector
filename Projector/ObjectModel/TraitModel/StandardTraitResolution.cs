@@ -18,6 +18,16 @@
             this.underlyingType = underlyingType;
         }
 
+        public ProjectionType ProjectionType
+        {
+            get { return projectionType; }
+        }
+
+        public Type UnderlyingType
+        {
+            get { return underlyingType; }
+        }
+
         internal void Add(TraitSpec spec)
         {
             spec.ProvideScopes(projectionType, underlyingType, this);
