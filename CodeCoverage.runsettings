@@ -10,7 +10,7 @@
             <ModulePaths>
               <Exclude>
                 <!-- Exclude test assemblies from code coverage -->
-                <ModulePath>.*\.Tests\.dll$</ModulePath>
+                <ModulePath>.*\.Tests(\..*)?\.dll$</ModulePath>
               </Exclude>
             </ModulePaths>
           </CodeCoverage>

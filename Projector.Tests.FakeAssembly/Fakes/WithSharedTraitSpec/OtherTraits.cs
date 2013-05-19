@@ -1,6 +1,7 @@
 ﻿namespace Projector.Fakes.WithSharedTraitSpec
 {
     using Projector.Specs;
+    using Traits = AssemblyA.Fakes.WithSharedTraitSpec.OtherTraits;
 
     public class OtherTraits : SharedTraitSpec
     {
@@ -8,12 +9,12 @@
         {
             Type<ITypeA>().Spec(t =>
             {
-                t.Apply(Traits.OtherTypeA);
-                t.Property(o => o.PropertyA).Apply(Traits.OtherPropertyA);
-                t.Property(o => o.PropertyB).Apply(Traits.OtherPropertyB);
+                t.Apply(Traits.TypeA);
+                t.Property(o => o.PropertyA).Apply(Traits.PropertyA);
+                t.Property(o => o.PropertyB).Apply(Traits.PropertyB);
             });
 
-            Type<ITypeB>().Apply(Traits.OtherTypeB);
+            Type<ITypeB>().Apply(Traits.TypeB);
         }
     }
 }

@@ -1,22 +1,21 @@
 ﻿namespace Projector
 {
-    partial class AssemblyA
+    partial class AssemblyB
     {
         partial class Fakes
         {
-            public static class WithSharedTraitSpec
+            public static class WithTypeTraitSpec
             {
                 private const string
-                    TraitPath = Fakes.TraitPath + ".WithSharedTraitSpec";
+                    TraitPath = Fakes.TraitPath + ".WithTypeTraitSpec";
 
-                public static class SharedTraits
+                public static class TypeATraits
                 {
                     private const string
-                        TraitPath = WithSharedTraitSpec.TraitPath + ".SharedTraits";
+                        TraitPath = WithTypeTraitSpec.TraitPath + ".TypeATraits";
 
                     public const string
                         TypeA     = TraitPath + ":TypeA",
-                        TypeB     = TraitPath + ":TypeB",
                         PropertyA = TraitPath + ":PropertyA",
                         PropertyB = TraitPath + ":PropertyB";
                 }
@@ -24,7 +23,7 @@
                 public static class OtherTraits
                 {
                     private const string
-                        TraitPath = WithSharedTraitSpec.TraitPath + ".OtherTraits";
+                        TraitPath = WithTypeTraitSpec.TraitPath + ".OtherTraits";
 
                     public const string
                         TypeA     = TraitPath + ":TypeA",

@@ -1,19 +1,37 @@
-﻿namespace Projector.Fakes.WithTypeTraitSpec
+﻿namespace Projector
 {
-    public static class Traits
+    partial class AssemblyA
     {
-        private const string
-            TypeATraitsPrefix = "A/Fakes/WithTypeTraitSpec/TypeATraits -> ",
-            OtherTraitsPrefix = "A/Fakes/WithTypeTraitSpec/OtherTraits -> ";
+        partial class Fakes
+        {
+            public static class WithTypeTraitSpec
+            {
+                private const string
+                    TraitPath = Fakes.TraitPath + ".WithTypeTraitSpec";
 
-        public const string
-            TypeA          = TypeATraitsPrefix + "TypeA",
-            PropertyA      = TypeATraitsPrefix + "PropertyA",
-            PropertyB      = TypeATraitsPrefix + "PropertyB",
+                public static class TypeATraits
+                {
+                    private const string
+                        TraitPath = WithTypeTraitSpec.TraitPath + ".TypeATraits";
 
-            OtherTypeA     = OtherTraitsPrefix + "TypeA",
-            OtherTypeB     = OtherTraitsPrefix + "TypeB",
-            OtherPropertyA = OtherTraitsPrefix + "PropertyA",
-            OtherPropertyB = OtherTraitsPrefix + "PropertyB";
+                    public const string
+                        TypeA     = TraitPath + ":TypeA",
+                        PropertyA = TraitPath + ":PropertyA",
+                        PropertyB = TraitPath + ":PropertyB";
+                }
+
+                public static class OtherTraits
+                {
+                    private const string
+                        TraitPath = WithTypeTraitSpec.TraitPath + ".OtherTraits";
+
+                    public const string
+                        TypeA     = TraitPath + ":TypeA",
+                        TypeB     = TraitPath + ":TypeB",
+                        PropertyA = TraitPath + ":PropertyA",
+                        PropertyB = TraitPath + ":PropertyB";
+                }
+            }
+        }
     }
 }

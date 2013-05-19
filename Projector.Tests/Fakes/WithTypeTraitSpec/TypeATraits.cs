@@ -1,9 +1,9 @@
-﻿namespace Projector.Fakes
+﻿namespace Projector.Fakes.WithTypeTraitSpec
 {
     using Projector.Specs;
-    using Traits = AssemblyA.Fakes.TypeATraits;
+    using Traits = AssemblyB.Fakes.WithTypeTraitSpec.TypeATraits;
 
-    public class TypeATraits : TypeTraitSpec<WithNoTraitSpecs.ITypeA>
+    public class TypeATraits : TypeTraitSpec<ITypeA>
     {
         public TypeATraits()
         {

@@ -120,52 +120,216 @@
     }
 
     [TestFixture]
-    public class WithDetectedSharedTraitSpec : TestCase<Fakes.WithSharedTraitSpec.ITypeA>
-    {
-        [Test]
-        public void ProvideTypeTraits()
-        {
-            Assert.That(TraitsOfType, IsSequence(
-                Fakes.WithSharedTraitSpec.Traits.TypeA
-            ));
-        }
-
-        [Test]
-        public void ProvidePropertyTraits()
-        {
-            Assert.That(TraitsOfPropertyA, IsSequence(
-                Fakes.WithSharedTraitSpec.Traits.PropertyA
-            ));
-        }
-    }
-
-    [TestFixture]
-    public class WithDetectedTypeTraitSpec : TestCase<Fakes.WithTypeTraitSpec.ITypeA>
-    {
-        [Test]
-        public void ProvideTypeTraits()
-        {
-            Assert.That(TraitsOfType, IsSequence(
-                Fakes.WithTypeTraitSpec.Traits.TypeA
-            ));
-        }
-
-        [Test]
-        public void ProvidePropertyTraits()
-        {
-            Assert.That(TraitsOfPropertyA, IsSequence(
-                Fakes.WithTypeTraitSpec.Traits.PropertyA
-            ));
-        }
-    }
-
-    [TestFixture]
     public class WithIncludedTraitSpec : TestCase<Fakes.WithNoTraitSpecs.ITypeA>
     {
         internal override StandardTraitResolver CreateResolver()
         {
             return new StandardTraitResolver(c => c
-                .IncludeSpec<Fakes.OtherTraits>());
+                .IncludeSpec<Fakes.TypeATraits>()
+                .IncludeSpec<Fakes.SharedTraits>());
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.TypeATraits.TypeA,
+                AssemblyA.Fakes.SharedTraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.TypeATraits.PropertyA,
+                AssemblyA.Fakes.SharedTraits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedSharedTraitSpec_InContainingAssembly : TestCase<Fakes.WithSharedTraitSpec.ITypeA>
+    {
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedTypeTraitSpec_InContainingAssembly : TestCase<Fakes.WithTypeTraitSpec.ITypeA>
+    {
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedSharedTraitSpec_InIncludedAssembly : TestCase<Fakes.WithSharedTraitSpec.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(AssemblyB.Assembly));
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyB.Fakes.WithSharedTraitSpec.SharedTraits.TypeA,
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.TypeA
+                // Containing assembly is always searched; searched last if not present in includes
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyB.Fakes.WithSharedTraitSpec.SharedTraits.PropertyA,
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.PropertyA
+                // Containing assembly is always searched; searched last if not present in includes
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedTypeTraitSpec_InIncludedAssembly : TestCase<Fakes.WithTypeTraitSpec.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(AssemblyB.Assembly));
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyB.Fakes.WithTypeTraitSpec.TypeATraits.TypeA,
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.TypeA
+                // Containing assembly is always searched; searched last if not present in includes
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyB.Fakes.WithTypeTraitSpec.TypeATraits.PropertyA,
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.PropertyA
+                // Containing assembly is always searched; searched last if not present in includes
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedSharedTraitSpec_InIncludedContainingAssembly : TestCase<Fakes.WithSharedTraitSpec.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(AssemblyA.Assembly)
+                .IncludeAssembly(AssemblyB.Assembly));
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.TypeA,
+                AssemblyB.Fakes.WithSharedTraitSpec.SharedTraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.WithSharedTraitSpec.SharedTraits.PropertyA,
+                AssemblyB.Fakes.WithSharedTraitSpec.SharedTraits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithDetectedTypeTraitSpec_InIncludedContainingAssembly : TestCase<Fakes.WithTypeTraitSpec.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(AssemblyA.Assembly)
+                .IncludeAssembly(AssemblyB.Assembly));
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.TypeA,
+                AssemblyB.Fakes.WithTypeTraitSpec.TypeATraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits.PropertyA,
+                AssemblyB.Fakes.WithTypeTraitSpec.TypeATraits.PropertyA
+            ));
+        }
+    }
+
+    [TestFixture]
+    public class WithConditionalTraitSpec : TestCase<Fakes.WithNoTraitSpecs.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeSpec<Fakes.ConditionalTraits>());
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                AssemblyA.Fakes.ConditionalTraits.TypeA.Type
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                AssemblyA.Fakes.ConditionalTraits.Global.PropertyA,
+                AssemblyA.Fakes.ConditionalTraits.TypeA.PropertyA
+            ));
         }
     }
 }

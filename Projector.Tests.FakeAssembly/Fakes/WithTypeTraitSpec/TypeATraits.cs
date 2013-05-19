@@ -1,6 +1,7 @@
 ﻿namespace Projector.Fakes.WithTypeTraitSpec
 {
     using Projector.Specs;
+    using Traits = AssemblyA.Fakes.WithTypeTraitSpec.TypeATraits;
 
     public class TypeATraits : TypeTraitSpec<ITypeA>
     {

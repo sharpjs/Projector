@@ -1,6 +1,6 @@
 ﻿namespace Projector
 {
-    partial class AssemblyA
+    partial class AssemblyB
     {
         partial class Fakes
         {

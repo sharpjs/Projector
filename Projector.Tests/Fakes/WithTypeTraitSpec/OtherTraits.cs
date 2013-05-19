@@ -1,7 +1,7 @@
 ﻿namespace Projector.Fakes.WithTypeTraitSpec
 {
     using Projector.Specs;
-    using Traits = AssemblyA.Fakes.WithTypeTraitSpec.OtherTraits;
+    using Traits = AssemblyB.Fakes.WithTypeTraitSpec.OtherTraits;
 
     public class OtherTraits : SharedTraitSpec
     {

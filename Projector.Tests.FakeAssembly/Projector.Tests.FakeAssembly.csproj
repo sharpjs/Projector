@@ -39,6 +39,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyA.cs" />
+    <Compile Include="Fakes\ConditionalTraits.cs" />
+    <Compile Include="Fakes\Traits.cs" />
     <Compile Include="Fakes\WithNoTraitSpecs\ITypeA.cs" />
     <Compile Include="Fakes\WithNoTraitSpecs\ITypeB.cs" />
     <Compile Include="Fakes\WithSharedTraitSpec\ITypeA.cs" />
