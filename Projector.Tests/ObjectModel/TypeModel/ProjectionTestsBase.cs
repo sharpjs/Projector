@@ -26,11 +26,6 @@
             return TypeOf<T>().Properties;
         }
 
-        //protected static ProjectionStructureType ProjectionTypeOf<T>()
-        //{
-        //    return (ProjectionStructureType) TypeOf<T>();
-        //}
-
         protected static ProjectionProperty PropertyOf<T>(string name)
         {
             return PropertiesOf<T>()[name];
@@ -39,6 +34,18 @@
         protected static Constraint IsSequence(params object[] items)
         {
             return Is.EqualTo(items);
+        }
+
+        protected static ProjectionType _anyType;
+        protected static ProjectionType AnyType
+        {
+            get { return _anyType ?? (_anyType = TypeOf<IAny>()); }
+        }
+
+        protected static ProjectionType _anyStructureType;
+        protected static ProjectionType AnyStructureType
+        {
+            get { return _anyStructureType ?? (_anyStructureType = TypeOf<IAny>()); }
         }
     }
 }

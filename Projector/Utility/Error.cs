@@ -64,11 +64,6 @@
             return new InvalidOperationException("Traits for the object are frozen.");
         }
 
-        //internal static Exception AssemblyModeAlreadyConfigured()
-        //{
-        //    return new InvalidOperationException("The assembly generation mode has already been set.");
-        //}
-
         internal static Exception InvalidProjectionType(Type type)
         {
             var message = string.Format
@@ -87,6 +82,11 @@
                 type.GetPrettyName(true)
             );
             return new NotSupportedException(message);
+        }
+
+        internal static Exception NotPropertyExpression(string name)
+        {
+            return new ArgumentOutOfRangeException(name, "The argument was not a property expression.");
         }
 
         internal static Exception TraitSpecCreateFailed(Type type, Exception innerException)

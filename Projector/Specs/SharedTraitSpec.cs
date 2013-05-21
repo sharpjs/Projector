@@ -36,7 +36,7 @@
             }
         }
 
-        protected ITypeScope<T> Type<T>()
+        protected ITypeScopeBlock<T> Type<T>()
         {
             TypeScope scope;
             var type = typeof(T);

@@ -102,6 +102,7 @@
     <Compile Include="Utility\CollectionDebugView.cs" />
     <Compile Include="Utility\Concurrent.cs" />
     <Compile Include="Utility\Error.cs" />
+    <Compile Include="Utility\ExpressionExtensions.cs" />
     <Compile Include="Utility\MemberKey.cs" />
     <Compile Include="Utility\MemberKeyComparer.cs" />
     <Compile Include="Utility\StringExtensions.cs" />

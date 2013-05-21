@@ -3,7 +3,7 @@
     using System;
     using Projector.ObjectModel;
 
-    public interface ITypeCut : ITypeScope
+    public interface ITypeCut : ITypeScopeBlock
     {
         ITypeCut OfKind(TypeKind kind);
         ITypeCut OfKind(params TypeKind[] kinds);

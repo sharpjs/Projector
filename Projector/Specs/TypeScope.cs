@@ -6,7 +6,7 @@
     using System.Reflection;
     using Projector.ObjectModel;
 
-    internal class TypeScope : TraitScope, ITypeScope
+    internal class TypeScope : TraitScope, ITypeScopeBlock
     {
         private List<PropertyCut>                 generalPropertyScopes;
         private Dictionary<string, PropertyScope> specificPropertyScopes;
@@ -27,6 +27,9 @@
 
         public IPropertyScope Property(string name)
         {
+            if (name == null)
+                throw Error.ArgumentNull("name");
+
             PropertyScope scope;
             var scopes = specificPropertyScopes
                 ?? (specificPropertyScopes = new Dictionary<string, PropertyScope>());
@@ -67,26 +70,13 @@
         }
     }
 
-    internal class TypeScope<T> : TypeScope, ITypeScope<T>
+    internal class TypeScope<T> : TypeScope, ITypeScopeBlock<T>
     {
         internal TypeScope() { }
 
         public IPropertyScope Property(Expression<Func<T, object>> expression)
         {
-            if (expression == null)
-                throw Error.ArgumentNull("property");
-            if (expression.NodeType != ExpressionType.Lambda)
-                throw Error.ArgumentOutOfRange("property");
-
-            var access = expression.Body as MemberExpression;
-            if (access == null)
-                throw Error.ArgumentOutOfRange("property");
-
-            var property = access.Member as PropertyInfo;
-            if (property == null)
-                throw Error.ArgumentOutOfRange("property");
-
-            return Property(property.Name);
+            return Property(expression.ToProperty().Name);
         }
 
         public new void Spec(Action<ITypeScope<T>> spec)
