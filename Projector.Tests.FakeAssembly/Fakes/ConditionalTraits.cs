@@ -5,24 +5,24 @@
 
     public class ConditionalTraits : SharedTraitSpec
     {
-        public ConditionalTraits()
+        protected override void Build(ISharedScope scope)
         {
-            Types.Matching(t => t.Name.EndsWith("A")).Spec(s =>
+            scope.Types.Matching(t => t.Name.EndsWith("A")).Spec(t =>
             {
-                s.Apply(Traits.TypeA.Type);
-                s.Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.TypeA.PropertyA);
-                s.Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.TypeA.PropertyB);
+                t.Apply(Traits.TypeA.Type);
+                t.Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.TypeA.PropertyA);
+                t.Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.TypeA.PropertyB);
             });
 
-            Types.Matching(t => t.Name.EndsWith("B")).Spec(s =>
+            scope.Types.Matching(t => t.Name.EndsWith("B")).Spec(t =>
             {
-                s.Apply(Traits.TypeB.Type);
-                s.Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.TypeB.PropertyA);
-                s.Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.TypeB.PropertyB);
+                t.Apply(Traits.TypeB.Type);
+                t.Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.TypeB.PropertyA);
+                t.Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.TypeB.PropertyB);
             });
 
-            Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.Global.PropertyA);
-            Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.Global.PropertyB);
+            scope.Properties.Matching(p => p.Name.EndsWith("A")).Apply(Traits.Global.PropertyA);
+            scope.Properties.Matching(p => p.Name.EndsWith("B")).Apply(Traits.Global.PropertyB);
         }
     }
 }

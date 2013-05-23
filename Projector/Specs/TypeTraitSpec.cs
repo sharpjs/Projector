@@ -1,7 +1,6 @@
 ﻿namespace Projector.Specs
 {
     using System;
-    using System.Linq.Expressions;
     using Projector.ObjectModel;
 
     public abstract class TypeTraitSpec<T> : TraitSpec
@@ -13,30 +12,9 @@
             scope = new TypeScope<T>();
         }
 
-        protected IPropertyCut Properties
-        {
-            get { return scope.Properties; }
-        }
+        internal override void Build() { Build(scope); }
 
-        protected IPropertyScope Property(string name)
-        {
-            return scope.Property(name);
-        }
-
-        protected IPropertyScope Property(Expression<Func<T, object>> expression)
-        {
-            return scope.Property(expression);
-        }
-
-        protected ITraitScope Apply(object trait)
-        {
-            return scope.Apply(trait);
-        }
-
-        protected ITraitScope Apply(Func<object> factory)
-        {
-            return scope.Apply(factory);
-        }
+        protected abstract void Build(ITypeScope<T> scope);
 
         internal sealed override void ProvideScopes(
             ProjectionType       projectionType,

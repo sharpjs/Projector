@@ -3,10 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using System.Reflection;
     using Projector.ObjectModel;
 
-    internal class TypeScope : TraitScope, ITypeScopeBlock
+    internal class TypeScope : TraitScope, ITypeBlock
     {
         private List<PropertyCut>                 generalPropertyScopes;
         private Dictionary<string, PropertyScope> specificPropertyScopes;
@@ -70,7 +69,7 @@
         }
     }
 
-    internal class TypeScope<T> : TypeScope, ITypeScopeBlock<T>
+    internal class TypeScope<T> : TypeScope, ITypeBlock<T>
     {
         internal TypeScope() { }
 
@@ -79,7 +78,7 @@
             return Property(expression.ToProperty().Name);
         }
 
-        public new void Spec(Action<ITypeScope<T>> spec)
+        public void Spec(Action<ITypeScope<T>> spec)
         {
             if (spec == null)
                 throw Error.ArgumentNull("spec");

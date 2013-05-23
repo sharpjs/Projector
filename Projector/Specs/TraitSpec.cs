@@ -10,9 +10,11 @@
 
         internal static TraitSpec CreateInstance(Type type)
         {
+            TraitSpec spec;
+
             try
             {
-                return (TraitSpec) Activator.CreateInstance(type);
+                spec = (TraitSpec) Activator.CreateInstance(type);
             }
             catch (TargetInvocationException e)
             {
@@ -24,7 +26,12 @@
                 // Some other problem (visibility, security, etc.)
                 throw Error.TraitSpecCreateFailed(type, e);
             }
+
+            spec.Build();
+            return spec;
         }
+
+        internal abstract void Build();
 
         internal abstract void ProvideScopes
         (

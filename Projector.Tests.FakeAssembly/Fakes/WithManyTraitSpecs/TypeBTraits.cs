@@ -4,7 +4,7 @@
 
     public class TypeBTraits : TypeTraitSpec<ITypeB>
     {
-        public TypeBTraits()
+        protected override void Build(ITypeScope<ITypeB> scope)
         {
         }
     }

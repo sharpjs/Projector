@@ -2,50 +2,52 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Projector.ObjectModel;
 
     // A collection of traits that apply multiple types
     internal class TypeCut : TypeScope, ITypeCut
     {
-        private List<Func<ProjectionType, bool>> predicates;
+        private List<ITypeRestriction> restrictions;
 
         internal TypeCut() { }
 
         public ITypeCut OfKind(TypeKind kind)
         {
-            return Restrict(t => t.Kind == kind);
+            return Restrict(new TypeKindRestriction(kind));
         }
 
         public ITypeCut OfKind(params TypeKind[] kinds)
         {
-            if (kinds == null)
-                throw Error.ArgumentNull("kinds");
-
-            return Restrict(t => kinds.Contains(t.Kind));
+            return Restrict(new TypeKindsRestriction(kinds));
         }
 
         public ITypeCut Matching(Func<ProjectionType, bool> predicate)
         {
-            if (predicate == null)
-                throw Error.ArgumentNull("predicate");
-
-            return Restrict(predicate);
+            return Restrict(new TypeMatchesRestriction(predicate));
         }
 
-        protected TypeCut Restrict(Func<ProjectionType, bool> predicate)
+        public ITypeCut Matching(ITypeRestriction restriction)
         {
-            (predicates ?? (predicates = new List<Func<ProjectionType, bool>>()))
-                .Add(predicate);
+            if (restriction == null)
+                throw Error.ArgumentNull("restriction");
+
+            return Restrict(restriction);
+        }
+
+        protected TypeCut Restrict(ITypeRestriction restriction)
+        {
+            (restrictions ?? (restrictions = new List<ITypeRestriction>()))
+                .Add(restriction);
+
             return this;
         }
 
         internal bool AppliesTo(ProjectionType type)
         {
-            var predicates = this.predicates;
-            if (predicates != null)
-                foreach (var predicate in predicates)
-                    if (!predicate(type))
+            var restrictions = this.restrictions;
+            if (restrictions != null)
+                foreach (var restriction in restrictions)
+                    if (!restriction.AppliesTo(type))
                         return false;
 
             return true;

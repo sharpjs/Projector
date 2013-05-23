@@ -5,8 +5,13 @@
 
     internal class FakeTraitSpec : TraitSpec
     {
-        internal override void ProvideScopes(
+        internal sealed override void ProvideScopes(
             ProjectionType projectionType, Type underlyingType, ITypeScopeAggregator action)
+        {
+            // Stub only
+        }
+
+        internal sealed override void Build()
         {
             // Stub only
         }

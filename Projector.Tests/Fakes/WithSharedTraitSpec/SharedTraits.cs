@@ -5,16 +5,16 @@
 
     public class SharedTraits : SharedTraitSpec
     {
-        public SharedTraits()
+        protected override void Build(ISharedScope scope)
         {
-            Type<ITypeA>().Spec(t =>
+            scope.Type<ITypeA>().Spec(t =>
             {
                 t.Apply(Traits.TypeA);
                 t.Property(o => o.PropertyA).Apply(Traits.PropertyA);
                 t.Property(o => o.PropertyB).Apply(Traits.PropertyB);
             });
 
-            Type<ITypeB>().Apply(Traits.TypeB);
+            scope.Type<ITypeB>().Apply(Traits.TypeB);
         }
     }
 }

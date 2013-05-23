@@ -36,16 +36,16 @@
             return Is.EqualTo(items);
         }
 
-        protected static ProjectionType _anyType;
-        protected static ProjectionType AnyType
-        {
-            get { return _anyType ?? (_anyType = TypeOf<IAny>()); }
-        }
+        //private static ProjectionType _anyType;
+        //protected static ProjectionType AnyType
+        //{
+        //    get { return _anyType ?? (_anyType = TypeOf<IAny>()); }
+        //}
 
-        protected static ProjectionType _anyStructureType;
-        protected static ProjectionType AnyStructureType
-        {
-            get { return _anyStructureType ?? (_anyStructureType = TypeOf<IAny>()); }
-        }
+        //private static ProjectionType _anyStructureType;
+        //protected static ProjectionType AnyStructureType
+        //{
+        //    get { return _anyStructureType ?? (_anyStructureType = TypeOf<IAny>()); }
+        //}
     }
 }

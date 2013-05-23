@@ -5,11 +5,11 @@
 
     public class TypeATraits : TypeTraitSpec<WithNoTraitSpecs.ITypeA>
     {
-        public TypeATraits()
+        protected override void Build(ITypeScope<WithNoTraitSpecs.ITypeA> scope)
         {
-            Apply(Traits.TypeA);
-            Property(o => o.PropertyA).Apply(Traits.PropertyA);
-            Property(o => o.PropertyB).Apply(Traits.PropertyB);
+            scope.Apply(Traits.TypeA);
+            scope.Property(o => o.PropertyA).Apply(Traits.PropertyA);
+            scope.Property(o => o.PropertyB).Apply(Traits.PropertyB);
         }
     }
 }
