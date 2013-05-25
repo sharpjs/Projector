@@ -2,59 +2,114 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using System.Reflection;
     using NUnit.Framework;
     using Projector.ObjectModel;
 
     [TestFixture]
     public class TypeCutTests : ProjectionTestsBase
     {
-        private TypeCut TypeCut { get; set; }
+        private TypeCut Cut { get; set; }
 
         [SetUp]
         public void SetUp()
         {
-            TypeCut = new TypeCut();
+            Cut = new TypeCut();
         }
 
         [Test]
         public void Initially()
         {
-            Assert.That(TypeCut.AppliesTo(TypeOf<IAny>()), Is.True);
+            Assert.That(Cut.AppliesTo(TypeOf<IAny>()), Is.True);
         }
 
         [Test]
-        public void OfKind_Single_Applies_True()
+        public void OfKind_Single()
         {
-            TypeCut.OfKind(TypeKind.Array);
+            Cut.OfKind(TypeKind.Array);
 
-            Assert.That(TypeCut.AppliesTo(TypeOf<string[]>()), Is.True);
+            Assert.That(Cut.AppliesTo(TypeOf<IAny[]>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny  >()), Is.False);
         }
 
         [Test]
-        public void OfKind_Single_AppliesTo_False()
+        public void OfKind_Multiple()
         {
-            TypeCut.OfKind(TypeKind.Array);
+            Cut.OfKind(TypeKind.Array, TypeKind.List);
 
-            Assert.That(TypeCut.AppliesTo(TypeOf<string  >()), Is.False);
+            Assert.That(Cut.AppliesTo(TypeOf<      IAny[]>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IList<IAny> >()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<      IAny  >()), Is.False);
         }
 
         [Test]
-        public void OfKind_Array_Applies_True()
+        public void OfKind_Multiple_Null()
         {
-            TypeCut.OfKind(TypeKind.Array, TypeKind.List);
-
-            Assert.That(TypeCut.AppliesTo(TypeOf<string[]     >()), Is.True);
-            Assert.That(TypeCut.AppliesTo(TypeOf<IList<string>>()), Is.True);
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.OfKind(null as TypeKind[])
+            )
+            .ForParameter("kinds");
         }
 
         [Test]
-        public void OfKind_Array_AppliesTo_False()
+        public void Matching_Predicate()
         {
-            TypeCut.OfKind(TypeKind.Array, TypeKind.List);
+            Cut.Matching(t => t.UnderlyingType == typeof(TestType));
 
-            Assert.That(TypeCut.AppliesTo(TypeOf<string>()), Is.False);
+            Assert.That(Cut.AppliesTo(TypeOf<TestType>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny    >()), Is.False);
+        }
+
+        [Test]
+        public void Matching_Predicate_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.Matching(null as Func<ProjectionType, bool>)
+            )
+            .ForParameter("predicate");
+        }
+
+        [Test]
+        public void Matching_Restriction()
+        {
+            Cut.Matching(new IsTestTypeRestriction());
+
+            Assert.That(Cut.AppliesTo(TypeOf<TestType>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny    >()), Is.False);
+        }
+
+        [Test]
+        public void Matching_Restriction_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.Matching(null as ITypeRestriction)
+            )
+            .ForParameter("restriction");
+        }
+
+        [Test]
+        public void WithMultipleRestrictions()
+        {
+            Cut
+                .OfKind(TypeKind.Structure)
+                .Matching(t => t.Name.Contains("Test"));
+
+            Assert.That(Cut.AppliesTo(TypeOf<ITestType>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<TestType >()), Is.False);
+            Assert.That(Cut.AppliesTo(TypeOf<IAny     >()), Is.False);
+        }
+
+        private interface ITestType { }
+        private class      TestType { }
+
+        private class IsTestTypeRestriction : ITypeRestriction
+        {
+            public bool AppliesTo(ProjectionType type)
+            {
+                return type.UnderlyingType == typeof(TestType);
+            }
         }
     }
 }

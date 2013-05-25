@@ -4,6 +4,6 @@
 
     public interface IPropertyRestriction
     {
-        bool AppliesTo(ProjectionProperty type);
+        bool AppliesTo(ProjectionProperty property);
     }
 }

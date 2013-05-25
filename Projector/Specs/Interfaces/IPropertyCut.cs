@@ -12,5 +12,6 @@
         IPropertyCut Named(params string[] names);
 
         IPropertyCut Matching(Func<ProjectionProperty, bool> predicate);
+        IPropertyCut Matching(IPropertyRestriction restriction);
     }
 }

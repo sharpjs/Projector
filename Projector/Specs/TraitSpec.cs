@@ -19,7 +19,7 @@
             catch (TargetInvocationException e)
             {
                 // Constructor threw an exception
-                throw Error.TraitSpecCreateFailed(type, e.InnerException ?? e);
+                throw Error.TraitSpecCreateFailed(type, e.InnerException);
             }
             catch (Exception e)
             {

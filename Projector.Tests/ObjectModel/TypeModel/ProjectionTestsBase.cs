@@ -1,9 +1,11 @@
 ﻿namespace Projector.ObjectModel
 {
+    using System;
+    using System.Linq.Expressions;
     using NUnit.Framework;
     using NUnit.Framework.Constraints;
-    using Projector.ObjectModel;
 
+    // TODO: Move this to root Projector namespace
     public abstract class ProjectionTestsBase
     {
         protected static ProjectionFactory Factory
@@ -26,6 +28,11 @@
             return TypeOf<T>().Properties;
         }
 
+        protected static ProjectionProperty PropertyOf<T>(Expression<Func<T, object>> expression)
+        {
+            return PropertyOf<T>(expression.ToProperty().Name);
+        }
+
         protected static ProjectionProperty PropertyOf<T>(string name)
         {
             return PropertiesOf<T>()[name];
@@ -35,17 +42,5 @@
         {
             return Is.EqualTo(items);
         }
-
-        //private static ProjectionType _anyType;
-        //protected static ProjectionType AnyType
-        //{
-        //    get { return _anyType ?? (_anyType = TypeOf<IAny>()); }
-        //}
-
-        //private static ProjectionType _anyStructureType;
-        //protected static ProjectionType AnyStructureType
-        //{
-        //    get { return _anyStructureType ?? (_anyStructureType = TypeOf<IAny>()); }
-        //}
     }
 }

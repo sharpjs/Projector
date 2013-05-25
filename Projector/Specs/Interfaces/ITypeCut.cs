@@ -9,6 +9,6 @@
         ITypeCut OfKind(params TypeKind[] kinds);
 
         ITypeCut Matching(Func<ProjectionType, bool> predicate);
-        //ITypeCut Matching(ITypeRestriction restriction);
+        ITypeCut Matching(ITypeRestriction restriction);
     }
 }

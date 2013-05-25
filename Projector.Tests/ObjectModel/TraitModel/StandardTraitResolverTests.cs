@@ -52,7 +52,7 @@
         {
             Assert.Throws<ArgumentNullException>
             (
-                () => Resolver.Resolve(null, typeof(object))
+                () => Resolver.Resolve(null, typeof(IAny))
             );
         }
 
@@ -61,7 +61,7 @@
         {
             Assert.Throws<ArgumentNullException>
             (
-                () => Resolver.Resolve(TypeOf<object>(), null)
+                () => Resolver.Resolve(TypeOf<IAny>(), null)
             );
         }
     }

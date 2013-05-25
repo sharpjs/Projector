@@ -81,10 +81,14 @@
     <Compile Include="ObjectModel\TypeModel\TraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs\Restrictions\PropertyKindRestriction.cs" />
+    <Compile Include="Specs\Restrictions\PropertyKindsRestriction.cs" />
+    <Compile Include="Specs\Restrictions\PropertyMatchesRestriction.cs" />
+    <Compile Include="Specs\Restrictions\PropertyNameRestriction.cs" />
     <Compile Include="Specs\Restrictions\TypeKindsRestriction.cs" />
     <Compile Include="Specs\Restrictions\TypeKindRestriction.cs" />
     <Compile Include="Specs\Restrictions\TypeMatchesRestriction.cs" />
-    <Compile Include="Specs\Restrictions\TypeNamedRestriction.cs" />
+    <Compile Include="Specs\Restrictions\TypeNameRestriction.cs" />
     <Compile Include="Specs\SharedScope.cs" />
     <Compile Include="Utility\IFluent.cs" />
     <Compile Include="Specs\Interfaces\ISharedScope.cs" />

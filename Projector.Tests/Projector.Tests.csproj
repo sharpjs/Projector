@@ -82,12 +82,15 @@
     <Compile Include="ObjectModel\TypeModel\ProjectionTypeTests.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKindTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs\FakeTypeScopeAggregator.cs" />
+    <Compile Include="Specs\PropertyCutTests.cs" />
     <Compile Include="Specs\TraitScopeTests.cs" />
     <Compile Include="Specs\TraitSpecExceptionTests.cs" />
     <Compile Include="Specs\TraitSpecTests.cs" />
     <Compile Include="Specs\FakeTraitSpec.cs" />
     <Compile Include="Specs\TypeCutTests.cs" />
     <Compile Include="Specs\TypeScopeTests.cs" />
+    <Compile Include="Specs\TypeTraitSpecTests.cs" />
     <Compile Include="Utility\CellEnumeratorTests.cs" />
     <Compile Include="Utility\CellListTests.cs" />
     <Compile Include="Utility\CellTests.cs" />

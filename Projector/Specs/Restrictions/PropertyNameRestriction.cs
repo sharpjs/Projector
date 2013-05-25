@@ -3,20 +3,20 @@
     using System;
     using Projector.ObjectModel;
 
-    internal sealed class TypeNamedRestriction : ITypeRestriction
+    internal sealed class PropertyNameRestriction : IPropertyRestriction
     {
         private readonly string           name;
         private readonly StringComparison comparison;
 
-        public TypeNamedRestriction(string name, StringComparison comparison)
+        public PropertyNameRestriction(string name, StringComparison comparison)
         {
             this.name       = name;
             this.comparison = comparison;
         }
 
-        public bool AppliesTo(ProjectionType type)
+        public bool AppliesTo(ProjectionProperty property)
         {
-            return type.Name.Equals(name, comparison);
+            return property.Name.Equals(name, comparison);
         }
 
         public override string ToString()

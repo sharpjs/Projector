@@ -8,57 +8,58 @@
     // A collection of traits that apply to multiple properties
     internal class PropertyCut : PropertyScope, IPropertyCut
     {
-        private List<Func<ProjectionProperty, bool>> predicates;
+        private List<IPropertyRestriction> restrictions;
 
         internal PropertyCut() { }
 
         public IPropertyCut OfKind(TypeKind kind)
         {
-            return Restrict(p => p.PropertyType.Kind == kind);
+            return Restrict(new PropertyKindRestriction(kind));
         }
 
         public IPropertyCut OfKind(params TypeKind[] kinds)
         {
-            if (kinds == null)
-                throw Error.ArgumentNull("kinds");
-
-            return Restrict(p => kinds.Contains(p.PropertyType.Kind));
+            return Restrict(new PropertyKindsRestriction(kinds));
         }
 
         public IPropertyCut Named(string name)
         {
-            return Restrict(p => p.Name.Equals(name));
+            return Restrict(new PropertyNameRestriction(name, StringComparison.Ordinal));
         }
 
         public IPropertyCut Named(params string[] names)
         {
-            if (names == null)
-                throw Error.ArgumentNull("names");
-
-            return Restrict(p => names.Contains(p.Name));
+            // TODO: Fix
+            return Restrict(new PropertyMatchesRestriction(p => names.Contains(p.Name)));
         }
 
         public IPropertyCut Matching(Func<ProjectionProperty, bool> predicate)
         {
-            if (predicate == null)
-                throw Error.ArgumentNull("predicate");
-
-            return Restrict(predicate);
+            return Restrict(new PropertyMatchesRestriction(predicate));
         }
 
-        protected PropertyCut Restrict(Func<ProjectionProperty, bool> predicate)
+        public IPropertyCut Matching(IPropertyRestriction restriction)
         {
-            (predicates ?? (predicates = new List<Func<ProjectionProperty, bool>>()))
-                .Add(predicate);
+            if (restriction == null)
+                throw Error.ArgumentNull("restriction");
+
+            return Restrict(restriction);
+        }
+
+        protected PropertyCut Restrict(IPropertyRestriction restriction)
+        {
+            (restrictions ?? (restrictions = new List<IPropertyRestriction>()))
+                .Add(restriction);
+
             return this;
         }
 
         internal bool AppliesTo(ProjectionProperty property)
         {
-            var predicates = this.predicates;
-            if (predicates != null)
-                foreach (var predicate in predicates)
-                    if (!predicate(property))
+            var restrictions = this.restrictions;
+            if (restrictions != null)
+                foreach (var restriction in restrictions)
+                    if (!restriction.AppliesTo(property))
                         return false;
 
             return true;

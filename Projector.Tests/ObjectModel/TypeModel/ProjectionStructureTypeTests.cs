@@ -63,12 +63,12 @@
         [TestFixture]
         public class WithNoBaseTypes
         {
-            public interface IAny { }
+            public interface IRoot { }
 
             [Test]
             public void BaseTypes()
             {
-                Assert.That(TypeOf<IAny>().BaseTypes, Is.Empty);
+                Assert.That(TypeOf<IRoot>().BaseTypes, Is.Empty);
             }
         }
 
