@@ -84,6 +84,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specs\FakeTypeScopeAggregator.cs" />
     <Compile Include="Specs\PropertyCutTests.cs" />
+    <Compile Include="Specs\Restrictions\NamesRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\PredicateRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\NameRegexRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\NameEqualsRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\KindsRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\KindRestrictionTests.cs" />
     <Compile Include="Specs\TraitScopeTests.cs" />
     <Compile Include="Specs\TraitSpecExceptionTests.cs" />
     <Compile Include="Specs\TraitSpecTests.cs" />

@@ -34,6 +34,54 @@
         }
 
         [Test]
+        public void Named_Single()
+        {
+            Cut.Named("ArrayProperty");
+
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.ArrayProperty)), Is.True );
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.OtherProperty)), Is.False);
+        }
+
+        [Test]
+        public void Named_Multiple()
+        {
+            Cut.Named("ArrayProperty", "ListProperty");
+
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.ArrayProperty)), Is.True );
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.ListProperty )), Is.True );
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.OtherProperty)), Is.False);
+        }
+
+        [Test]
+        public void Named_Multiple_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.Named(null as string[])
+            )
+            .ForParameter("names");
+        }
+
+        [Test]
+        public void NamedLike()
+        {
+            Cut.NamedLike("^Array");
+
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.ArrayProperty)), Is.True );
+            Assert.That(Cut.AppliesTo(PropertyOf<IStructure>(o => o.OtherProperty)), Is.False);
+        }
+
+        [Test]
+        public void NamedLike_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.NamedLike(null)
+            )
+            .ForParameter("pattern");
+        }
+
+        [Test]
         public void OfKind_Single()
         {
             Cut.OfKind(TypeKind.Array);

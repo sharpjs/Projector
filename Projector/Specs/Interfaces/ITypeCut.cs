@@ -5,6 +5,11 @@
 
     public interface ITypeCut : ITypeBlock
     {
+        ITypeCut Named(string name);
+        ITypeCut Named(params string[] names);
+
+        ITypeCut NamedLike(string pattern);
+
         ITypeCut OfKind(TypeKind kind);
         ITypeCut OfKind(params TypeKind[] kinds);
 

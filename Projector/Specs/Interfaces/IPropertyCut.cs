@@ -5,11 +5,13 @@
 
     public interface IPropertyCut : IPropertyScope
     {
-        IPropertyCut OfKind(TypeKind kind);
-        IPropertyCut OfKind(params TypeKind[] kinds);
-
         IPropertyCut Named(string name);
         IPropertyCut Named(params string[] names);
+
+        IPropertyCut NamedLike(string pattern);
+
+        IPropertyCut OfKind(TypeKind kind);
+        IPropertyCut OfKind(params TypeKind[] kinds);
 
         IPropertyCut Matching(Func<ProjectionProperty, bool> predicate);
         IPropertyCut Matching(IPropertyRestriction restriction);

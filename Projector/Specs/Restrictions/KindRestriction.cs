@@ -2,13 +2,18 @@
 {
     using Projector.ObjectModel;
 
-    internal sealed class PropertyKindRestriction : IPropertyRestriction
+    internal sealed class KindRestriction : ITypeRestriction, IPropertyRestriction
     {
         private readonly TypeKind kind;
 
-        public PropertyKindRestriction(TypeKind kind)
+        public KindRestriction(TypeKind kind)
         {
             this.kind = kind;
+        }
+
+        public bool AppliesTo(ProjectionType type)
+        {
+            return type.Kind == kind;
         }
 
         public bool AppliesTo(ProjectionProperty property)

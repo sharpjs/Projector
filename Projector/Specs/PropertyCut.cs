@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using Projector.ObjectModel;
 
     // A collection of traits that apply to multiple properties
@@ -14,28 +15,32 @@
 
         public IPropertyCut OfKind(TypeKind kind)
         {
-            return Restrict(new PropertyKindRestriction(kind));
+            return Restrict(new KindRestriction(kind));
         }
 
         public IPropertyCut OfKind(params TypeKind[] kinds)
         {
-            return Restrict(new PropertyKindsRestriction(kinds));
+            return Restrict(new KindsRestriction(kinds));
         }
 
         public IPropertyCut Named(string name)
         {
-            return Restrict(new PropertyNameRestriction(name, StringComparison.Ordinal));
+            return Restrict(new NameRestriction(name, StringComparison.Ordinal));
         }
 
         public IPropertyCut Named(params string[] names)
         {
-            // TODO: Fix
-            return Restrict(new PropertyMatchesRestriction(p => names.Contains(p.Name)));
+            return Restrict(new NamesRestriction(names, StringComparison.Ordinal));
+        }
+
+        public IPropertyCut NamedLike(string pattern)
+        {
+            return Restrict(new NameRegexRestriction(pattern, RegexOptions.CultureInvariant));
         }
 
         public IPropertyCut Matching(Func<ProjectionProperty, bool> predicate)
         {
-            return Restrict(new PropertyMatchesRestriction(predicate));
+            return Restrict(new PropertyPredicateRestriction(predicate, null));
         }
 
         public IPropertyCut Matching(IPropertyRestriction restriction)

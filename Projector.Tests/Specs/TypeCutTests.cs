@@ -23,6 +23,54 @@
         }
 
         [Test]
+        public void Named_Single()
+        {
+            Cut.Named("IAny[]");
+
+            Assert.That(Cut.AppliesTo(TypeOf<IAny[]>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny  >()), Is.False);
+        }
+
+        [Test]
+        public void Named_Multiple()
+        {
+            Cut.Named("IAny[]", "IList<IAny>");
+
+            Assert.That(Cut.AppliesTo(TypeOf<IAny[]     >()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IList<IAny>>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny       >()), Is.False);
+        }
+
+        [Test]
+        public void Named_Multiple_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.Named(null as string[])
+            )
+            .ForParameter("names");
+        }
+
+        [Test]
+        public void NamedLike()
+        {
+            Cut.NamedLike("\\[\\]$");
+
+            Assert.That(Cut.AppliesTo(TypeOf<IAny[]>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny  >()), Is.False);
+        }
+
+        [Test]
+        public void NamedLike_Null()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Cut.NamedLike(null)
+            )
+            .ForParameter("pattern");
+        }
+
+        [Test]
         public void OfKind_Single()
         {
             Cut.OfKind(TypeKind.Array);
@@ -36,9 +84,9 @@
         {
             Cut.OfKind(TypeKind.Array, TypeKind.List);
 
-            Assert.That(Cut.AppliesTo(TypeOf<      IAny[]>()), Is.True );
-            Assert.That(Cut.AppliesTo(TypeOf<IList<IAny> >()), Is.True );
-            Assert.That(Cut.AppliesTo(TypeOf<      IAny  >()), Is.False);
+            Assert.That(Cut.AppliesTo(TypeOf<IAny[]     >()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IList<IAny>>()), Is.True );
+            Assert.That(Cut.AppliesTo(TypeOf<IAny       >()), Is.False);
         }
 
         [Test]
