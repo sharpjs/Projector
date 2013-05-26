@@ -87,7 +87,7 @@
     <Compile Include="Specs\Restrictions\NamesRestrictionTests.cs" />
     <Compile Include="Specs\Restrictions\PredicateRestrictionTests.cs" />
     <Compile Include="Specs\Restrictions\NameRegexRestrictionTests.cs" />
-    <Compile Include="Specs\Restrictions\NameEqualsRestrictionTests.cs" />
+    <Compile Include="Specs\Restrictions\NameRestrictionTests.cs" />
     <Compile Include="Specs\Restrictions\KindsRestrictionTests.cs" />
     <Compile Include="Specs\Restrictions\KindRestrictionTests.cs" />
     <Compile Include="Specs\TraitScopeTests.cs" />

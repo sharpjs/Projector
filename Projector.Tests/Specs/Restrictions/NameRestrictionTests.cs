@@ -4,9 +4,29 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class NameEqualsRestrictionTests
+    public class NameRestrictionTests
     {
         // Other tests in xxxxCutTests
+
+        [Test]
+        public void OnNullTypeCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as ITypeCut).Named("A")
+            )
+            .ForParameter("cut");
+        }
+
+        [Test]
+        public void OnNullPropertyCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as IPropertyCut).Named("A")
+            )
+            .ForParameter("cut");
+        }
 
         [Test]
         public void Construct_NullName()

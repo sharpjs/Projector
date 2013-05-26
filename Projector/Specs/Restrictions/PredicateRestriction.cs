@@ -28,4 +28,34 @@
             return description ?? "matches predicate";
         }
     }
+
+    internal sealed class PropertyPredicateRestriction
+        : PredicateRestriction<ProjectionProperty>, IPropertyRestriction
+    {
+        public PropertyPredicateRestriction(Func<ProjectionProperty, bool> predicate, string description)
+            : base(predicate, description) { }
+    }
+
+    internal sealed class TypePredicateRestriction
+        : PredicateRestriction<ProjectionType>, ITypeRestriction
+    {
+        public TypePredicateRestriction(Func<ProjectionType, bool> predicate, string description)
+            : base(predicate, description) { }
+    }
+
+    partial class TypeCutExtensions
+    {
+        public static ITypeCut Matching(this ITypeCut cut, Func<ProjectionType, bool> predicate)
+        {
+            return Required(cut).Matching(new TypePredicateRestriction(predicate, null));
+        }
+    }
+
+    partial class PropertyCutExtensions
+    {
+        public static IPropertyCut Matching(this IPropertyCut cut, Func<ProjectionProperty, bool> predicate)
+        {
+            return Required(cut).Matching(new PropertyPredicateRestriction(predicate, null));
+        }
+    }
 }

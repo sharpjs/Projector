@@ -41,4 +41,20 @@
                 .ToString();
         }
     }
+
+    partial class TypeCutExtensions
+    {
+        public static ITypeCut OfKind(this ITypeCut cut, params TypeKind[] kinds)
+        {
+            return Required(cut).Matching(new KindsRestriction(kinds));
+        }
+    }
+
+    partial class PropertyCutExtensions
+    {
+        public static IPropertyCut OfKind(this IPropertyCut cut, params TypeKind[] kinds)
+        {
+            return Required(cut).Matching(new KindsRestriction(kinds));
+        }
+    }
 }

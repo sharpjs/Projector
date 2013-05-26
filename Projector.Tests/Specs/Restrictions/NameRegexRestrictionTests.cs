@@ -1,5 +1,6 @@
 ﻿namespace Projector.Specs
 {
+    using System;
     using System.Text.RegularExpressions;
     using NUnit.Framework;
 
@@ -7,6 +8,26 @@
     public class NameRegexRestrictionTests
     {
         // Other tests in xxxxCutTests
+
+        [Test]
+        public void OnNullTypeCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as ITypeCut).NamedLike("A")
+            )
+            .ForParameter("cut");
+        }
+
+        [Test]
+        public void OnNullPropertyCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as IPropertyCut).NamedLike("A")
+            )
+            .ForParameter("cut");
+        }
 
         [Test]
         public void ToStringMethod()

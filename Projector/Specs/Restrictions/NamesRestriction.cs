@@ -47,4 +47,20 @@
                 .ToString();
         }
     }
+
+    partial class TypeCutExtensions
+    {
+        public static ITypeCut Named(this ITypeCut cut, params string[] names)
+        {
+            return Required(cut).Matching(new NamesRestriction(names, StringComparison.Ordinal));
+        }
+    }
+
+    partial class PropertyCutExtensions
+    {
+        public static IPropertyCut Named(this IPropertyCut cut, params string[] names)
+        {
+            return Required(cut).Matching(new NamesRestriction(names, StringComparison.Ordinal));
+        }
+    }
 }

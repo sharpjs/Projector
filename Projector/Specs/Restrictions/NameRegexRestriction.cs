@@ -32,4 +32,20 @@
             );
         }
     }
+
+    partial class TypeCutExtensions
+    {
+        public static ITypeCut NamedLike(this ITypeCut cut, string pattern)
+        {
+            return Required(cut).Matching(new NameRegexRestriction(pattern, RegexOptions.CultureInvariant));
+        }
+    }
+
+    partial class PropertyCutExtensions
+    {
+        public static IPropertyCut NamedLike(this IPropertyCut cut, string pattern)
+        {
+            return Required(cut).Matching(new NameRegexRestriction(pattern, RegexOptions.CultureInvariant));
+        }
+    }
 }

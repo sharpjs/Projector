@@ -1,5 +1,6 @@
 ﻿namespace Projector.Specs
 {
+    using System;
     using NUnit.Framework;
     using Projector.ObjectModel;
 
@@ -7,6 +8,26 @@
     public class PredicateRestrictionTests
     {
         // Other tests in xxxxCutTests
+
+        [Test]
+        public void OnNullTypeCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as ITypeCut).Matching(t => true)
+            )
+            .ForParameter("cut");
+        }
+
+        [Test]
+        public void OnNullPropertyCut()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => (null as IPropertyCut).Matching(t => true)
+            )
+            .ForParameter("cut");
+        }
 
         [Test]
         public void ToStringMethod_Default()

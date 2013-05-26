@@ -81,15 +81,15 @@
     <Compile Include="ObjectModel\TypeModel\TraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\TypeKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs\PropertyCutExtensions.cs" />
     <Compile Include="Specs\Restrictions\NamesRestriction.cs" />
     <Compile Include="Specs\Restrictions\PredicateRestriction.cs" />
     <Compile Include="Specs\Restrictions\NameRegexRestriction.cs" />
     <Compile Include="Specs\Restrictions\KindRestriction.cs" />
     <Compile Include="Specs\Restrictions\KindsRestriction.cs" />
-    <Compile Include="Specs\Restrictions\PropertyPredicateRestriction.cs" />
     <Compile Include="Specs\Restrictions\NameRestriction.cs" />
-    <Compile Include="Specs\Restrictions\TypePredicateRestriction.cs" />
     <Compile Include="Specs\SharedScope.cs" />
+    <Compile Include="Specs\TypeCutExtensions.cs" />
     <Compile Include="Utility\IFluent.cs" />
     <Compile Include="Specs\Interfaces\ISharedScope.cs" />
     <Compile Include="Specs\Interfaces\IPropertyCut.cs" />

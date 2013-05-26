@@ -36,4 +36,20 @@
             );
         }
     }
+
+    partial class TypeCutExtensions
+    {
+        public static ITypeCut Named(this ITypeCut cut, string name)
+        {
+            return Required(cut).Matching(new NameRestriction(name, StringComparison.Ordinal));
+        }
+    }
+
+    partial class PropertyCutExtensions
+    {
+        public static IPropertyCut Named(this IPropertyCut cut, string name)
+        {
+            return Required(cut).Matching(new NameRestriction(name, StringComparison.Ordinal));
+        }
+    }
 }
