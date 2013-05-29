@@ -1,7 +1,6 @@
 ﻿namespace Projector.ObjectModel
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
 
     [DebuggerDisplay(@"\{Name = {Name}, FullName = {FullName}\}")]
@@ -10,6 +9,7 @@
         private readonly Type              type;
         private readonly TypeKind          kind;
         private readonly ProjectionFactory factory;
+        private          ITraitResolution  resolution;
 
         internal ProjectionType(Type type, TypeKind kind, ProjectionFactory factory)
             //: base(factory)
@@ -21,7 +21,9 @@
 
         internal override TraitAggregator CreateTraitAggregator()
         {
-            return new ProjectionTypeTraitAggregator(this);
+            var resolution = this.resolution ?? ResolveTraits();
+            this.resolution = null;
+            return new ProjectionTypeTraitAggregator(this, resolution);
         }
 
         internal override void InvokeInitializers()
@@ -155,6 +157,16 @@
         public override string ToString()
         {
             return type.GetPrettyName(true);
+        }
+
+        protected ITraitResolution TraitResolution
+        {
+            get { return resolution ?? (resolution = ResolveTraits()); }
+        }
+
+        private ITraitResolution ResolveTraits()
+        {
+            return factory.TraitResolver.Resolve(this, type);
         }
     }
 }

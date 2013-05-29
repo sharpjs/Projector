@@ -3,50 +3,38 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Reflection;
 
-    internal sealed class ProjectionPropertyTraitAggregator : TraitAggregator<ProjectionProperty, MemberKey>
+    internal sealed class ProjectionPropertyTraitAggregator
+        : TraitAggregator<ProjectionProperty, MemberKey>, ITraitAggregator
     {
-        private readonly PropertyInfo                 underlyingProperty;
         private readonly ProjectionPropertyCollection properties;
         private          List<ProjectionProperty>     overrides;
-        private          object[]                     declaredTraits;
+        private          List<object>                 declaredTraits;
 
-        private static System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty>
+        private static readonly ReadOnlyCollection<ProjectionProperty>
             NoOverrides = Array.AsReadOnly(new ProjectionProperty[0]);
 
-        public ProjectionPropertyTraitAggregator
-        (
-            ProjectionProperty           property,
-            PropertyInfo              underlyingProperty,
-            ProjectionPropertyCollection properties
-        )
-        : base(property)
+        internal ProjectionPropertyTraitAggregator(ProjectionProperty property, ProjectionPropertyCollection properties)
+            : base(property)
         {
-            this.underlyingProperty = underlyingProperty;
-            this.properties         = properties;
+            this.properties = properties;
         }
 
-        private System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty> Overrides
+        public ReadOnlyCollection<ProjectionProperty> Overrides
         {
             get { return overrides == null ? NoOverrides : overrides.AsReadOnly(); }
         }
 
-        public System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty> CollectOverrides()
+        void ITraitAggregator.Add(object trait)
         {
-            declaredTraits = underlyingProperty.GetCustomAttributes(false);
             OverrideAttribute overrideDirective;
 
-            for (var i = 0; i < declaredTraits.Length; i++)
-            {
-                if (null != (overrideDirective = declaredTraits[i] as OverrideAttribute))
-                {
-                    AddOverrideDirective(overrideDirective);
-                    declaredTraits[i] = null;
-                }
-            }
-
-            return Overrides;
+            if (trait == null)
+                return; // TODO: Should we be lenient if resolver provides a null trait?
+            else if (null != (overrideDirective = trait as OverrideAttribute))
+                AddOverrideDirective(overrideDirective);
+            else
+                QueueDeclaredTrait(trait);
         }
 
         private void AddOverrideDirective(OverrideAttribute directive)
@@ -58,24 +46,38 @@
                 Target
             );
 
+            var overrides = this.overrides;
             if (overrides == null)
-                overrides = new List<ProjectionProperty>();
+                overrides = this.overrides = new List<ProjectionProperty>();
             overrides.Add(oldProperty);
         }
 
-        protected override object[] GetDeclaredTraits(ProjectionProperty property)
+        private void QueueDeclaredTrait(object trait)
         {
-            return declaredTraits;
+            var declaredTraits = this.declaredTraits;
+            if (declaredTraits == null)
+                declaredTraits = this.declaredTraits = new List<object>();
+            declaredTraits.Add(trait);
         }
 
-        protected override object[] GetInheritableTraits(ProjectionProperty property)
+        public override void CollectDeclaredTraits()
         {
-            return property.InheritableTraits;
+            var declaredTraits = this.declaredTraits;
+            if (declaredTraits == null)
+                return;
+            foreach (var trait in declaredTraits)
+                CollectDeclaredTrait(trait);
+            this.declaredTraits = null;
         }
 
-        protected override IEnumerable<ProjectionProperty> GetInheritanceSources(ProjectionProperty property)
+        public override void CollectInheritedTraits()
         {
-            return overrides == null ? NoOverrides : overrides as IEnumerable<ProjectionProperty>;
+            var overrides = this.overrides;
+            if (overrides == null)
+                return;
+            foreach (var property in overrides)
+                CollectInheritedTraits(property);
+            this.overrides = null;
         }
 
         protected override MemberKey GetSourceKey(ProjectionProperty property)

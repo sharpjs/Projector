@@ -1,26 +1,33 @@
 ﻿namespace Projector.ObjectModel
 {
     using System;
-    using System.Collections.Generic;
 
-    internal sealed class ProjectionTypeTraitAggregator : TraitAggregator<ProjectionType, Type>
+    internal sealed class ProjectionTypeTraitAggregator
+        : TraitAggregator<ProjectionType, Type>, ITraitAggregator
     {
-        public ProjectionTypeTraitAggregator(ProjectionType type)
-            : base(type) { }
+        private ITraitResolution resolution;
 
-        protected override object[] GetDeclaredTraits(ProjectionType projectionType)
+        internal ProjectionTypeTraitAggregator(ProjectionType type, ITraitResolution resolution)
+            : base(type)
         {
-            return projectionType.UnderlyingType.GetCustomAttributes(false);
+            this.resolution = resolution;
         }
 
-        protected override object[] GetInheritableTraits(ProjectionType projectionType)
+        public override void CollectDeclaredTraits()
         {
-            return projectionType.InheritableTraits;
+            resolution.ProvideTypeTraits(this);
+            resolution = null;
         }
 
-        protected override IEnumerable<ProjectionType> GetInheritanceSources(ProjectionType projectionType)
+        void ITraitAggregator.Add(object trait)
         {
-            return projectionType.BaseTypes;
+            CollectDeclaredTrait(trait);
+        }
+
+        public override void CollectInheritedTraits()
+        {
+            foreach (var baseType in Target.BaseTypes)
+                CollectInheritedTraits(baseType);
         }
 
         protected override Type GetSourceKey(ProjectionType projectionType)

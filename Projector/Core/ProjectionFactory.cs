@@ -72,6 +72,14 @@
         //    get { return providersPublic; }
         //}
 
+        /// <summary>
+        ///   Gets the trait resolver that is configured for the factory.
+        /// </summary>
+        public ITraitResolver TraitResolver
+        {
+            get { return resolver; }
+        }
+
         //public T Create<T>()
         //{
         //    return (T) CreateCore(typeof(T), ProjectionContext.Default, 0, null, null);

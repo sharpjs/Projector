@@ -30,27 +30,30 @@
         }
 
         internal ProjectionProperty(PropertyInfo property, ProjectionStructureType declaringType,
-            ProjectionPropertyCollection properties, ProjectionFactory factory)
+            ProjectionPropertyCollection properties, ProjectionFactory factory, ITraitResolution resolution)
             //: base(factory)
         {
-            this.name           = property.Name;
-            this.declaringType  = declaringType;
-            this.propertyType   = factory.GetProjectionTypeUnsafe(property.PropertyType);
+            this.name          = property.Name;
+            this.declaringType = declaringType;
+            this.propertyType  = factory.GetProjectionTypeUnsafe(property.PropertyType);
 
             var getter = property.GetGetMethod();
             var setter = property.GetSetMethod();
             if (getter != null) { getterHandle = getter.MethodHandle; flags |= Flags.CanRead;  }
             if (setter != null) { setterHandle = setter.MethodHandle; flags |= Flags.CanWrite; }
 
-            aggregator = new ProjectionPropertyTraitAggregator(this, property, properties);
-            this.overrides = aggregator.CollectOverrides();
+            var aggregator = new ProjectionPropertyTraitAggregator(this, properties);
+            resolution.ProvidePropertyTraits(this, property, aggregator);
+
+            this.aggregator = aggregator;
+            this.overrides  = aggregator.Overrides;
         }
 
         internal override TraitAggregator CreateTraitAggregator()
         {
-            var value = aggregator;
-            aggregator = null;
-            return value;
+            var aggregator = this.aggregator;
+            this.aggregator = null;
+            return aggregator;
         }
 
         internal override void InvokeInitializers()

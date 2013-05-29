@@ -8,6 +8,8 @@
     //
     internal abstract class TraitAggregator
     {
+        protected TraitAggregator() { }
+
         public abstract void CollectDeclaredTraits();
         public abstract void CollectInheritedTraits();
         public abstract void ApplyDeferredTraits();
@@ -39,51 +41,35 @@
             get { return target; }
         }
 
-        public override void CollectDeclaredTraits()
+        public sealed override object[] InheritableTraits
         {
-            foreach (var trait in GetDeclaredTraits(target))
-                if (trait != null && ShouldCollect(trait)) // TODO: Can take out null check?
-                    AddTrait(trait, true);
+            get
+            {
+                var traits = this.inheritableTraits;
+                return traits == null ? NoTraits : traits.ToArray();
+            }
         }
 
-        public override void CollectInheritedTraits()
-        {
-            foreach (var source in GetInheritanceSources(target))
-            foreach (var trait  in GetInheritableTraits (source))
-                if (trait != null && ShouldInherit(trait.GetType(), source)) // TODO: Can take out null check?
-                    AddTrait(trait, false);
-        }
-
-        public override void ApplyDeferredTraits()
-        {
-            if (singletonTraits != null)
-                foreach (var item in singletonTraits.Values)
-                    target.Apply(item.Trait);
-        }
-
-        public override object[] InheritableTraits
-        {
-            get { return inheritableTraits == null ? NoTraits : inheritableTraits.ToArray(); }
-        }
-
-        private bool ShouldCollect(object trait)
+        protected void CollectDeclaredTrait(object trait)
         {
             InheritFromAttribute inheritDirective;
             SuppressAttribute    suppressDirective;
 
-            if (null != (inheritDirective = trait as InheritFromAttribute))
-            {
+            if (trait == null)
+                return; // TODO: Should we be lenient if resolver provides a null trait?
+            else if (null != (inheritDirective = trait as InheritFromAttribute))
                 AddInheritDirective(inheritDirective);
-                return false;
-            }
-
-            if (null != (suppressDirective = trait as SuppressAttribute))
-            {
+            else if (null != (suppressDirective = trait as SuppressAttribute))
                 AddSuppressDirective(suppressDirective);
-                return false;
-            }
+            else
+                AddTrait(trait, true);
+        }
 
-            return true;
+        protected void CollectInheritedTraits(TMetaObject source)
+        {
+            foreach (var trait in source.InheritableTraits)
+                if (trait != null && ShouldInherit(trait.GetType(), source))
+                    AddTrait(trait, false);
         }
 
         private void AddTrait(object trait, bool declared)
@@ -109,17 +95,18 @@
             SingletonTrait singleton;
             var traitType = trait.GetType();
 
+            var singletonTraits = this.singletonTraits;
             if (singletonTraits == null)
-                singletonTraits = new Dictionary<Type, SingletonTrait>();
+                singletonTraits = this.singletonTraits = new Dictionary<Type, SingletonTrait>();
 
             if (declared || !singletonTraits.TryGetValue(traitType, out singleton))
             {
                 singletonTraits[traitType] = new SingletonTrait(trait, declared);
                 return true;
             }
-            else
+            else // !declared && singleton found
             {
-                if (!(singleton.Declared || singleton.Trait == trait))
+                if (!singleton.Declared && singleton.Trait != trait)
                     HandleTraitConflict(traitType);
                 return false;
             }
@@ -127,57 +114,70 @@
 
         private void AddInheritableTrait(object trait)
         {
+            var inheritableTraits = this.inheritableTraits;
             if (inheritableTraits == null)
-                inheritableTraits = new List<object>();
+                inheritableTraits = this.inheritableTraits = new List<object>();
             inheritableTraits.Add(trait);
         }
 
         private void AddInheritDirective(InheritFromAttribute directive)
         {
+            HashSet<TSourceKey> sources;
+
             var traitType = directive.AttributeType;
             if (traitType == null)
             {
-                if (generalSources == null)
-                    generalSources = new HashSet<TSourceKey>(SourceKeyComparer);
-                generalSources.Add(GetSourceKey(directive));
+                sources = this.generalSources;
+                if (sources == null)
+                    sources = this.generalSources = new HashSet<TSourceKey>(SourceKeyComparer);
             }
             else
             {
-                HashSet<TSourceKey> sources;
+                var specificSources = this.specificSources;
                 if (specificSources == null)
-                    specificSources = new Dictionary<Type, HashSet<TSourceKey>>();
+                    specificSources = this.specificSources = new Dictionary<Type, HashSet<TSourceKey>>();
                 if (specificSources.TryGetValue(traitType, out sources) == false)
                     specificSources[traitType] = sources = new HashSet<TSourceKey>(SourceKeyComparer);
-                sources.Add(GetSourceKey(directive));
             }
+
+            sources.Add(GetSourceKey(directive));
         }
 
         private void AddSuppressDirective(SuppressAttribute directive)
         {
+            var suppressedTraits = this.suppressedTraits;
             if (suppressedTraits == null)
-                suppressedTraits = new HashSet<Type>();
+                suppressedTraits = this.suppressedTraits = new HashSet<Type>();
             suppressedTraits.Add(directive.Type);
         }
 
         private bool ShouldInherit(Type traitType, TMetaObject source)
         {
+            var suppressedTraits = this.suppressedTraits;
             if (suppressedTraits != null && suppressedTraits.Contains(traitType))
                 return false;
 
             HashSet<TSourceKey> sources;
-            return (specificSources != null && specificSources.TryGetValue(traitType, out sources))
-                ? sources.Contains(GetSourceKey(source))
-                : generalSources == null || generalSources.Contains(GetSourceKey(source));
+            var specificSources = this.specificSources;
+            if (specificSources != null && specificSources.TryGetValue(traitType, out sources))
+                return sources.Contains(GetSourceKey(source));
+
+            sources = this.generalSources;
+            return sources == null
+                || sources.Contains(GetSourceKey(source));
+        }
+
+        public sealed override void ApplyDeferredTraits()
+        {
+            if (singletonTraits != null)
+                foreach (var item in singletonTraits.Values)
+                    target.Apply(item.Trait);
         }
 
         protected virtual IEqualityComparer<TSourceKey> SourceKeyComparer
         {
             get { return EqualityComparer<TSourceKey>.Default; }
         }
-
-        protected abstract object[]                 GetDeclaredTraits    (TMetaObject obj);
-        protected abstract object[]                 GetInheritableTraits (TMetaObject obj);
-        protected abstract IEnumerable<TMetaObject> GetInheritanceSources(TMetaObject obj);
 
         protected abstract TSourceKey GetSourceKey(TMetaObject          obj);
         protected abstract TSourceKey GetSourceKey(InheritFromAttribute directive);

@@ -189,9 +189,13 @@
 
         private void CollectDeclaredProperties(PropertyInfo[] properties, ProjectionPropertyCollection collection)
         {
-            var factory = Factory;
+            var factory    = Factory;
+            var resolution = TraitResolution;
+
             foreach (var property in properties)
-                collection.Add(new ProjectionProperty(property, this, collection, factory), true);
+            {
+                collection.Add(new ProjectionProperty(property, this, collection, factory, resolution), true);
+            }
         }
 
         private static void CollectInheritedProperties(ProjectionTypeCollection baseTypes, ProjectionPropertyCollection collection)
