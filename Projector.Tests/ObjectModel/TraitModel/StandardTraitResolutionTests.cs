@@ -332,4 +332,66 @@
             ));
         }
     }
+
+    [TestFixture]
+    public class WithManyTraitSpecs : TestCase<Fakes.WithManyTraitSpecs.ITypeA>
+    {
+        internal override StandardTraitResolver CreateResolver()
+        {
+            return new StandardTraitResolver(c => c
+                .IncludeAssembly(AssemblyB.Assembly)
+                .IncludeSpec<Fakes.WithManyTraitSpecs.IncludedTraits>());
+        }
+
+        [Test]
+        public void ProvideTypeTraits()
+        {
+            Assert.That(TraitsOfType, IsSequence(
+                // Attributes
+                new Fakes.WithManyTraitSpecs.FakeAttribute() { Tag = "TypeA" },
+                // Included specs
+                AssemblyA.Fakes.WithManyTraitSpecs.IncludedTraits.TypeA,
+                // Shared specs, in assembly order, then general to specific order
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.Types.Type, // certain  types
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.Type, // specific type
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.Types.Type, // certain  types
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.Type, // specific type
+                // Type specs, in assembly order
+                AssemblyB.Fakes.WithManyTraitSpecs.TypeATraits.TypeA,
+                AssemblyA.Fakes.WithManyTraitSpecs.TypeATraits.TypeA
+            ));
+        }
+
+        [Test]
+        public void ProvidePropertyTraits()
+        {
+            Assert.That(TraitsOfPropertyA, IsSequence(
+                // Attributes
+                new Fakes.WithManyTraitSpecs.FakeAttribute() { Tag = "PropertyA" },
+                // Included specs, in general to specific order
+                AssemblyA.Fakes.WithManyTraitSpecs.IncludedTraits.Properties,     // all      props of specific type
+                AssemblyA.Fakes.WithManyTraitSpecs.IncludedTraits.PropertyA,      // specific prop  of specific type
+                // Shared specs, in assembly order, then general to specific order
+                // ... Assembly B
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.Properties,       // all      props
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.Types.Properties, // all      props of certain  types
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.Types.PropertyA,  // specific prop  of certain  types
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.Properties, // all      props of specific type
+                AssemblyB.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.PropertyA,  // specific prop  of specific type
+                // ... Assembly A
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.Properties,       // all      props
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.Types.Properties, // all      props of certain  types
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.Types.PropertyA,  // specific prop  of certain  types
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.Properties, // all      props of specific type
+                AssemblyA.Fakes.WithManyTraitSpecs.SharedTraits.TypeA.PropertyA,  // specific prop  of specific type
+                // Type specs, in assembly order, then general to specific order
+                // ... Assembly B
+                AssemblyB.Fakes.WithManyTraitSpecs.TypeATraits.Properties,        // all      props of specific type
+                AssemblyB.Fakes.WithManyTraitSpecs.TypeATraits.PropertyA,         // specific prop  of specific type
+                // ... Assembly A
+                AssemblyA.Fakes.WithManyTraitSpecs.TypeATraits.Properties,        // all      props of specific type
+                AssemblyA.Fakes.WithManyTraitSpecs.TypeATraits.PropertyA          // specific prop  of specific type
+            ));
+        }
+    }
 }

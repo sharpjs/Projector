@@ -47,12 +47,12 @@
             if (aggregator == null)
                 throw Error.ArgumentNull("aggregator");
 
+            ProvideAttributes(underlyingType, aggregator);
+
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)
                     scope.ProvideTraits(aggregator);
-
-            ResolveAttributes(underlyingType, aggregator);
         }
 
         public void ProvidePropertyTraits(
@@ -67,15 +67,15 @@
             if (aggregator == null)
                 throw Error.ArgumentNull("aggregator");
 
+            ProvideAttributes(underlyingProperty, aggregator);
+
             var scopes = this.scopes;
             if (scopes != null)
                 foreach (var scope in scopes)
                     scope.ProvideTraits(projectionProperty, aggregator);
-
-            ResolveAttributes(underlyingProperty, aggregator);
         }
 
-        private static void ResolveAttributes(MemberInfo source, ITraitAggregator aggregator)
+        private static void ProvideAttributes(MemberInfo source, ITraitAggregator aggregator)
         {
             foreach (var trait in source.GetCustomAttributes(false))
                 aggregator.Add(trait);

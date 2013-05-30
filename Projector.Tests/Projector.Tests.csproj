@@ -49,6 +49,10 @@
     <Compile Include="Core\ProjectionExceptionTests.cs" />
     <Compile Include="Core\ProjectionFactoryTests.cs" />
     <Compile Include="AssemblyB.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\OtherTraits.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\SharedTraits.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\Traits.cs" />
+    <Compile Include="Fakes\WithManyTraitSpecs\TypeATraits.cs" />
     <Compile Include="Fakes\WithSharedTraitSpec\OtherTraits.cs" />
     <Compile Include="Fakes\WithSharedTraitSpec\SharedTraits.cs" />
     <Compile Include="Fakes\WithSharedTraitSpec\Traits.cs" />
