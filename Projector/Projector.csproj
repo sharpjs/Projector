@@ -44,6 +44,23 @@
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
     <Compile Include="Core\ProjectionConfiguration.cs" />
+    <Compile Include="Core\InvocationOptions.cs" />
+    <Compile Include="ObjectModel\Interfaces\IPropertyInitializer.cs" />
+    <Compile Include="ObjectModel\Invocations\PropertyInitializerInvocation.cs" />
+    <Compile Include="ObjectModel\TraitModel\ProjectionBehavior.cs" />
+    <Compile Include="ObjectModel\TraitModel\ProjectionBehaviorAttribute.cs" />
+    <Compile Include="ObjectModel\Interfaces\IInstanceInitializer.cs" />
+    <Compile Include="ObjectModel\Interfaces\IProjectionInitializer.cs" />
+    <Compile Include="ObjectModel\Interfaces\IPropertyGetter.cs" />
+    <Compile Include="ObjectModel\Interfaces\IPropertySetter.cs" />
+    <Compile Include="ObjectModel\Interfaces\ITypeInitializer.cs" />
+    <Compile Include="ObjectModel\Invocations\InstanceInitializerInvocation.cs" />
+    <Compile Include="ObjectModel\Core\Projection.cs" />
+    <Compile Include="ObjectModel\Invocations\ProjectionInitializerInvocation.cs" />
+    <Compile Include="ObjectModel\Core\ProjectionInstance.cs" />
+    <Compile Include="ObjectModel\Invocations\PropertyGetterInvocation.cs" />
+    <Compile Include="ObjectModel\Invocations\PropertySetterInvocation.cs" />
+    <Compile Include="ObjectModel\Invocations\TypeInitializerInvocation.cs" />
     <Compile Include="ObjectModel\TraitModel\ITraitAggregator.cs" />
     <Compile Include="ObjectModel\TraitModel\ITraitResolution.cs" />
     <Compile Include="ObjectModel\TraitModel\ITraitResolver.cs" />
@@ -125,10 +142,9 @@
     <Compile Include="Utility\TypeExtensions.cs" />
     <Compile Include="Utility\TypePrettyName.cs" />
     <Compile Include="Utility\UniqueCollection.cs" />
+    <Compile Include="Utility\Unknown.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ObjectModel\Invocations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
