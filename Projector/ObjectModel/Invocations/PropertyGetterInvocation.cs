@@ -61,7 +61,7 @@
             for (var behavior = this.behavior;;)
             {
                 if (behavior == null)
-                    return Unknown.Value;
+                    return AccessStorage();
 
                 var getter = behavior.Item as IPropertyGetter;
                 behavior   = behavior.Next;
@@ -75,6 +75,26 @@
                     );
                 }
             }
+        }
+
+        private object AccessStorage()
+        {
+            for (var cell = projection.Instance.FirstStorage; cell != null; cell = cell.Next)
+            {
+                var item = cell.Item;
+
+                var accessor = property.GetAccessor(item.Token);
+                if (accessor == null)
+                    continue;
+
+                var value = accessor.GetPropertyValue(item.Store, projection, property, options);
+                if (value is Unknown)
+                    continue;
+
+                return value;
+            }
+
+            return Unknown.Value;
         }
     }
 }

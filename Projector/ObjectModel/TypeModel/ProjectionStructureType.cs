@@ -10,8 +10,8 @@
         private readonly ProjectionTypeCollection     baseTypes;
         private readonly ProjectionPropertyCollection properties;
 
-        //private ProjectionConstructor constructor;
-        //private object                constructorLock;
+        private ProjectionConstructor constructor;
+        private object                constructorLock;
 
         internal ProjectionStructureType(Type type, ProjectionFactory factory)
             : base(type, TypeKind.Structure, factory)
@@ -82,8 +82,8 @@
             get { return true; }
         }
 
-        //internal Projection CreateProjection(ProjectionInstance instance)
-        //{
+        internal Projection CreateProjection(ProjectionInstance instance)
+        {
         //    ProjectionConstructor create;
 
         //    if ((create = constructor) == null)
@@ -105,7 +105,8 @@
         //    }
 
         //    return create(instance);
-        //}
+            return null;
+        }
 
         private ProjectionTypeCollection CollectBaseTypes(Type type, out int propertyCount)
         {

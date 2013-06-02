@@ -11,9 +11,10 @@
         private readonly string                   name;
         private readonly ProjectionStructureType  declaringType;
         private readonly ProjectionType           propertyType;
+        private readonly OverrideCollection       overrides;
+        private readonly IPropertyAccessor[]      accessors;
         private readonly RuntimeMethodHandle      getterHandle;
         private readonly RuntimeMethodHandle      setterHandle;
-        private readonly OverrideCollection       overrides;
         private ProjectionPropertyTraitAggregator aggregator;
         private Flags                             flags;
 
@@ -31,11 +32,11 @@
 
         internal ProjectionProperty(PropertyInfo property, ProjectionStructureType declaringType,
             ProjectionPropertyCollection properties, ProjectionFactory factory, ITraitResolution resolution)
-            //: base(factory)
         {
             this.name          = property.Name;
             this.declaringType = declaringType;
             this.propertyType  = factory.GetProjectionTypeUnsafe(property.PropertyType);
+            this.accessors     = new IPropertyAccessor[4]; // factory.Providers.Count
 
             var getter = property.GetGetMethod();
             var setter = property.GetSetMethod();
@@ -135,6 +136,16 @@
         {
             var typeHandle = declaringType.UnderlyingType.TypeHandle;
             return (MethodInfo) MethodBase.GetMethodFromHandle(handle, typeHandle);
+        }
+
+        internal IPropertyAccessor GetAccessor(int token)
+        {
+            return accessors[token];
+        }
+
+        internal void SetAccessor(int token, IPropertyAccessor accessor)
+        {
+            accessors[token] = accessor;
         }
 
         public override string ToString()

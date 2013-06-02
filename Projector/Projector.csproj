@@ -45,6 +45,11 @@
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
     <Compile Include="Core\ProjectionConfiguration.cs" />
     <Compile Include="Core\InvocationOptions.cs" />
+    <Compile Include="Core\ProjectionOptions.cs" />
+    <Compile Include="ObjectModel\Core\ProjectionAssembly.cs" />
+    <Compile Include="ObjectModel\Core\ProjectionAssemblyFactory.cs" />
+    <Compile Include="ObjectModel\Core\ProjectionStorage.cs" />
+    <Compile Include="ObjectModel\Interfaces\IPropertyAccessor.cs" />
     <Compile Include="ObjectModel\Interfaces\IPropertyInitializer.cs" />
     <Compile Include="ObjectModel\Invocations\PropertyInitializerInvocation.cs" />
     <Compile Include="ObjectModel\TraitModel\ProjectionBehavior.cs" />
@@ -83,6 +88,7 @@
     <Compile Include="ObjectModel\TraitModel\TraitSet.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionArrayType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionCollectionType.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionConstructor.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionDictionaryType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionListType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionMetaObject.cs" />
@@ -107,6 +113,7 @@
     <Compile Include="Specs\Restrictions\NameRestriction.cs" />
     <Compile Include="Specs\SharedScope.cs" />
     <Compile Include="Specs\TypeCutExtensions.cs" />
+    <Compile Include="Utility\CollectionExtensions.cs" />
     <Compile Include="Utility\IFluent.cs" />
     <Compile Include="Specs\Interfaces\ISharedScope.cs" />
     <Compile Include="Specs\Interfaces\IPropertyCut.cs" />
@@ -134,9 +141,11 @@
     <Compile Include="Utility\Concurrent.cs" />
     <Compile Include="Utility\Error.cs" />
     <Compile Include="Utility\ExpressionExtensions.cs" />
+    <Compile Include="Utility\InternalList.cs" />
     <Compile Include="Utility\Log.cs" />
     <Compile Include="Utility\MemberKey.cs" />
     <Compile Include="Utility\MemberKeyComparer.cs" />
+    <Compile Include="Utility\RandomExtensions.cs" />
     <Compile Include="Utility\StringBuilderExtensions.cs" />
     <Compile Include="Utility\StringExtensions.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
