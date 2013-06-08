@@ -20,7 +20,7 @@
                 GetAssemblyAccess(options)
             );
 
-            module = 0 == (options & ProjectionOptions.SaveAssembly)
+            module = 0 == (options & ProjectionOptions.SaveAssemblies)
                 ? assembly.DefineDynamicModule(name)
                 : assembly.DefineDynamicModule(name, FileName);
         }
@@ -40,7 +40,7 @@
             assembly.Save(FileName);
         }
 
-        public ProjectionConstructor ImplementProjectionClass(ProjectionStructureType projectionType)
+        internal ProjectionConstructor ImplementProjectionClass(ProjectionStructureType projectionType)
         {
             var typeBuilder = module.DefineType
             (
@@ -384,17 +384,15 @@
         {
             switch (options & ProjectionOptionsInternal.AssemblyModes)
             {
+                default:
                 case ProjectionOptions.None:
                     return AssemblyBuilderAccess.Run;
 
-                case ProjectionOptions.SaveAssembly:
+                case ProjectionOptions.SaveAssemblies:
                     return AssemblyBuilderAccess.RunAndSave;
 
-                case ProjectionOptions.CollectAssembly:
+                case ProjectionOptions.CollectAssemblies:
                     return AssemblyBuilderAccess.RunAndCollect;
-
-                default:
-                    throw Error.InternalError("invalid assembly mode");
             }
         }
 
@@ -422,7 +420,7 @@
                 BindingFlags.NonPublic    | BindingFlags.Instance |
                 BindingFlags.DeclaredOnly | BindingFlags.ExactBinding,
                 null, // binder
-                new[] { typeof(ProjectionProperty), typeof(InvocationOptions) },
+                new[] { typeof(ProjectionProperty), typeof(GetterOptions) },
                 null // modifiers
             ),
             BaseSetMethod = typeof(Projection).GetMethod

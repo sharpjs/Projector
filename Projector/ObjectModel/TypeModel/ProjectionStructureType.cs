@@ -84,28 +84,20 @@
 
         internal Projection CreateProjection(ProjectionInstance instance)
         {
-        //    ProjectionConstructor create;
+            return (constructor ?? GetConstructor()) (instance);
+        }
 
-        //    if ((create = constructor) == null)
-        //    {
-        //        var newLock = new object();
-        //        var theLock = Interlocked.CompareExchange(ref constructorLock, newLock, null) ?? newLock;
-
-        //        Monitor.Enter(theLock);
-        //        try
-        //        {
-        //            if ((create = constructor) == null)
-        //                create = constructor = Factory.ImplementProjectionType(this);
-        //        }
-        //        finally
-        //        {
-        //            constructorLock = null;
-        //            Monitor.Exit(theLock);
-        //        }
-        //    }
-
-        //    return create(instance);
-            return null;
+        private ProjectionConstructor GetConstructor()
+        {
+            var token = Concurrent.Lock(ref constructorLock);
+            try
+            {
+                return constructor ?? (constructor = Factory.ImplementProjectionType(this));
+            }
+            finally
+            {
+                Concurrent.Unlock(ref constructorLock, token);
+            }
         }
 
         private ProjectionTypeCollection CollectBaseTypes(Type type, out int propertyCount)

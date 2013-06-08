@@ -30,20 +30,6 @@
         //    throw new InvalidOperationException();
         //}
 
-        internal static Exception InternalError(string description)
-        {
-            var message = string.Format
-            (
-                "An internal error occurred in Projector.  " +
-                "This is probably a bug.  " +
-                "Please report this incident to the developer.  " +
-                "Description: '{0}'",
-                description
-            );
-
-            return new InvalidOperationException(message);
-        }
-
         internal static Exception NotSupported()
         {
             return new NotSupportedException();
@@ -62,6 +48,14 @@
         internal static Exception ReadOnlyTraits()
         {
             return new InvalidOperationException("Traits for the object are frozen.");
+        }
+
+        internal static Exception SaveAndCollectAssembliesNotSupported()
+        {
+            const string message
+                = "Saving and garbage collection of dynamic assemblies cannot be enabled simultaneously.";
+
+            return new NotSupportedException(message);
         }
 
         internal static Exception InvalidProjectionType(Type type)
@@ -212,20 +206,19 @@
         //    throw new NotImplementedException();
         //}
 
-        //internal static Exception ProvidersAlreadyConfigured()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        internal static Exception InternalError(string description)
+        {
+            var message = string.Format
+            (
+                "An internal error occurred in Projector.  " +
+                "This is probably a bug.  " +
+                "Please report this incident to the developer.  " +
+                "Description: '{0}'",
+                description
+            );
 
-        //internal static Exception ProfilesAlreadyConfigured()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //internal static Exception AlreadyConfigured(string p)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return new InvalidOperationException(message);
+        }
 
         internal static Exception TodoError()
         {

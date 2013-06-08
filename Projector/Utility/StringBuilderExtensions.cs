@@ -4,11 +4,6 @@
 
     internal static class StringBuilderExtensions
     {
-        public static StringBuilder Build(this string text)
-        {
-            return new StringBuilder(text);
-        }
-
         public static StringBuilder AppendList(this StringBuilder text, params string[] items)
         {
             text.Append('[');

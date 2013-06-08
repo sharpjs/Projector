@@ -15,10 +15,11 @@
         private Cell<Projection>           projections;
         private Cell<ProjectionStorage>    storages;
 
-        internal ProjectionInstance(ProjectionFactory factory, object context)
+        internal ProjectionInstance(ProjectionFactory factory, int token, object store, object context)
         {
-            this.factory = factory;
-            this.context = context;
+            this.factory  = factory;
+            this.context  = context;
+            this.storages = Cell.Cons(new ProjectionStorage(store, token, null));
         }
 
         public override ProjectionFactory Factory

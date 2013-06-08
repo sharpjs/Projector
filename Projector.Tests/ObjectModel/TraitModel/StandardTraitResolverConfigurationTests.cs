@@ -14,7 +14,18 @@
             Assert.Throws<ArgumentNullException>
             (
                 () => Configuration.IncludeAssembly(null)
-            );
+            )
+            .ForParameter("assembly");
+        }
+
+        [Test]
+        public void IncludeAssembly_NullType()
+        {
+            Assert.Throws<ArgumentNullException>
+            (
+                () => Configuration.IncludeAssemblyOf(null)
+            )
+            .ForParameter("type");
         }
 
         [Test]
@@ -23,7 +34,8 @@
             Assert.Throws<ArgumentNullException>
             (
                 () => Configuration.IncludeSpec(null)
-            );
+            )
+            .ForParameter("spec");
         }
     }
 
@@ -33,49 +45,25 @@
         [Test]
         public void IncludedAssemblies()
         {
-            Assert.That(Configuration.IncludedAssemblies, Is.Empty);
+            Assert.That(Configured.IncludedAssemblies, Is.Null);
         }
 
         [Test]
         public void IncludedSpecs()
         {
-            Assert.That(Configuration.IncludedSpecs, Is.Empty);
+            Assert.That(Configured.IncludedSpecs, Is.Null);
         }
 
         [Test]
-        public void GetAssembliesInternal()
+        public void GetIncludedAssemblies()
         {
-            Assert.That(Configuration.GetAssembliesInternal(), Is.Null);
+            Assert.That(StandardTraitResolverConfiguration.GetIncludedAssemblies(Configured), Is.Null);
         }
 
         [Test]
-        public void GetSpecsInternal()
+        public void GetIncludedSpecs()
         {
-            Assert.That(Configuration.GetSpecsInternal(), Is.Null);
-        }
-    }
-
-    [TestFixture]
-    public class AfterGetCollections : TestCase
-    {
-        public override void SetUp()
-        {
-            base.SetUp();
-            object _;
-            _ = Configuration.IncludedAssemblies;
-            _ = Configuration.IncludedSpecs;
-        }
-
-        [Test]
-        public void GetAssembliesInternal()
-        {
-            Assert.That(Configuration.GetAssembliesInternal(), Is.Null);
-        }
-
-        [Test]
-        public void GetSpecsInternal()
-        {
-            Assert.That(Configuration.GetSpecsInternal(), Is.Null);
+            Assert.That(StandardTraitResolverConfiguration.GetIncludedSpecs(Configured), Is.Null);
         }
     }
 
@@ -90,13 +78,13 @@
         [Test]
         public void IncludedAssemblies()
         {
-            Assert.That(Configuration.IncludedAssemblies, Is.EqualTo(Assemblies));
+            Assert.That(Configured.IncludedAssemblies, Is.EqualTo(Assemblies));
         }
 
         [Test]
         public void GetAssembliesInternal()
         {
-            Assert.That(Configuration.GetAssembliesInternal(), Is.EqualTo(Assemblies));
+            Assert.That(StandardTraitResolverConfiguration.GetIncludedAssemblies(Configured), Is.EqualTo(Assemblies));
         }
     }
 
@@ -156,13 +144,13 @@
         [Test]
         public void IncludedSpecs()
         {
-            Assert.That(Configuration.IncludedSpecs, Is.EqualTo(Specs));
+            Assert.That(Configured.IncludedSpecs, Is.EqualTo(Specs));
         }
 
         [Test]
         public void GetSpecsInternal()
         {
-            Assert.That(Configuration.GetSpecsInternal(), Is.EqualTo(Specs));
+            Assert.That(StandardTraitResolverConfiguration.GetIncludedSpecs(Configured), Is.EqualTo(Specs));
         }
     }
 
@@ -180,7 +168,7 @@
         [Test]
         public void IncludedSpecs()
         {
-            Assert.That(Configuration.IncludedSpecs, Has.Count.EqualTo(2)
+            Assert.That(Configured.IncludedSpecs, Has.Count.EqualTo(2)
                 & Has.Some.TypeOf<FakeTraitSpecA>()
                 & Has.Some.TypeOf<FakeTraitSpecB>());
         }
@@ -188,7 +176,7 @@
         [Test]
         public void GetSpecsInternal()
         {
-            Assert.That(Configuration.GetSpecsInternal(), Has.Length.EqualTo(2)
+            Assert.That(StandardTraitResolverConfiguration.GetIncludedSpecs(Configured), Has.Length.EqualTo(2)
                 & Has.Some.TypeOf<FakeTraitSpecA>()
                 & Has.Some.TypeOf<FakeTraitSpecB>());
         }
@@ -197,6 +185,11 @@
     public abstract class TestCase
     {
         protected StandardTraitResolverConfiguration Configuration { get; private set; }
+
+        protected IStandardTraitResolverConfiguration Configured
+        {
+            get { return Configuration as IStandardTraitResolverConfiguration; }
+        }
 
         [SetUp]
         public virtual void SetUp()

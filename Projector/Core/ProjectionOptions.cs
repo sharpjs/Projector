@@ -6,7 +6,7 @@
     ///   Specifies options that control the creation of projections.
     /// </summary>
     [Flags]
-    internal enum ProjectionOptions
+    public enum ProjectionOptions
     {
         /// <summary>
         ///   Default value, with no options specified.
@@ -16,27 +16,20 @@
         /// <summary>
         ///   Allow generated assemblies to be saved.
         /// </summary>
-        SaveAssembly = 0x1,
+        SaveAssemblies = 0x1,
 
         /// <summary>
         ///   Allow generated assemblies to be garbage collected.
         /// </summary>
-        CollectAssembly = 0x2,
-
-        /// <summary>
-        ///   Enable derived projection types to inherit attributes of base types.
-        ///   An attribute is inherited if its associated
-        ///   <c>AttributeUsageAttribute</c> has <c>Inherited</c> = <c>true</c>.
-        /// </summary>
-        InheritAttributes = 0x4
+        CollectAssemblies = 0x2
     }
 
     internal static class ProjectionOptionsInternal
     {
         public const ProjectionOptions
             AssemblyModes
-                = ProjectionOptions.SaveAssembly
-                | ProjectionOptions.CollectAssembly
+                = ProjectionOptions.SaveAssemblies
+                | ProjectionOptions.CollectAssemblies
                 ;
     }
 

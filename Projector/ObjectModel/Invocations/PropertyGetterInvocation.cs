@@ -6,13 +6,13 @@
     {
         private readonly Projection                projection;
         private readonly ProjectionProperty        property;
-        private readonly InvocationOptions         options;
+        private readonly GetterOptions         options;
         private readonly Cell<IProjectionBehavior> behavior;
 
         internal PropertyGetterInvocation(
             Projection                projection,
             ProjectionProperty        property,
-            InvocationOptions         options,
+            GetterOptions         options,
             Cell<IProjectionBehavior> behavior)
         {
             this.projection = projection;
@@ -51,7 +51,7 @@
             get { return property.Behaviors; }
         }
 
-        public InvocationOptions Options
+        public GetterOptions Options
         {
             get { return options; }
         }

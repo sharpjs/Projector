@@ -4,6 +4,11 @@
     using System.Reflection;
     using System.Reflection.Emit;
 
+    // In some versions of .NET, performance of TypeBuilder.CreateType degrades at O(n^2) as more
+    // types are added to the dynamic assembly.  Workaround is to create one assembly per N types.
+    //
+    // See: http://support.microsoft.com/kb/970924
+
     internal abstract class ProjectionAssemblyFactory
     {
         private const string
@@ -57,7 +62,7 @@
         {
             var assembly = new ProjectionAssembly(name, options);
 
-            if (0 != (options & ProjectionOptions.SaveAssembly))
+            if (0 != (options & ProjectionOptions.SaveAssemblies))
                 unsaved.Enqueue(assembly);
 
             return assembly;

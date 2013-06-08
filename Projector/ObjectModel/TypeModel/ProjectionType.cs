@@ -28,9 +28,9 @@
 
         internal override void InvokeInitializers()
         {
-            //new TypeInitializerInvocation
-            //    (this, FirstBehavior)
-            //    .Proceed();
+            new TypeInitializerInvocation
+                (this, FirstBehavior)
+                .Proceed();
         }
 
         internal override void InvokeLateInitializers()

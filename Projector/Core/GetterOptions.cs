@@ -3,7 +3,7 @@
     /// <summary>
     ///   Specifies options for the invocation of projection members.
     /// </summary>
-    public enum InvocationOptions
+    public enum GetterOptions
     {
         /// <summary>
         ///   Default value, with no options specified.

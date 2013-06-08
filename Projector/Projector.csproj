@@ -43,15 +43,17 @@
     </Compile>
     <Compile Include="Core\Interfaces\IBindingList.cs" />
     <Compile Include="Core\Interfaces\IBindingSet.cs" />
+    <Compile Include="Core\Interfaces\IProjectionConfiguration.cs" />
     <Compile Include="Core\ProjectionConfiguration.cs" />
-    <Compile Include="Core\InvocationOptions.cs" />
+    <Compile Include="Core\GetterOptions.cs" />
     <Compile Include="Core\ProjectionOptions.cs" />
-    <Compile Include="ObjectModel\Core\ProjectionAssembly.cs" />
-    <Compile Include="ObjectModel\Core\ProjectionAssemblyFactory.cs" />
+    <Compile Include="ObjectModel\Assembly\ProjectionAssembly.cs" />
+    <Compile Include="ObjectModel\Assembly\ProjectionAssemblyFactory.cs" />
     <Compile Include="ObjectModel\Core\ProjectionStorage.cs" />
     <Compile Include="ObjectModel\Interfaces\IPropertyAccessor.cs" />
     <Compile Include="ObjectModel\Interfaces\IPropertyInitializer.cs" />
     <Compile Include="ObjectModel\Invocations\PropertyInitializerInvocation.cs" />
+    <Compile Include="ObjectModel\TraitModel\IStandardTraitResolverConfiguration.cs" />
     <Compile Include="ObjectModel\TraitModel\ProjectionBehavior.cs" />
     <Compile Include="ObjectModel\TraitModel\ProjectionBehaviorAttribute.cs" />
     <Compile Include="ObjectModel\Interfaces\IInstanceInitializer.cs" />
@@ -141,16 +143,16 @@
     <Compile Include="Utility\Concurrent.cs" />
     <Compile Include="Utility\Error.cs" />
     <Compile Include="Utility\ExpressionExtensions.cs" />
-    <Compile Include="Utility\InternalList.cs" />
     <Compile Include="Utility\Log.cs" />
     <Compile Include="Utility\MemberKey.cs" />
     <Compile Include="Utility\MemberKeyComparer.cs" />
+    <Compile Include="Utility\ObjectEqualityComparer.cs" />
     <Compile Include="Utility\RandomExtensions.cs" />
+    <Compile Include="Utility\ReferenceEqualityComparer.cs" />
     <Compile Include="Utility\StringBuilderExtensions.cs" />
     <Compile Include="Utility\StringExtensions.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
     <Compile Include="Utility\TypePrettyName.cs" />
-    <Compile Include="Utility\UniqueCollection.cs" />
     <Compile Include="Utility\Unknown.cs" />
   </ItemGroup>
   <ItemGroup />

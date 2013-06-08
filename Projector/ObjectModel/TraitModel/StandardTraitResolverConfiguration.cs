@@ -4,38 +4,21 @@
     using System.Collections.Generic;
     using System.Reflection;
     using Projector.Specs;
+    using Projector.Utility;
 
-    public sealed class StandardTraitResolverConfiguration
+    public sealed class StandardTraitResolverConfiguration : IStandardTraitResolverConfiguration, IFluent
     {
-        // TODO: Change to using some UniqueList<T> : IList<T>, ISet<T>
-        // TODO: Only allocate when needed
-        private UniqueCollection<Assembly>  assemblies;
-        private UniqueCollection<TraitSpec> specs;
+        private List<Assembly>  assemblies;
+        private List<TraitSpec> specs;
 
-        public ICollection<Assembly> IncludedAssemblies
+        ICollection<Assembly> IStandardTraitResolverConfiguration.IncludedAssemblies
         {
-            get { return assemblies ?? Concurrent.Ensure(ref assemblies, new UniqueCollection<Assembly>()); }
+            get { return assemblies; }
         }
 
-        public ICollection<TraitSpec> IncludedSpecs
+        ICollection<TraitSpec> IStandardTraitResolverConfiguration.IncludedSpecs
         {
-            get { return specs ?? Concurrent.Ensure(ref specs, new UniqueCollection<TraitSpec>()); }
-        }   
-
-        internal Assembly[] GetAssembliesInternal()
-        {
-            var assemblies = this.assemblies;
-            return assemblies == null || assemblies.Count == 0
-                ? null
-                : assemblies.ToArray();
-        }
-
-        internal TraitSpec[] GetSpecsInternal()
-        {
-            var specs = this.specs;
-            return specs == null || specs.Count == 0
-                ? null
-                : specs.ToArray();
+            get { return specs; }
         }
 
         public StandardTraitResolverConfiguration IncludeAssembly(Assembly assembly)
@@ -56,12 +39,6 @@
             return Add(Assembly.GetAssembly(type));
         }
 
-        public StandardTraitResolverConfiguration IncludeSpec<TSpec>()
-            where TSpec : TraitSpec, new()
-        {
-            return Add(TraitSpec.CreateInstance(typeof(TSpec)));
-        }
-
         public StandardTraitResolverConfiguration IncludeSpec(TraitSpec spec)
         {
             if (spec == null)
@@ -70,11 +47,17 @@
             return Add(spec);
         }
 
+        public StandardTraitResolverConfiguration IncludeSpec<TSpec>()
+            where TSpec : TraitSpec, new()
+        {
+            return Add(TraitSpec.CreateInstance(typeof(TSpec)));
+        }
+
         private StandardTraitResolverConfiguration Add(Assembly assembly)
         {
             var assemblies = this.assemblies;
             if (assemblies == null)
-                assemblies = this.assemblies = new UniqueCollection<Assembly>();
+                assemblies = this.assemblies = new List<Assembly>();
 
             assemblies.Add(assembly);
             return this;
@@ -84,10 +67,22 @@
         {
             var specs = this.specs;
             if (specs == null)
-                specs = this.specs = new UniqueCollection<TraitSpec>();
+                specs = this.specs = new List<TraitSpec>();
 
             specs.Add(spec);
             return this;
+        }
+
+        internal static Assembly[] GetIncludedAssemblies(IStandardTraitResolverConfiguration configuration)
+        {
+            return configuration.IncludedAssemblies.ToUniqueArrayOrNull(new ObjectEqualityComparer<Assembly>());
+            // PERF: Don't use comparer .Instance; no need to keep it after this.
+        }
+
+        internal static TraitSpec[] GetIncludedSpecs(IStandardTraitResolverConfiguration configuration)
+        {
+            return configuration.IncludedSpecs.ToUniqueArrayOrNull(new ReferenceEqualityComparer<TraitSpec>());
+            // PERF: Don't use comparer .Instance; no need to keep it after this.
         }
     }
 }

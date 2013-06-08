@@ -12,11 +12,10 @@
         private readonly Dictionary<Type, ProjectionType> types;
         private readonly CellList<ProjectionType>         incompleteTypes;
         private readonly ReaderWriterLockSlim             typesLock;
-        //private readonly ProjectionAssemblyFactory        assemblyFactory;
+        private readonly ProjectionAssemblyFactory        assemblyFactory;
         //private readonly ProjectionProvider[]             providers;
         //private readonly ProjectionProviderCollection     providersPublic;
         private readonly ITraitResolver                   resolver;
-        //private readonly ProjectionOptions                options;
 
         public ProjectionFactory()
             : this(new ProjectionConfiguration()) { }
@@ -24,18 +23,17 @@
         public ProjectionFactory(Action<ProjectionConfiguration> configure)
             : this(Configure(configure)) { }
 
-        public ProjectionFactory(ProjectionConfiguration configuration)
+        public ProjectionFactory(IProjectionConfiguration configuration)
         {
             if (configuration == null)
                 throw Error.ArgumentNull("configuration");
 
-            //options         = configuration.GetOptions();
             //providers       = configuration.GetProviders();
-            resolver        = configuration.TraitResolver;
+            resolver        = ProjectionConfiguration.GetTraitResolver(configuration);
+            assemblyFactory = CreateAssemblyFactory                   (configuration);
             types           = new Dictionary<Type, ProjectionType>();
             typesLock       = new ReaderWriterLockSlim();
             incompleteTypes = new CellList<ProjectionType>();
-            //assemblyFactory = ProjectionAssemblyFactory.PerType(options);
             //providersPublic = new ProjectionProviderCollection(providers);
         }
 
@@ -47,6 +45,16 @@
             var configuration = new ProjectionConfiguration();
             configure(configuration);
             return configuration;
+        }
+
+        private static ProjectionAssemblyFactory CreateAssemblyFactory(IProjectionConfiguration configuration)
+        {
+            var options   = ProjectionConfiguration.GetOptions            (configuration);
+            var threshold = ProjectionConfiguration.GetMaxTypesPerAssembly(configuration);
+
+            return threshold <= 0 ? ProjectionAssemblyFactory.Single (options)
+                 : threshold == 1 ? ProjectionAssemblyFactory.PerType(options)
+                 : ProjectionAssemblyFactory.Batched(threshold, options);
         }
 
         /// <summary>
@@ -80,35 +88,35 @@
             get { return resolver; }
         }
 
-        //public T Create<T>()
-        //{
-        //    return (T) CreateCore(typeof(T), ProjectionContext.Default, 0, null, null);
-        //}
+        public T Create<T>()
+        {
+            return (T) CreateCore(typeof(T), null, 0, null, null);
+        }
 
         //public T Create<T>(object store)
         //{
         //    var token = FindStorageProvider(ref store);
-        //    return (T) CreateCore(typeof(T), ProjectionContext.Default, token, store, null);
+        //    return (T) CreateCore(typeof(T), null, token, store, null);
         //}
 
         //public T Create<T>(object store, params object[] args)
         //{
         //    var token = FindStorageProvider(ref store);
-        //    return (T) CreateCore(typeof(T), ProjectionContext.Default, token, store, args);
+        //    return (T) CreateCore(typeof(T), null, token, store, args);
         //}
 
-        //public T Create<T>(IProjectionContext context)
+        //public T Create<T>(object context)
         //{
         //    return (T) CreateCore(typeof(T), Require(context), 0, null, null);
         //}
 
-        //public T Create<T>(IProjectionContext context, object store)
+        //public T Create<T>(object context, object store)
         //{
         //    var token = FindStorageProvider(ref store);
         //    return (T) CreateCore(typeof(T), Require(context), token, store, null);
         //}
 
-        //public T Create<T>(IProjectionContext context, object store, params object[] args)
+        //public T Create<T>(object context, object store, params object[] args)
         //{
         //    var token = FindStorageProvider(ref store);
         //    return (T) CreateCore(typeof(T), Require(context), token, store, args);
@@ -116,43 +124,43 @@
 
         //public object Create(Type type)
         //{
-        //    return CreateCore(type, ProjectionContext.Default, 0, null, null);
+        //    return CreateCore(type, null, 0, null, null);
         //}
 
         //public object Create(Type type, object store)
         //{
         //    var token = FindStorageProvider(ref store);
-        //    return CreateCore(type, ProjectionContext.Default, token, store, null);
+        //    return CreateCore(type, null, token, store, null);
         //}
 
         //public object Create(Type type, object store, params object[] args)
         //{
         //    var token = FindStorageProvider(ref store);
-        //    return CreateCore(type, ProjectionContext.Default, token, store, args);
+        //    return CreateCore(type, null, token, store, args);
         //}
 
-        //public object Create(Type type, IProjectionContext context)
+        //public object Create(Type type, object context)
         //{
         //    return CreateCore(type, Require(context), 0, null, null);
         //}
 
-        //public object Create(Type type, IProjectionContext context, object store)
+        //public object Create(Type type, object context, object store)
         //{
         //    var token = FindStorageProvider(ref store);
         //    return CreateCore(type, Require(context), token, store, null);
         //}
 
-        //public object Create(Type type, IProjectionContext context, object store, params object[] args)
+        //public object Create(Type type, object context, object store, params object[] args)
         //{
         //    var token = FindStorageProvider(ref store);
         //    return CreateCore(type, Require(context), token, store, args);
         //}
 
-        //private object CreateCore(Type type, IProjectionContext context, int token, object store, object[] args)
-        //{
-        //    return new ProjectionInstance(this, context, token, store)
-        //        .Initialize(type, args);
-        //}
+        private object CreateCore(Type type, object context, int token, object store, object[] args)
+        {
+            return new ProjectionInstance(this, token, store, context)
+                .Initialize(type, args);
+        }
 
         //private int FindStorageProvider(ref object store)
         //{
@@ -164,14 +172,6 @@
         //            return i;
 
         //    throw Error.NoStorageProvider();
-        //}
-            
-        //private static IProjectionContext Require(IProjectionContext context)
-        //{
-        //    if (context != null)
-        //        return context;
-
-        //    throw Error.ArgumentNull("context");
         //}
 
         public ProjectionType GetProjectionType(Type type)
@@ -280,16 +280,16 @@
                 types.Remove(projectionType);
         }
 
-        //internal ProjectionConstructor ImplementProjectionType(ProjectionStructureType projectionType)
-        //{
-        //    return assemblyFactory
-        //        .GetAssembly(projectionType.UnderlyingType)
-        //        .ImplementProjectionClass(projectionType);
-        //}
+        internal ProjectionConstructor ImplementProjectionType(ProjectionStructureType projectionType)
+        {
+            return assemblyFactory
+                .GetAssembly(projectionType.UnderlyingType)
+                .ImplementProjectionClass(projectionType);
+        }
 
-        //internal void SaveGeneratedAssemblies()
-        //{
-        //    assemblyFactory.SaveAll();
-        //}
+        internal void SaveGeneratedAssemblies()
+        {
+            assemblyFactory.SaveAll();
+        }
     }
 }

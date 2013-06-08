@@ -21,13 +21,13 @@
         public StandardTraitResolver(Action<StandardTraitResolverConfiguration> configure)
             : this(Configure(configure)) { }
 
-        public StandardTraitResolver(StandardTraitResolverConfiguration configuration)
+        public StandardTraitResolver(IStandardTraitResolverConfiguration configuration)
         {
             if (configuration == null)
                 throw Error.ArgumentNull("configuration");
 
-            assemblies = configuration.GetAssembliesInternal();
-            specs      = configuration.GetSpecsInternal();
+            assemblies = StandardTraitResolverConfiguration.GetIncludedAssemblies(configuration);
+            specs      = StandardTraitResolverConfiguration.GetIncludedSpecs     (configuration);
         }
 
         private static StandardTraitResolverConfiguration
