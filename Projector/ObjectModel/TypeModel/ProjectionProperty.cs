@@ -5,8 +5,20 @@
     using System.Reflection;
     using OverrideCollection = System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty>;
 
+    public class ProjectionProperty<T> : ProjectionProperty
+    {
+        internal ProjectionProperty(PropertyInfo property, ProjectionStructureType declaringType,
+            ProjectionPropertyCollection properties, ProjectionFactory factory, ITraitResolution resolution)
+            : base(property, declaringType, properties, factory, resolution) { }
+
+        internal new IPropertyAccessor<T> GetAccessor(int token)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     [DebuggerDisplay(@"\{{PropertyType.Name,nq} {Name,nq}\}")]
-    public sealed class ProjectionProperty : ProjectionMetaObject
+    public class ProjectionProperty : ProjectionMetaObject
     {
         private readonly string                   name;
         private readonly ProjectionStructureType  declaringType;
@@ -105,6 +117,11 @@
         public bool CanWrite
         {
             get { return 0 != (flags & Flags.CanWrite); }
+        }
+
+        public bool IsVolatile
+        {
+            get { return false; }
         }
 
         //public bool IsShared

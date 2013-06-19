@@ -54,6 +54,8 @@
 
         public object GetPropertyValue(ProjectionProperty property, GetterOptions options)
         {
+            var site = Type.Properties.GetSite(property);
+
             return GetPropertyValueCore(Type.Properties[property], options);
         }
 
@@ -64,12 +66,12 @@
                 .Proceed();
         }
 
-        public object SetPropertyValue(ProjectionProperty property, object value)
+        public bool SetPropertyValue(ProjectionProperty property, object value)
         {
             return SetPropertyValueCore(Type.Properties[property], value);
         }
 
-        protected object SetPropertyValueCore(ProjectionProperty property, object value)
+        protected bool SetPropertyValueCore(ProjectionProperty property, object value)
         {
             return new PropertySetterInvocation
                 (this, property, property.FirstBehavior)
@@ -81,9 +83,14 @@
             return (T) GetPropertyValue(property, options);
         }
 
-        public T SetPropertyValueAs<T>(ProjectionProperty property, T value)
+        public bool SetPropertyValueAs<T>(ProjectionProperty property, T value)
         {
-            return (T) SetPropertyValue(property, value);
+            return SetPropertyValue(property, value);
+        }
+
+        public void InvalidateProperty(ProjectionProperty property)
+        {
+            var site = Type.Properties.GetSite(property);
         }
     }
 }

@@ -81,6 +81,11 @@
             get { return explicitProperties[new MemberKey(property)]; }
         }
 
+        internal ProjectionPropertySite GetSite(ProjectionProperty property)
+        {
+            return new ProjectionPropertySite();
+        }
+
         public bool TryGet(string name, out ProjectionProperty property)
         {
             return implicitProperties.TryGetValue(name, out property);

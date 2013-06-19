@@ -49,6 +49,7 @@
     <Compile Include="Core\ProjectionOptions.cs" />
     <Compile Include="ObjectModel\Assembly\ProjectionAssembly.cs" />
     <Compile Include="ObjectModel\Assembly\ProjectionAssemblyFactory.cs" />
+    <Compile Include="ObjectModel\Assembly\ProjectionPropertyImplementor.cs" />
     <Compile Include="ObjectModel\Core\ProjectionStorage.cs" />
     <Compile Include="ObjectModel\Interfaces\IPropertyAccessor.cs" />
     <Compile Include="ObjectModel\Interfaces\IPropertyInitializer.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="ObjectModel\TypeModel\ProjectionMetaObject.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionProperty.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionPropertyCollection.cs" />
+    <Compile Include="ObjectModel\TypeModel\ProjectionPropertySite.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionPropertyTraitAggregator.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionSetType.cs" />
     <Compile Include="ObjectModel\TypeModel\ProjectionStructureType.cs" />

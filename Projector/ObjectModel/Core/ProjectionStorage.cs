@@ -34,5 +34,8 @@
         {
             get { return graph != null ? graph.Target : null; }
         }
+
+        private static ProjectionStorage _field;
+        public static ProjectionStorage PropA { get { return _field; } set { _field = value; } }
     }
 }

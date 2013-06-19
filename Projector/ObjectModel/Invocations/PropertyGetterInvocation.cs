@@ -2,11 +2,71 @@
 {
     using System.Collections.Generic;
 
+    public struct PropertyGetterInvocation<T>
+    {
+        private readonly Projection                projection;
+        private readonly ProjectionProperty<T>     property;
+        private readonly GetterOptions             options;
+        private readonly Cell<IProjectionBehavior> behavior;
+
+        internal PropertyGetterInvocation(
+            Projection                projection,
+            ProjectionProperty<T>     property,
+            GetterOptions             options,
+            Cell<IProjectionBehavior> behavior)
+        {
+            this.projection = projection;
+            this.property   = property;
+            this.options    = options;
+            this.behavior   = behavior;
+        }
+
+        public bool Proceed(out T value)
+        {
+            for (var behavior = this.behavior;;)
+            {
+                if (behavior == null)
+                    return AccessStorage(out value);
+
+                var getter = behavior.Item as IPropertyGetter<T>;
+                behavior   = behavior.Next;
+
+                if (getter != null)
+                {
+                    return getter.GetPropertyValue
+                    (
+                        new PropertyGetterInvocation<T>
+                            (projection, property, options, behavior),
+                        out value
+                    );
+                }
+            }
+        }
+
+        private bool AccessStorage(out T value)
+        {
+            for (var cell = projection.Instance.FirstStorage; cell != null; cell = cell.Next)
+            {
+                var item = cell.Item;
+
+                var accessor = property.GetAccessor(item.Token);
+                if (accessor == null)
+                    continue;
+
+                if (accessor.GetPropertyValue(item.Store, projection, property, options, out value))
+                    return true;
+            }
+
+            value = default(T);
+            return false;
+        }
+    }
+
     public struct PropertyGetterInvocation
     {
         private readonly Projection                projection;
         private readonly ProjectionProperty        property;
-        private readonly GetterOptions         options;
+        private readonly GetterOptions             options;
         private readonly Cell<IProjectionBehavior> behavior;
 
         internal PropertyGetterInvocation(

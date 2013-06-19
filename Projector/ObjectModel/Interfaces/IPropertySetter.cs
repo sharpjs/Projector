@@ -1,7 +1,14 @@
 ﻿namespace Projector.ObjectModel
 {
+    public interface IPropertySetter<in TIn, TOut> : IProjectionBehavior
+    {
+        bool GetPropertyValue(PropertyGetterInvocation<TOut> invocation, TIn value);
+    }
+
     public interface IPropertySetter : IProjectionBehavior
     {
-        object SetPropertyValue(PropertySetterInvocation invocation, object value);
+        bool SetPropertyValue(PropertySetterInvocation invocation, object value);
+        // NOTE: Return true  => value can be cached
+        //              false => different value will be retrieved; don't cache
     }
 }

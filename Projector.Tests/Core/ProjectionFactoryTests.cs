@@ -50,6 +50,14 @@
             Assert.That(types, Has.All.SameAs(types[0]));
         }
 
+        [Test]
+        public void Create_Type_Generic()
+        {
+            var projection = Factory.Create<IStructureType>() as Projection;
+
+            Assert_Created<IStructureType>(projection, null);
+        }
+
         //[Test]
         //public void Create_Type()
         //{
@@ -220,6 +228,11 @@
         public sealed class AnyType     { }
         public sealed class PopularType { }
 
+        public interface IStructureType
+        {
+            string Property { get; set; }
+        }
+
         //[ArgumentAware]
         //public interface ICreatable { }
 
@@ -239,12 +252,12 @@
         //    public bool WasVisited { get; set; }
         //}
 
-        //private void Assert_Created(Projection projection, IProjectionContext context)
-        //{
-        //    Assert.That(projection,                  Is.Not.Null & Is.InstanceOf<ICreatable>());
-        //    Assert.That(projection.Type,             Is.SameAs(Factory.GetProjectionType(typeof(ICreatable))));
-        //    Assert.That(projection.Instance,         Is.Not.Null);
-        //    Assert.That(projection.Instance.Context, Is.SameAs(context));
-        //}
+        private void Assert_Created<T>(Projection projection, object context)
+        {
+            Assert.That(projection,                  Is.Not.Null & Is.InstanceOf<T>());
+            Assert.That(projection.Type,             Is.SameAs(Factory.GetProjectionType(typeof(T))));
+            Assert.That(projection.Instance,         Is.Not.Null);
+            Assert.That(projection.Instance.Context, Is.SameAs(context));
+        }
     }
 }

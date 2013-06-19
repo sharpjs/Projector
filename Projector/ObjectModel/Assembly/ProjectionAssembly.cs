@@ -61,7 +61,7 @@
             ImplementTypeProperty (typeBuilder);
 
             var properties =
-            CollectProjectionProperties  (projectionType. Properties);
+            CollectProjectionProperties  (projectionType.Properties);
             ImplementProjectionProperties(typeBuilder, properties);
 
             var projectionClass = typeBuilder.CreateType();
@@ -170,8 +170,8 @@
 
         private struct ProjectionPropertyInfo
         {
-            public string          FieldName;
             public ProjectionProperty Property;
+            public string             PropertyFieldName;
         }
 
         private static ProjectionPropertyInfo[] CollectProjectionProperties(ProjectionPropertyCollection properties)
@@ -183,8 +183,8 @@
             {
                 infos[index++] = new ProjectionPropertyInfo
                 {
-                    Property  = property,
-                    FieldName = GetPropertyFieldName(property, index)
+                    Property          = property,
+                    PropertyFieldName = GetPropertyFieldName(property, index),
                 };
             }
 
@@ -193,28 +193,55 @@
 
         private static string GetPropertyFieldName(ProjectionProperty property, int index)
         {
-            // TODO: Use a name that is illegal in most .NET languages
-            return string.Concat
-            (
-                "_p", index.ToString(),
-                "_",  property.Name
-            );
+            return string.Concat("$_p", index.ToString(), "_", property.Name);
+        }
+
+        private static string GetValueFieldName(ProjectionProperty property, int index)
+        {
+            return string.Concat("$_v", index.ToString(), "_", property.Name);
+        }
+
+        private static string GetFlagsFieldName(int index)
+        {
+            return string.Concat("$_flags" + index.ToString());
         }
 
         private static void ImplementProjectionProperties(TypeBuilder typeBuilder, ProjectionPropertyInfo[] properties)
         {
-            foreach (var item in properties)
-                ImplementProjectionProperty(typeBuilder, item.Property, item.FieldName);
+            var flagsType  = properties.Length < 32 ? typeof(int) : typeof(long);
+            var flagsField = null as FieldInfo;
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                if ((i & 63) == 0)
+                {
+                    flagsField = typeBuilder.DefineField
+                    (
+                        GetFlagsFieldName(i),
+                        flagsType,
+                        FieldAttributes.Private
+                    );
+                }
+                var item = properties[i];
+                ImplementProjectionProperty(typeBuilder, i, flagsField, item.Property, item.PropertyFieldName);
+            }
         }
 
-        private static void ImplementProjectionProperty(TypeBuilder typeBuilder,
-            ProjectionProperty propertyInfo, string propertyFieldName)
+        private static void ImplementProjectionProperty(TypeBuilder typeBuilder, int index,
+            FieldInfo flagsField, ProjectionProperty propertyInfo, string propertyFieldName)
         {
             var propertyField = typeBuilder.DefineField
             (
                 propertyFieldName,
                 typeof(ProjectionProperty),
                 FieldAttributes.Public | FieldAttributes.Static
+            );
+
+            var valueField = typeBuilder.DefineField
+            (
+                GetValueFieldName(propertyInfo, index),
+                propertyInfo.PropertyType.UnderlyingType,
+                FieldAttributes.Private
             );
 
             var property = typeBuilder.DefineProperty
@@ -226,21 +253,28 @@
                 null // parameterTypes
             );
 
+            var cacheMethod = ImplementCacheMethod(typeBuilder, propertyInfo, valueField, flagsField, index);
+            var invalidateMethod = ImplementInvalidateMethod(typeBuilder, propertyInfo, valueField, flagsField, index);
+
             if (propertyInfo.CanRead)
             {
-                var getMethod = ImplementGetMethod(typeBuilder, propertyInfo, propertyField);
+                var getMethod = ImplementGetMethod(typeBuilder, propertyInfo, propertyField, valueField, flagsField, index);
                 property.SetGetMethod(getMethod);
             }
 
             if (propertyInfo.CanWrite)
             {
-                var setMethod = ImplementSetMethod(typeBuilder, propertyInfo, propertyField);
+                var setMethod = ImplementSetMethod(typeBuilder, propertyInfo, propertyField, valueField, flagsField, index, invalidateMethod);
                 property.SetSetMethod(setMethod);
             }
+
+            // implement untyped getter
+            // implement untyped setter
         }
 
         private static MethodBuilder ImplementGetMethod(TypeBuilder typeBuilder,
-            ProjectionProperty propertyInfo, FieldInfo propertyField)
+            ProjectionProperty propertyInfo, FieldInfo propertyField, FieldInfo valueField,
+            FieldInfo flagsField, int index)
         {
             var getMethod = typeBuilder.DefineMethod
             (
@@ -253,15 +287,16 @@
             );
 
             var il = getMethod.GetILGenerator();
-            EmitCallBaseGetter      (il, BaseGetMethod, propertyField);
-            EmitReturnTypedOrDefault(il, propertyInfo.PropertyType.UnderlyingType);
+            EmitCallBaseGetter      (il, BaseGetMethod, propertyField, valueField, flagsField, index);
+            EmitReturnTypedOrDefault(il, propertyInfo.PropertyType.UnderlyingType, valueField, flagsField, index);
 
             typeBuilder.DefineMethodOverride(getMethod, propertyInfo.UnderlyingGetter);
             return getMethod;
         }
 
         private static MethodBuilder ImplementSetMethod(TypeBuilder typeBuilder,
-            ProjectionProperty propertyInfo, FieldInfo propertyField)
+            ProjectionProperty propertyInfo, FieldInfo propertyField, FieldInfo valueField,
+            FieldInfo flagsField, int index, MethodInfo invalidateMethod)
         {
             var setMethod = typeBuilder.DefineMethod
             (
@@ -276,38 +311,212 @@
             setMethod.DefineParameter(1, ParameterAttributes.None, "value");
 
             var il = setMethod.GetILGenerator();
-            EmitCallBaseSetter(il, BaseSetMethod, propertyField);
+            EmitCallBaseSetter(il, BaseSetMethod, propertyField, valueField, flagsField, index, invalidateMethod);
 
             typeBuilder.DefineMethodOverride(setMethod, propertyInfo.UnderlyingSetter);
             return setMethod;
         }
 
-        private static void EmitCallBaseGetter(ILGenerator il, MethodInfo baseMethod, FieldInfo propertyField)
+        private static void EmitCallBaseGetter(ILGenerator il, MethodInfo baseMethod,
+            FieldInfo propertyField, FieldInfo valueField, FieldInfo flagsField, int bit)
         {
             var value = il.DeclareLocal(typeof(object)); // loc.0
+            var uncached = il.DefineLabel();
 
-            // value = GetProperty(key, false)
-            il.Emit(OpCodes.Ldarg_0);                // [0] this
-            il.Emit(OpCodes.Ldsfld, propertyField);  // [1] _FooProperty
-            il.Emit(OpCodes.Ldc_I4_1);               // [2] AdaptorOptions.Virtual
-            il.Emit(OpCodes.Call, baseMethod);       // base.GetPropertyValueCore()
-            il.Emit(OpCodes.Stloc_0);                // value = ^
+            // if ((flags & mask) == 0) goto uncached
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            EmitLoadFlagsAndMask(il, flagsField, bit);  // [0] flags, [1] bit
+            il.Emit(OpCodes.And);                       // [0] and(flags, bit)
+            il.Emit(OpCodes.Brfalse_S, uncached);       // [-] if (!^) goto getValueSlow
+
+            // return value field
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldfld, valueField);         // [0] $_vN_SomeProperty
+            il.Emit(OpCodes.Ret);                       // [-] return ^
+
+            // value = GetPropertyValueCore(property, GetterOptions.Virtual)
+            il.MarkLabel(uncached);
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldsfld, propertyField);     // [1] $_pN_SomeProperty
+            il.Emit(OpCodes.Ldc_I4_1);                  // [2] GetterOptions.Virtual
+            il.Emit(OpCodes.Call, baseMethod);          // [0] base.GetPropertyValueCore()
+            il.Emit(OpCodes.Stloc_0);                   // [-] value = ^
         }
 
-        private static void EmitCallBaseSetter(ILGenerator il, MethodInfo baseMethod, FieldInfo propertyField)
+        private static void EmitAbstractGetter(ILGenerator il, MethodInfo baseMethod,
+            FieldInfo propertyField, FieldInfo valueField, FieldInfo flagsField, int bit)
         {
-            // value = GetProperty(key, false)
-            il.Emit(OpCodes.Ldarg_0);                // [0] this
-            il.Emit(OpCodes.Ldsfld, propertyField);  // [1] _FooProperty
-            il.Emit(OpCodes.Ldarg_1);                // [2] value
-            il.Emit(OpCodes.Call, baseMethod);       // base.SetPropertyValueCore()
-            il.Emit(OpCodes.Pop);                    // discard value
-            il.Emit(OpCodes.Ret);                    // return
+            var value = il.DeclareLocal(typeof(object)); // loc.0
+            var uncached = il.DefineLabel();
+            var type = valueField.FieldType;
+
+            // if ((flag & mask) == 0) goto uncached
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            EmitLoadFlagsAndMask(il, flagsField, bit);  // [0] flags, [1] bit
+            il.Emit(OpCodes.And);                       // [0] and(flags, bit)
+            il.Emit(OpCodes.Brfalse_S, uncached);       // [-] if (!^) goto getValueSlow
+
+            // return cached value
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldfld, valueField);         // [0] $_vN_SomeProperty
+            if (type.IsValueType)
+                il.Emit(OpCodes.Box, type);
+            il.Emit(OpCodes.Ret);                       // [-] return ^
+
+            // value = GetPropertyValueCore(property, GetterOptions.Virtual)
+            il.MarkLabel(uncached);
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldsfld, propertyField);     // [1] $_pN_SomeProperty
+            il.Emit(OpCodes.Ldc_I4_1);                  // [2] GetterOptions.Virtual
+            il.Emit(OpCodes.Call, baseMethod);          // [0] base.GetPropertyValueCore()
+            il.Emit(OpCodes.Stloc_0);                   // [-] value = ^
+
+            // ...copied form lower method
+            // but ugh, we have to set the typed field anyway
+
+            var returnDefault = il.DefineLabel();
+
+            // if (value is Unknown) return default(type)
+            il.Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Isinst, typeof(Unknown));
+            il.Emit(OpCodes.Brtrue_S, returnDefault);
+            il.Emit(OpCodes.Ret);
+
+            if (type.IsValueType)
+            {
+                var result = il.DeclareLocal(type); // loc.1
+
+                // return default(type)
+                il.MarkLabel(returnDefault);
+                il.Emit(OpCodes.Ldloca_S, result);
+                il.Emit(OpCodes.Initobj, type);
+                il.Emit(OpCodes.Ldloc_1);
+                il.Emit(OpCodes.Ret);
+            }
+            else // is reference type
+            {
+                // return default(type)
+                il.MarkLabel(returnDefault);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ret);
+            }
+
+            if (valueField.FieldType.IsValueType)
+                il.Emit(OpCodes.Box, valueField.FieldType);
+            il.Emit(OpCodes.Ret);                       // [-] return ^
         }
 
-        private static void EmitReturnTypedOrDefault(ILGenerator il, Type type)
+        private static void EmitLoadFlagsAndMask(ILGenerator il, FieldInfo flagsField, int bit)
+        {
+            il.Emit(OpCodes.Ldfld, flagsField);         // [0] $_flagsN
+
+            switch (bit)
+            {
+                case 0: il.Emit(OpCodes.Ldc_I4_1); return;
+                case 1: il.Emit(OpCodes.Ldc_I4_2); return;
+                case 2: il.Emit(OpCodes.Ldc_I4_4); return;
+                case 3: il.Emit(OpCodes.Ldc_I4_8); return;
+            }
+
+            il.Emit(OpCodes.Ldc_I4_1);
+            if (flagsField.FieldType == typeof(long))
+                il.Emit(OpCodes.Conv_I8);
+
+            switch (bit)
+            {
+                case 4:  il.Emit(OpCodes.Ldc_I4_4);      break;
+                case 5:  il.Emit(OpCodes.Ldc_I4_5);      break;
+                case 6:  il.Emit(OpCodes.Ldc_I4_6);      break;
+                case 7:  il.Emit(OpCodes.Ldc_I4_7);      break;
+                case 8:  il.Emit(OpCodes.Ldc_I4_8);      break;
+                default: il.Emit(OpCodes.Ldc_I4_S, bit); break;
+            }
+
+            il.Emit(OpCodes.Shl);
+        }
+
+        private static void EmitCallBaseSetter(ILGenerator il, MethodInfo baseMethod,
+            FieldInfo propertyField, FieldInfo valueField, FieldInfo flagsField, int bit, MethodInfo invalidateMethod)
+        {
+            var uncacheable = il.DefineLabel();
+            var type = valueField.FieldType;
+
+            // if (!base.SetPropertyValueCore(property, value)) goto done
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldsfld, propertyField);     // [1] $_pN_SomeProperty
+            il.Emit(OpCodes.Ldarg_1);                   // [2] value
+            if (type.IsValueType)                       //
+                il.Emit(OpCodes.Box, type);             // [2] value (boxed)
+            il.Emit(OpCodes.Call, baseMethod);          // [0] base.SetPropertyValueCore()
+            il.Emit(OpCodes.Brfalse_S, uncacheable);           // [-] if (!^) goto done
+
+            // $_vN_SomeProperty = value
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldarg_1);                   // [2] value
+            il.Emit(OpCodes.Stfld, valueField);         // [-] $_vN_SomeProperty = ^
+
+            // $_flagsN |= bit
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Dup);                       // [1] ^
+            EmitLoadFlagsAndMask(il, flagsField, bit);  // [2] bit, [1] $_flagsN
+            il.Emit(OpCodes.Or);                        // [1] flags | bit
+            il.Emit(OpCodes.Stfld, flagsField);         // [-] $_flagsN
+            il.Emit(OpCodes.Ret);                       // [-] return
+
+            // done: return
+            il.MarkLabel(uncacheable);
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Call, invalidateMethod);    // [-] $Invalidate()
+            il.Emit(OpCodes.Ret);                       // [-] return
+        }
+
+        private static void EmitAbstractSetter(ILGenerator il, MethodInfo baseMethod,
+            FieldInfo propertyField, FieldInfo valueField, FieldInfo flagsField, int index)
+        {
+            var done = il.DefineLabel();
+            var fail = il.DefineLabel();
+            var type = valueField.FieldType;
+
+            // if (value is type == false) goto error;
+            il.Emit(OpCodes.Ldarg_1);                   // [0] value (boxed)
+            il.Emit(OpCodes.Isinst, type);              // [0] is assignable
+            il.Emit(OpCodes.Brfalse_S, done);           // [-] if (!^) goto fail
+
+            // if (!base.SetPropertyValueCore(property, value)) goto done
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldsfld, propertyField);     // [1] $_pN_SomeProperty
+            il.Emit(OpCodes.Ldarg_1);                   // [2] value (boxed)
+            il.Emit(OpCodes.Call, baseMethod);          // [0] base.SetPropertyValueCore()
+            il.Emit(OpCodes.Brfalse_S, done);           // [-] if (!^) goto done
+
+            // $_vN_SomeProperty = value
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldarg_1);                   // [2] value (boxed)
+            if (type.IsValueType)                       //
+                il.Emit(OpCodes.Unbox_Any, type);       // [2] value
+            il.Emit(OpCodes.Stfld, valueField);         // [-] $_vN_SomeProperty = ^
+
+            // $_flagsN |= bit
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Dup);                       // [1] ^
+            EmitLoadFlagsAndMask(il, flagsField, index);// [2] bit, [1] $_flagsN
+            il.Emit(OpCodes.Or);                        // [1] flags | bit
+            il.Emit(OpCodes.Stfld, flagsField);         // [-] $_flagsN
+
+            // done: return
+            il.MarkLabel(done);
+            il.Emit(OpCodes.Ret);                       // [-] return
+
+            // fail: throw InvalidCastException
+            il.MarkLabel(fail);
+            il.ThrowException(typeof(InvalidCastException));
+        }
+
+        private static void EmitReturnTypedOrDefault(ILGenerator il, Type type,
+            FieldInfo valueField, FieldInfo flagsField, int bit)
         {
             var returnDefault = il.DefineLabel();
+            var cache = il.DefineLabel();
 
             // if (value is Unknown) return default(type)
             il.Emit(OpCodes.Ldloc_0);
@@ -318,17 +527,35 @@
             {
                 var result = il.DeclareLocal(type); // loc.1
 
-                // return (type) value
+                // result = (type) value; goto label2
                 il.Emit(OpCodes.Ldloc_0);
                 il.Emit(OpCodes.Unbox_Any, type);
-                il.Emit(OpCodes.Ret);
+                il.Emit(OpCodes.Stloc_1);
+                il.Emit(OpCodes.Br_S, cache);
 
-                // return default(type)
+                // result = default(type)
                 il.MarkLabel(returnDefault);
                 il.Emit(OpCodes.Ldloca_S, result);
                 il.Emit(OpCodes.Initobj, type);
-                il.Emit(OpCodes.Ldloc_1);
-                il.Emit(OpCodes.Ret);
+
+                il.MarkLabel(cache);
+
+                // $_vN_SomeProperty = value
+                il.Emit(OpCodes.Ldarg_0);                   // [0] this
+                il.Emit(OpCodes.Ldloc_1);                   // [1] value
+                il.Emit(OpCodes.Stfld, valueField);         // [-] $_vN_SomeProperty = ^
+
+                // $_flagsN |= bit
+                il.Emit(OpCodes.Ldarg_0);                   // [0] this
+                il.Emit(OpCodes.Dup);                       // [1] ^
+                EmitLoadFlagsAndMask(il, flagsField, bit);  // [2] bit, [1] $_flagsN
+                il.Emit(OpCodes.Or);                        // [1] flags | bit
+                il.Emit(OpCodes.Stfld, flagsField);         // [-] $_flagsN
+
+                // return result
+                il.Emit(OpCodes.Ldloc_1);                   // [0] result
+                il.Emit(OpCodes.Ret);                       // [-] return
+
             }
             else // is reference type
             {
@@ -342,6 +569,81 @@
                 il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Ret);
             }
+        }
+
+        private static MethodBuilder ImplementCacheMethod(TypeBuilder typeBuilder,
+            ProjectionProperty propertyInfo, FieldInfo valueField, FieldInfo flagsField, int bit)
+        {
+            var method = typeBuilder.DefineMethod
+            (
+                string.Concat("$Cache_P", bit.ToString(), "_", propertyInfo.Name),
+                MethodAttributes.Private | MethodAttributes.HideBySig,
+                null, // void
+                new[] { propertyInfo.PropertyType.UnderlyingType }
+            );
+
+            method.DefineParameter(1, ParameterAttributes.None, "value");
+
+            var il = method.GetILGenerator();
+
+            // $_vN_SomeProperty = value
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Ldarg_1);                   // [2] value
+            il.Emit(OpCodes.Stfld, valueField);         // [-] $_vN_SomeProperty = ^
+
+            // $_flagsN |= bit
+            il.Emit(OpCodes.Ldarg_0);                   // [0] this
+            il.Emit(OpCodes.Dup);                       // [1] ^
+            //il.Emit(OpCodes.Ldfld, flagsField);         // [0] $_flagsN
+            EmitLoadFlagsAndMask(il, flagsField, bit);  // [2] bit, [1] $_flagsN
+            il.Emit(OpCodes.Or);                        // [1] flags | bit
+            il.Emit(OpCodes.Stfld, flagsField);         // [-] $_flagsN
+
+            // return
+            il.Emit(OpCodes.Ret);
+
+            return method;
+        }
+
+        private static MethodBuilder ImplementInvalidateMethod(TypeBuilder typeBuilder,
+            ProjectionProperty propertyInfo, FieldInfo valueField, FieldInfo flagsField, int bit)
+        {
+            var method = typeBuilder.DefineMethod
+            (
+                string.Concat("$Invalidate_P", bit.ToString(), "_", propertyInfo.Name),
+                MethodAttributes.Private | MethodAttributes.HideBySig,
+                null, // void
+                Type.EmptyTypes
+            );
+
+            var il = method.GetILGenerator();
+
+            if (valueField.FieldType.IsValueType)
+            {
+                // $_vN_SomeProperty = default(type)
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldflda, valueField);
+                il.Emit(OpCodes.Initobj, valueField.FieldType);
+            }
+            else
+            {
+                // $vN_SomeProperty = default(type)
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Stfld, valueField);
+            }
+
+            // $_flagsN &= ~bit
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Dup);
+            //il.Emit(OpCodes.Ldfld, flagsField);         // [0] $_flagsN
+            EmitLoadFlagsAndMask(il, flagsField, bit);
+            il.Emit(OpCodes.Not);
+            il.Emit(OpCodes.And);
+            il.Emit(OpCodes.Stfld, flagsField);
+            il.Emit(OpCodes.Ret);
+
+            return method;
         }
 
         private static ProjectionConstructor CreateFactoryDelegate(Type type)
@@ -362,7 +664,7 @@
         private static void InitializeProjectionProperties(Type type, ProjectionPropertyInfo[] properties)
         {
             foreach (var item in properties)
-                SetStaticField(type, item.FieldName, item.Property);
+                SetStaticField(type, item.PropertyFieldName, item.Property);
         }
 
         private static void SetStaticField(Type type, string name, object value)
@@ -402,9 +704,9 @@
         private const string
             GetterPrefix      = "get_",
             SetterPrefix      = "set_",
-            TypeFieldName     = "_type",
-            TypePropertyName  = "_Type",
-            FactoryMethodName = "_Create";
+            TypeFieldName     = "$_type",
+            TypePropertyName  = "$_Type",
+            FactoryMethodName = "$_Create";
 
         private static readonly Type[]
             ConstructorParameterTypes = { typeof(ProjectionInstance) };

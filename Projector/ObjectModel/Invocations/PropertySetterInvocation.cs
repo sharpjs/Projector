@@ -48,7 +48,7 @@
             get { return property.Behaviors; }
         }
 
-        public object Proceed(object value)
+        public bool Proceed(object value)
         {
             for (var behavior = this.behavior;;)
             {
@@ -70,8 +70,10 @@
             }
         }
 
-        private object AccessStorage(object value)
+        private bool AccessStorage(object value)
         {
+            var cacheable = true;
+
             for (var cell = projection.Instance.FirstStorage; cell != null; cell = cell.Next)
             {
                 var item = cell.Item;
@@ -80,10 +82,11 @@
                 if (accessor == null)
                     continue;
 
-                accessor.SetPropertyValue(item.Store, projection, property, value);
+                if (!accessor.SetPropertyValue(item.Store, projection, property, value))
+                    cacheable = false;
             }
 
-            return value;
+            return cacheable;
         }
     }
 }

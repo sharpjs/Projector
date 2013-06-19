@@ -287,7 +287,7 @@
                 .ImplementProjectionClass(projectionType);
         }
 
-        internal void SaveGeneratedAssemblies()
+        public void SaveGeneratedAssemblies()
         {
             assemblyFactory.SaveAll();
         }
