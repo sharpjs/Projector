@@ -59,6 +59,8 @@
     <Compile Include="Fakes\WithTypeTraitSpec\OtherTraits.cs" />
     <Compile Include="Fakes\WithTypeTraitSpec\Traits.cs" />
     <Compile Include="Fakes\WithTypeTraitSpec\TypeATraits.cs" />
+    <Compile Include="ObjectModel\TraitModel\TraitCollectionTests.cs" />
+    <Compile Include="ObjectModel\TraitModel\BehaviorCollectionTests.cs" />
     <Compile Include="ObjectModel\TraitModel\StandardTraitResolutionTests.cs" />
     <Compile Include="ObjectModel\TraitModel\StandardTraitResolverConfigurationTests.cs" />
     <Compile Include="ObjectModel\TraitModel\StandardTraitResolverTests.cs" />
@@ -123,7 +125,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

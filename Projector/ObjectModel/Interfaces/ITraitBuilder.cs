@@ -2,6 +2,7 @@
 {
     public interface ITraitBuilder
     {
-        void ApplyTraits(ProjectionMetaObject target, TraitApplicator applicator);
+        void ApplyTypeTraits    (TypeTraitApplicator     target);
+        void ApplyPropertyTraits(PropertyTraitApplicator target);
     }
 }

@@ -6,28 +6,27 @@
     using OverrideCollection = System.Collections.ObjectModel.ReadOnlyCollection<ProjectionProperty>;
 
     [DebuggerDisplay(@"\{{PropertyType.Name,nq} {Name,nq}\}")]
-    public sealed class ProjectionProperty : ProjectionMetaObject
+    public class ProjectionProperty : ProjectionMetaObject
     {
-        private readonly string                   name;
-        private readonly ProjectionStructureType  declaringType;
-        private readonly ProjectionType           propertyType;
+        private readonly string                   name;             // x
+        private readonly ProjectionStructureType  declaringType;    // x
+        private readonly ProjectionType           propertyType;     // x
         private readonly OverrideCollection       overrides;
+        private readonly RuntimeMethodHandle      getterHandle;     // x
+        private readonly RuntimeMethodHandle      setterHandle;     // x
         private readonly IPropertyAccessor[]      accessors;
-        private readonly RuntimeMethodHandle      getterHandle;
-        private readonly RuntimeMethodHandle      setterHandle;
         private ProjectionPropertyTraitAggregator aggregator;
-        private Flags                             flags;
+        private Flags                             flags;            // x (read/write only)
 
         [Flags]
         private enum Flags
         {
-            CanRead   = 0x00000001,
-            CanWrite  = 0x00000002,
-            Shared    = 0x00000004,
-            Reference = 0x00000008,
-            Volatile  = 0x00000010,
-            Eager     = 0x00000020,
-            Default   = 0x00000100,
+            Declared  = 0x00000001, // Property is declared in the containing type (not inherited)
+            CanRead   = 0x00000002, // Property has a getter
+            CanWrite  = 0x00000004, // Property has a setter
+            Reference = 0x00000008, // Property should participate in reference behavior
+            Volatile  = 0x00000010, // Don't cache property's value (or 
+            Default   = 0x00000020, // Property has a default value
         }
 
         internal ProjectionProperty(PropertyInfo property, ProjectionStructureType declaringType,
@@ -50,25 +49,25 @@
             this.overrides  = aggregator.Overrides;
         }
 
-        internal override TraitAggregator CreateTraitAggregator()
+        internal override void ComputeTraits()
         {
             var aggregator = this.aggregator;
             this.aggregator = null;
-            return aggregator;
+            aggregator.ComputeTraits();
         }
 
         internal override void InvokeInitializers()
         {
-            //new ProjectionPropertyInitializerInvocation
-            //    (this, FirstBehavior)
-            //    .Proceed();
+            new PropertyInitializerInvocation
+                (this, Behaviors.First)
+                .Proceed();
         }
 
-        internal override void InvokeLateInitializers()
+        internal override void InvokePostInitializers()
         {
-            //new ProjectionPropertyLateInitializerInvocation
-            //    (this, FirstBehavior)
-            //    .Proceed();
+            new PropertyPostInitializerInvocation
+                (this, Behaviors.First)
+                .Proceed();
         }
 
         public string Name
@@ -76,9 +75,14 @@
             get { return name; }
         }
 
+        public ProjectionType ContainingType
+        {
+            get { return null; }
+        }
+
         public ProjectionType DeclaringType
         {
-            get { return declaringType; }
+            get { return (flags & Flags.Declared) != 0 ? declaringType : overrides[0].ContainingType; }
         }
 
         public ProjectionType PropertyType
@@ -117,10 +121,10 @@
         //    get { return 0 != (flags & Flags.Reference); }
         //}
 
-        //public bool IsVolatile
-        //{
-        //    get { return 0 != (flags & Flags.Volatile); }
-        //}
+        public bool IsVolatile
+        {
+            get { return 0 != (flags & Flags.Volatile); }
+        }
 
         public MethodInfo UnderlyingGetter
         {
@@ -146,6 +150,16 @@
         internal void SetAccessor(int token, IPropertyAccessor accessor)
         {
             accessors[token] = accessor;
+        }
+
+        public virtual PropertyAccessor<T> As<T>()
+        {
+            return null; // TODO: make abstract
+        }
+
+        protected override void ApplyTraitBuilder(ITraitBuilder builder)
+        {
+            builder.ApplyPropertyTraits(new PropertyTraitApplicator(this));
         }
 
         public override string ToString()

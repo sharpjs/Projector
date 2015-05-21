@@ -238,7 +238,7 @@
             while (null != (cell = cell.Next));
 
             cell = incompleteTypes.Head;
-            do cell.Item.InvokeLateInitializers();
+            do cell.Item.InvokePostInitializers();
             while (null != (cell = cell.Next));
 
             incompleteTypes.Clear();

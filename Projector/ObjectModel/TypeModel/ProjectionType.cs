@@ -19,25 +19,30 @@
             this.factory = factory;
         }
 
-        internal override TraitAggregator CreateTraitAggregator()
+        internal override void ComputeTraits()
         {
             var resolution = this.resolution ?? ResolveTraits();
             this.resolution = null;
-            return new ProjectionTypeTraitAggregator(this, resolution);
+            new ProjectionTypeTraitAggregator(this, resolution).ComputeTraits();
+        }
+
+        protected override void ApplyTraitBuilder(ITraitBuilder builder)
+        {
+            builder.ApplyTypeTraits(new TypeTraitApplicator(this));
         }
 
         internal override void InvokeInitializers()
         {
             new TypeInitializerInvocation
-                (this, FirstBehavior)
+                (this, Behaviors.First)
                 .Proceed();
         }
 
-        internal override void InvokeLateInitializers()
+        internal override void InvokePostInitializers()
         {
-            //new TypeLateInitializerInvocation
-            //    (this, FirstBehavior)
-            //    .Proceed();
+            new TypePostInitializerInvocation
+                (this, Behaviors.First)
+                .Proceed();
         }
 
         /// <summary>

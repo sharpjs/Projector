@@ -7,13 +7,16 @@
     {
         private ITraitResolution resolution;
 
+        private BehaviorSet<IProjectionBehavior> oneTimeBehaviors;
+
         internal ProjectionTypeTraitAggregator(ProjectionType type, ITraitResolution resolution)
             : base(type)
         {
             this.resolution = resolution;
+            oneTimeBehaviors = new BehaviorSet<IProjectionBehavior>();
         }
 
-        public override void CollectDeclaredTraits()
+        protected override void CollectDeclaredTraits()
         {
             resolution.ProvideTypeTraits(this);
             resolution = null;
@@ -24,7 +27,7 @@
             CollectDeclaredTrait(trait);
         }
 
-        public override void CollectInheritedTraits()
+        protected override void CollectInheritedTraits()
         {
             foreach (var baseType in Target.BaseTypes)
                 CollectInheritedTraits(baseType);

@@ -11,6 +11,8 @@
         private          List<ProjectionProperty>     overrides;
         private          List<object>                 declaredTraits;
 
+        private BehaviorSet<IProjectionBehavior> initializers;
+
         private static readonly ReadOnlyCollection<ProjectionProperty>
             NoOverrides = Array.AsReadOnly(new ProjectionProperty[0]);
 
@@ -18,6 +20,7 @@
             : base(property)
         {
             this.properties = properties;
+            initializers = new BehaviorSet<IProjectionBehavior>();
         }
 
         public ReadOnlyCollection<ProjectionProperty> Overrides
@@ -60,7 +63,7 @@
             declaredTraits.Add(trait);
         }
 
-        public override void CollectDeclaredTraits()
+        protected override void CollectDeclaredTraits()
         {
             var declaredTraits = this.declaredTraits;
             if (declaredTraits == null)
@@ -70,7 +73,7 @@
             this.declaredTraits = null;
         }
 
-        public override void CollectInheritedTraits()
+        protected override void CollectInheritedTraits()
         {
             var overrides = this.overrides;
             if (overrides == null)

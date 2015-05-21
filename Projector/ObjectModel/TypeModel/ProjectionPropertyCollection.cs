@@ -12,6 +12,12 @@
         internal static readonly ProjectionPropertyCollection
             Empty = new ProjectionPropertyCollection(0);
 
+        // TODO: Use this representation internally
+        //private readonly ProjectionProperty[]       propertiesArray;
+        //private readonly Dictionary<string,    int> implicitProperties;
+        //private readonly Dictionary<MemberKey, int> explicitProperties;
+        //private int                                 count;
+
         private readonly HashSet   <           ProjectionProperty> properties;
         private readonly Dictionary<string,    ProjectionProperty> implicitProperties;
         private readonly Dictionary<MemberKey, ProjectionProperty> explicitProperties;
@@ -49,6 +55,11 @@
                 throw new ArgumentNullException("property");
 
             return properties.Contains(property);
+        }
+
+        public int IndexOf(ProjectionProperty property)
+        {
+            return 0; // TODO: Implement
         }
 
         public void CopyTo(ProjectionProperty[] array, int index)
@@ -105,6 +116,7 @@
 
                 var name = key.MemberName;
                 if (declared || implicitProperties.Remove(name) == false)
+                    //          ^^^^ BUG: Seems like this will do the wrong thing on the third property.
                     implicitProperties[name] = property;
             }
         }
@@ -122,8 +134,21 @@
 
                 var oldName = oldKey.MemberName;
                 if (oldName != newProperty.Name)
+                {
+                    // TODO: Investigate possible bug
                     if (implicitProperties.ContainsKey(oldName))
                         implicitProperties[oldName] = newProperty;
+
+                    // Proposed fix:
+                    //
+                    //ProjectionProperty implicitProperty;
+                    //if (implicitProperties.TryGetValue(oldName, out implicitProperty)
+                    //    && implicitProperty == oldProperty)
+                    //    implicitProperties[oldName] = newProperty;
+                    //
+                    // ^^^ I think we need to check that the instance in implicitProperties actually is oldProperty, not just named the same.
+                    // ^^^ Example: what if another implicit property is a declared property with same name as oldProperty?
+                }
                 //else, implicitProperties should be updated by Add()
 
                 return oldProperty;

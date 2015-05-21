@@ -45,9 +45,22 @@
             return new InvalidOperationException("The enumerator has no current item.");
         }
 
-        internal static Exception ReadOnlyTraits()
+        internal static Exception TraitsNotAvailable()
         {
-            return new InvalidOperationException("Traits for the object are frozen.");
+            const string message
+                = "Annotations and behaviors for the object are not yet available, because they are still being collected.";
+                // Do not use the annotations collection during annotation constructors or ITraitBuilder
+
+            return new InvalidOperationException(message);
+        }
+
+        internal static Exception TraitsReadOnly()
+        {
+            const string message
+                = "Annotations and behaviors for the object are frozen.";
+                // When are they not frozen?
+
+            return new InvalidOperationException(message);
         }
 
         internal static Exception SaveAndCollectAssembliesNotSupported()
@@ -205,6 +218,18 @@
         //{
         //    throw new NotImplementedException();
         //}
+
+        internal static Exception ConversionFailed<TFrom, TTo>(Exception innerException)
+        {
+            var message = string.Format
+            (
+                "Conversion from {0} to {1} failed.",
+                typeof(TFrom).GetPrettyName(true),
+                typeof(TTo  ).GetPrettyName(true)
+            );
+
+            return new ConversionException(message, innerException);
+        }
 
         internal static Exception InternalError(string description)
         {

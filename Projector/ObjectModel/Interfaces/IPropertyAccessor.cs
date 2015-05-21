@@ -6,7 +6,7 @@
             object             store,
             Projection         projection,
             ProjectionProperty property,
-            GetterOptions  options);
+            GetterOptions      options);
 
         void SetPropertyValue(
             object             store,

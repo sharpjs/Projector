@@ -109,7 +109,7 @@
             if (projectionType == null)
                 throw Error.InvalidProjectionType(type);
 
-            firstBehavior = projectionType.FirstBehavior;
+            firstBehavior = projectionType.Behaviors.First;
             return projectionType.CreateProjection(this);
         }
 

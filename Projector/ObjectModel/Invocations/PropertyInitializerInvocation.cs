@@ -1,7 +1,5 @@
 ﻿namespace Projector.ObjectModel
 {
-    using System.Collections.Generic;
-
     public struct PropertyInitializerInvocation
     {
         private readonly ProjectionProperty        property;
@@ -20,16 +18,6 @@
             get { return property; }
         }
 
-        public IEnumerable<object> Annotations
-        {
-            get { return property.Annotations; }
-        }
-
-        public IEnumerable<object> Behaviors
-        {
-            get { return property.Behaviors; }
-        }
-
         public void Proceed()
         {
             for (var behavior = this.behavior;;)
@@ -40,15 +28,16 @@
                 var initializer = behavior.Item as IPropertyInitializer;
                 behavior        = behavior.Next;
 
-                if (initializer != null)
-                {
-                    initializer.InitializeProperty
-                    (
-                        new PropertyInitializerInvocation
-                            (property, behavior)
-                    );
-                    return;
-                }
+                if (initializer == null)
+                    continue;
+
+                initializer.InitializeProperty
+                (
+                    new PropertyInitializerInvocation
+                        (property, behavior)
+                );
+
+                return;
             }
         }
     }

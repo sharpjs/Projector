@@ -1,92 +1,61 @@
 ﻿namespace Projector.ObjectModel
 {
-    using System;
-    using System.Collections.Generic;
-
     public abstract class ProjectionMetaObject : ProjectionObject
     {
-        private readonly AnnotationSet annotations;
-        private readonly BehaviorSet   behaviors;
-        private          bool          isReadOnly;
-        private          object[]      inheritableTraits;
+        private readonly TraitCollection    traits;
+        private readonly BehaviorCollection behaviors;
+        private bool                        frozen;
 
         // Constructor: Set readonlies, get other metaobjects
         internal ProjectionMetaObject()
         {
-            annotations = new AnnotationSet();
-            behaviors   = new BehaviorSet  ();
+            traits    = new TraitCollection();
+            behaviors = new BehaviorCollection();
         }
 
         // Initialization Pass 1
-        internal virtual void ComputeTraits()
-        {
-            var aggregator = CreateTraitAggregator();
-
-            aggregator.CollectDeclaredTraits();
-            aggregator.CollectInheritedTraits();
-            aggregator.ApplyDeferredTraits();
-
-            inheritableTraits = aggregator.InheritableTraits;
-        }
-
-        internal abstract TraitAggregator CreateTraitAggregator();
+        internal abstract void ComputeTraits();
 
         // Initialization Pass 2
-        internal virtual void FreezeTraits()
-        {
-            isReadOnly = true;
-        }
+        internal virtual void FreezeTraits() { frozen = true; }
 
         // Initialization Pass 3
         internal abstract void InvokeInitializers();
 
         // Initialization Pass 4
-        internal abstract void InvokeLateInitializers();
+        internal abstract void InvokePostInitializers();
 
-        public IEnumerable<object> Annotations
+        public TraitCollection Traits
         {
-            get { return annotations; }
+            get { return traits; }
         }
- 
-        internal Cell<object> FirstAnnotation
-        {
-            get { return annotations.First; }
-        }
- 
-        public IEnumerable<IProjectionBehavior> Behaviors
+
+        public BehaviorCollection Behaviors
         {
             get { return behaviors; }
         }
- 
-        internal Cell<IProjectionBehavior> FirstBehavior
-        {
-            get { return behaviors.First; }
-        }
 
-        // Traits inherited by derived types
-        internal object[] InheritableTraits
+        internal void ApplyTrait(object trait, bool inheritable)
         {
-            get { return inheritableTraits; }
-        }
+            if (frozen)
+                throw Error.TraitsReadOnly();
 
-        internal void Apply(object trait)
-        {
-            if (isReadOnly)
-                throw Error.ReadOnlyTraits();
+            traits.AddInternal(trait, inheritable);
+
+            var behavior = trait as IProjectionBehavior;
+            if (behavior != null)
+                ApplyBehavior(behavior);
 
             var builder = trait as ITraitBuilder;
-            if (builder == null)
-            {
-                var behavior = trait as IProjectionBehavior;
-                if (behavior == null)
-                    annotations.Apply(trait);
-                else
-                    behaviors.Apply(behavior);
-            }
-            else
-            {
-                builder.ApplyTraits(this, new TraitApplicator(this));
-            }
+            if (builder != null)
+                ApplyTraitBuilder(builder);
         }
+
+        protected virtual void ApplyBehavior(IProjectionBehavior behavior)
+        {
+            behaviors.AddInternal(behavior);
+        }
+
+        protected abstract void ApplyTraitBuilder(ITraitBuilder builder);
     }
 }

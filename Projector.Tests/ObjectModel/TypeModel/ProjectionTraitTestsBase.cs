@@ -37,7 +37,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations, Is.Empty);
+                Assert.That(Target.Traits, Is.Empty);
             }
 
             [Test]
@@ -52,7 +52,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(1)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(1)
                     & Has.Some.InstanceOf<AnnotationAAttribute>()
                 );
             }
@@ -71,7 +71,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(2)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(2)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("1")
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("2")
                 );
@@ -92,7 +92,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(2)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(2)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseB")
                 );
@@ -113,7 +113,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(1)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(1)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("Derived")
                 );
             }
@@ -132,7 +132,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(3)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(3)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseB")
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("Derived")
@@ -170,7 +170,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(2)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(2)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseB")
                 );
@@ -191,7 +191,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(4)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(4)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationBAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationBAttribute>().With.Tag("BaseB")
@@ -216,7 +216,7 @@
             [Test]
             public void Annotations()
             {
-                Assert.That(Target.Annotations.ToList(), Has.Count.EqualTo(3)
+                Assert.That(Target.Traits.ToList(), Has.Count.EqualTo(3)
                     & Has.Some.InstanceOf<AnnotationAAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationBAttribute>().With.Tag("BaseA")
                     & Has.Some.InstanceOf<AnnotationBAttribute>().With.Tag("BaseB")

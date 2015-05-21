@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
 
-    public struct TypeInitializerInvocation
+    public struct TypePostInitializerInvocation
     {
         private readonly ProjectionType            type;
         private readonly Cell<IProjectionBehavior> behavior;
 
-        internal TypeInitializerInvocation(
+        internal TypePostInitializerInvocation(
             ProjectionType            type,
             Cell<IProjectionBehavior> behavior)
         {
@@ -33,9 +33,9 @@
                 if (initializer == null)
                     continue;
 
-                initializer.InitializeType
+                initializer.PostInitializeType
                 (
-                    new TypeInitializerInvocation
+                    new TypePostInitializerInvocation
                         (type, behavior)
                 );
 

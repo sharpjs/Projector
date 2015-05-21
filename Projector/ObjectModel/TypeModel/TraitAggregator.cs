@@ -10,11 +10,16 @@
     {
         protected TraitAggregator() { }
 
-        public abstract void CollectDeclaredTraits();
-        public abstract void CollectInheritedTraits();
-        public abstract void ApplyDeferredTraits();
+        public void ComputeTraits()
+        {
+            CollectDeclaredTraits();
+            CollectInheritedTraits();
+            ApplyDeferredTraits();
+        }
 
-        public abstract object[] InheritableTraits { get; }
+        protected abstract void CollectDeclaredTraits();
+        protected abstract void CollectInheritedTraits();
+        protected abstract void ApplyDeferredTraits();
     }
 
     internal abstract class TraitAggregator<TMetaObject, TSourceKey> : TraitAggregator
@@ -41,15 +46,6 @@
             get { return target; }
         }
 
-        public sealed override object[] InheritableTraits
-        {
-            get
-            {
-                var traits = this.inheritableTraits;
-                return traits == null ? NoTraits : traits.ToArray();
-            }
-        }
-
         protected void CollectDeclaredTrait(object trait)
         {
             InheritFromAttribute inheritDirective;
@@ -67,9 +63,11 @@
 
         protected void CollectInheritedTraits(TMetaObject source)
         {
-            foreach (var trait in source.InheritableTraits)
-                if (trait != null && ShouldInherit(trait.GetType(), source))
-                    AddTrait(trait, false);
+            var traits = source.Traits;
+            object trait;
+
+            for (var i = 0; (i = traits.FindInheritable(i, out trait)) >= 0;)
+                AddTrait(trait, false);
         }
 
         private void AddTrait(object trait, bool declared)
@@ -77,16 +75,16 @@
             var options = trait.GetTraitOptions();
 
             var added = options.AllowMultiple
-                ? AddTraitAllowMultiple(trait)
+                ? AddTraitAllowMultiple(trait, options.Inherited)
                 : AddTraitAllowSingle(trait, declared);
 
             if (added && options.Inherited)
                 AddInheritableTrait(trait);
         }
 
-        private bool AddTraitAllowMultiple(object trait)
+        private bool AddTraitAllowMultiple(object trait, bool inheritable)
         {
-            target.Apply(trait);
+            target.ApplyTrait(trait, inheritable);
             return true;
         }
 
@@ -167,11 +165,11 @@
                 || sources.Contains(GetSourceKey(source));
         }
 
-        public sealed override void ApplyDeferredTraits()
+        protected sealed override void ApplyDeferredTraits()
         {
             if (singletonTraits != null)
                 foreach (var item in singletonTraits.Values)
-                    target.Apply(item.Trait);
+                    target.ApplyTrait(item.Trait, true); // TODO: pass inheritable
         }
 
         protected virtual IEqualityComparer<TSourceKey> SourceKeyComparer

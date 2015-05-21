@@ -1,22 +1,63 @@
 ﻿namespace Projector.ObjectModel
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
 
-    internal sealed class BehaviorSet : BehaviorSet<IProjectionBehavior>
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(BehaviorCollection.DebugView))]
+    public sealed class BehaviorCollection : ICollection<IProjectionBehavior>
     {
-    }
+        private Cell<IProjectionBehavior> traits;
+        private int                       count;
 
-    internal class BehaviorSet<T> : TraitSet<T>
-        where T : class, IProjectionBehavior
-    {
-        private enum RemovalState { None, Removing, Removed }
+        internal BehaviorCollection() { }
 
-        internal override void Apply(T trait)
+        public int Count
+        {
+            get { return count; }
+        }
+
+        internal Cell<IProjectionBehavior> First
+        {
+            get { return traits; }
+        }
+
+        public bool Contains(IProjectionBehavior behavior)
+        {
+            for (var cell = traits; cell != null; cell = cell.Next)
+                if (cell.Item == behavior)
+                    return true;
+
+            return false;
+        }
+
+        public void CopyTo(IProjectionBehavior[] array, int index)
+        {
+            var i = index;
+            for (var cell = traits; cell != null; cell = cell.Next)
+                array[i++] = cell.Item;
+        }
+
+        public IEnumerator<IProjectionBehavior> GetEnumerator()
+        {
+            return (traits ?? Enumerable.Empty<IProjectionBehavior>()).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        internal void AddInternal(IProjectionBehavior trait)
         {
             if (traits == null)
             {
                 // Add first behavior
                 traits = Cell.Cons(trait);
+                count  = 1;
             }
             else
             {
@@ -28,7 +69,9 @@
             }
         }
 
-        private void MergeBehavior(T targetBehavior, int targetPriority, RemovalState removal)
+        private enum RemovalState { None, Removing, Removed }
+
+        private bool MergeBehavior(IProjectionBehavior targetBehavior, int targetPriority, RemovalState removal)
         {
             // CASES:
             // 0: Merging same behavior instance: MOVE to head of its priority group (REMOVE & INSERT)
@@ -40,7 +83,7 @@
             // Note: same instance will also have same priority
 
             var current    = traits;
-            var previous   = null as Cell<T>;
+            var previous   = null as Cell<IProjectionBehavior>;
             var stage      = 0;
             var behavior   = traits.Item;
             var targetType = (removal == RemovalState.Removing) ? targetBehavior.GetType() : null;
@@ -55,7 +98,7 @@
                         {
                             if (behavior == targetBehavior)
                                 // Same behavior is already first for its priority; nothing to do
-                                return;
+                                return false;
 
                             // Insert
                             previous = Link(previous, Cell.Cons(targetBehavior, current));
@@ -66,25 +109,25 @@
                                 { stage = 1; goto case 1; }
                             else
                                 // Already found remove point; our work is done here
-                                return;
+                                return false;
                         }
                         break;
 
                     case 1: // Find remove point, check if inserted behavior was already present
-                        if (behavior.Priority != targetPriority)
+                        if (behavior.Priority < targetPriority)
                         {
                             if (removal == RemovalState.Removing)
                                 // Still looking for something to remove
                                 stage = 2;
                             else
                                 // Already have insert, not removing; we're done
-                                return;
+                                return true;
                         }
                         else if (behavior == targetBehavior)
                         {
                             // Inserted behavior was already present; remove old cell
                             Link(previous, current.Next);
-                            return;
+                            return false;
                         }
                         break;
 
@@ -103,7 +146,7 @@
                         removal = RemovalState.Removed;
                     else
                         // Already have insert and remove points; we're done
-                        return;
+                        return false;
                 }
                 else
                 {
@@ -118,10 +161,66 @@
                 behavior = current.Item;
             }
 
-            if (inserted)
-                return;
+            // Either:
+            // (A) All existing items have higher priority; insert at end.
+            // (B) Found insert point, but never found remove point.
 
-            Link(previous, Cell.Cons(targetBehavior));
+            if (!inserted)
+                // Insert at end
+                Link(previous, Cell.Cons(targetBehavior));
+
+            return true;
+        }
+
+        private Cell<IProjectionBehavior> Link(Cell<IProjectionBehavior> cell, Cell<IProjectionBehavior> next)
+        {
+            return cell == null
+                ? traits    = next
+                : cell.Next = next;
+        }
+
+        bool ICollection<IProjectionBehavior>.IsReadOnly
+        {
+            get { return true; }
+        }
+
+        void ICollection<IProjectionBehavior>.Add(IProjectionBehavior item)
+        {
+            throw Error.ReadOnlyCollection();
+        }
+
+        bool ICollection<IProjectionBehavior>.Remove(IProjectionBehavior item)
+        {
+            throw Error.ReadOnlyCollection();
+        }
+
+        void ICollection<IProjectionBehavior>.Clear()
+        {
+            throw Error.ReadOnlyCollection();
+        }
+
+        internal sealed class DebugView
+        {
+            private readonly BehaviorCollection collection;
+
+            public DebugView(BehaviorCollection collection)
+            {
+                if (collection == null)
+                    throw new ArgumentNullException("collection");
+
+                this.collection = collection;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public IProjectionBehavior[] Items
+            {
+                get
+                {
+                    var array = new IProjectionBehavior[collection.Count];
+                    collection.CopyTo(array, 0);
+                    return array;
+                }
+            }
         }
     }
 }

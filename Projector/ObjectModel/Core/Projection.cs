@@ -52,38 +52,46 @@
         //	return state;
         //}
 
-        public object GetPropertyValue(ProjectionProperty property, GetterOptions options)
-        {
-            return GetPropertyValueCore(Type.Properties[property], options);
-        }
+        //public bool GetPropertyValue<T>(string name, out T value)
+        //{
+        //    return Type.Properties[name].As<T>().GetValue(this, GetterOptions.Virtual, out value);
+        //}
 
-        protected object GetPropertyValueCore(ProjectionProperty property, GetterOptions options)
-        {
-            return new PropertyGetterInvocation
-                (this, property, options, property.FirstBehavior)
-                .Proceed();
-        }
+        //public object GetPropertyValue(ProjectionProperty property, GetterOptions options)
+        //{
+        //    return GetPropertyValueCore(Type.Properties[property], options);
+        //}
 
-        public object SetPropertyValue(ProjectionProperty property, object value)
-        {
-            return SetPropertyValueCore(Type.Properties[property], value);
-        }
+        //protected object GetPropertyValueCore(ProjectionProperty property, GetterOptions options)
+        //{
+        //    return new PropertyGetterInvocation
+        //        (this, property, options, property.FirstBehavior)
+        //        .Proceed();
+        //}
 
-        protected object SetPropertyValueCore(ProjectionProperty property, object value)
-        {
-            return new PropertySetterInvocation
-                (this, property, property.FirstBehavior)
-                .Proceed(value);
-        }
+        //public object SetPropertyValue(ProjectionProperty property, object value)
+        //{
+        //    return SetPropertyValueCore(Type.Properties[property], value);
+        //}
 
-        public T GetPropertyValueAs<T>(ProjectionProperty property, GetterOptions options)
-        {
-            return (T) GetPropertyValue(property, options);
-        }
+        //protected object SetPropertyValueCore(ProjectionProperty property, object value)
+        //{
+        //    return new PropertySetterInvocation
+        //        (this, property, property.FirstBehavior)
+        //        .Proceed(value);
+        //}
 
-        public T SetPropertyValueAs<T>(ProjectionProperty property, T value)
-        {
-            return (T) SetPropertyValue(property, value);
-        }
+        //public T GetPropertyValue<T>(ProjectionProperty<T> property, GetterOptions options)
+        //{
+        //    T value;
+        //    property.GetValue(this, options, out value);
+        //    return value;
+        //}
+
+        //public T SetPropertyValue<T>(ProjectionProperty<T> property, T value)
+        //{
+        //    property.SetValue(this, value);
+        //    return value;
+        //}
     }
 }

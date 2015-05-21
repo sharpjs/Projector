@@ -58,13 +58,13 @@
                     property.InvokeInitializers();
         }
 
-        internal override void InvokeLateInitializers()
+        internal override void InvokePostInitializers()
         {
-            base.InvokeLateInitializers();
+            base.InvokePostInitializers();
 
             foreach (var property in properties)
                 if (property.DeclaringType == this)
-                    property.InvokeLateInitializers();
+                    property.InvokePostInitializers();
         }
 
         public override ProjectionTypeCollection BaseTypes

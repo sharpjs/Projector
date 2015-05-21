@@ -2,20 +2,20 @@
 {
     using System.Collections.Generic;
 
-    public struct PropertySetterInvocation<TValue>
+    public struct PropertyClearInvocation<TValue>
     {
         private readonly Projection                      projection;
         private readonly ProjectionProperty              property;
-        private readonly Cell<IPropertyBehavior<TValue>> next;
+        private readonly Cell<IPropertyBehavior<TValue>> behavior;
 
-        internal PropertySetterInvocation(
+        internal PropertyClearInvocation(
             Projection                      projection,
             ProjectionProperty              property,
-            Cell<IPropertyBehavior<TValue>> next)
+            Cell<IPropertyBehavior<TValue>> behavior)
         {
             this.projection = projection;
             this.property   = property;
-            this.next       = next;
+            this.behavior   = behavior;
         }
 
         public Projection Projection
@@ -38,13 +38,13 @@
             get { return property; }
         }
 
-        public bool Proceed(TValue value)
+        public void Proceed(TValue value)
         {
-            return next.Item.SetPropertyValue
+            var behavior = this.behavior;
+            behavior.Item.ClearPropertyValue
             (
-                new PropertySetterInvocation<TValue>
-                    (projection, property, next.Next),
-                value
+                new PropertyClearInvocation<TValue>
+                    (projection, property, behavior.Next)
             );
         }
     }

@@ -1,23 +1,21 @@
 ﻿namespace Projector.ObjectModel
 {
-    using System.Collections.Generic;
-
-    public struct TypeInitializerInvocation
+    public struct PropertyPostInitializerInvocation
     {
-        private readonly ProjectionType            type;
+        private readonly ProjectionProperty        property;
         private readonly Cell<IProjectionBehavior> behavior;
 
-        internal TypeInitializerInvocation(
-            ProjectionType            type,
+        internal PropertyPostInitializerInvocation(
+            ProjectionProperty        property,
             Cell<IProjectionBehavior> behavior)
         {
-            this.type     = type;
+            this.property = property;
             this.behavior = behavior;
         }
 
-        public ProjectionType Type
+        public ProjectionProperty Property
         {
-            get { return type; }
+            get { return property; }
         }
 
         public void Proceed()
@@ -27,16 +25,16 @@
                 if (behavior == null)
                     return;
 
-                var initializer = behavior.Item as ITypeInitializer;
+                var initializer = behavior.Item as IPropertyInitializer;
                 behavior        = behavior.Next;
 
                 if (initializer == null)
                     continue;
 
-                initializer.InitializeType
+                initializer.PostInitializeProperty
                 (
-                    new TypeInitializerInvocation
-                        (type, behavior)
+                    new PropertyPostInitializerInvocation
+                        (property, behavior)
                 );
 
                 return;

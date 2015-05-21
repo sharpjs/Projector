@@ -2,23 +2,23 @@
 {
     using System.Collections.Generic;
 
-    public struct PropertyGetterInvocation
+    public struct PropertyGetterInvocation<TValue>
     {
-        private readonly Projection                projection;
-        private readonly ProjectionProperty        property;
-        private readonly GetterOptions         options;
-        private readonly Cell<IProjectionBehavior> behavior;
+        private readonly Projection                      projection;
+        private readonly ProjectionProperty              property;
+        private readonly GetterOptions                   options;
+        private readonly Cell<IPropertyBehavior<TValue>> next;
 
         internal PropertyGetterInvocation(
-            Projection                projection,
-            ProjectionProperty        property,
-            GetterOptions         options,
-            Cell<IProjectionBehavior> behavior)
+            Projection                      projection,
+            ProjectionProperty              property,
+            GetterOptions                   options,
+            Cell<IPropertyBehavior<TValue>> next)
         {
             this.projection = projection;
             this.property   = property;
             this.options    = options;
-            this.behavior   = behavior;
+            this.next       = next;
         }
 
         public Projection Projection
@@ -41,60 +41,19 @@
             get { return property; }
         }
 
-        public IEnumerable<object> Annotations
-        {
-            get { return property.Annotations; }
-        }
-
-        public IEnumerable<object> Behaviors
-        {
-            get { return property.Behaviors; }
-        }
-
         public GetterOptions Options
         {
             get { return options; }
         }
 
-        public object Proceed()
+        public bool Proceed(out TValue value)
         {
-            for (var behavior = this.behavior;;)
-            {
-                if (behavior == null)
-                    return AccessStorage();
-
-                var getter = behavior.Item as IPropertyGetter;
-                behavior   = behavior.Next;
-
-                if (getter != null)
-                {
-                    return getter.GetPropertyValue
-                    (
-                        new PropertyGetterInvocation
-                            (projection, property, options, behavior)
-                    );
-                }
-            }
-        }
-
-        private object AccessStorage()
-        {
-            for (var cell = projection.Instance.FirstStorage; cell != null; cell = cell.Next)
-            {
-                var item = cell.Item;
-
-                var accessor = property.GetAccessor(item.Token);
-                if (accessor == null)
-                    continue;
-
-                var value = accessor.GetPropertyValue(item.Store, projection, property, options);
-                if (value is Unknown)
-                    continue;
-
-                return value;
-            }
-
-            return Unknown.Value;
+            return next.Item.GetPropertyValue
+            (
+                new PropertyGetterInvocation<TValue>
+                    (projection, property, options, next.Next),
+                out value
+            );
         }
     }
 }

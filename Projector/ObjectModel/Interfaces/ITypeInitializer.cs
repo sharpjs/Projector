@@ -2,6 +2,7 @@
 {
     public interface ITypeInitializer : IProjectionBehavior
     {
-        void InitializeType(TypeInitializerInvocation invocation);
+        void     InitializeType(    TypeInitializerInvocation invocation);
+        void PostInitializeType(TypePostInitializerInvocation invocation);
     }
 }
