@@ -1,5 +1,7 @@
-Projector
-=========
+#### `DEVELOPMENT HALTED DUE TO LACK OF INTEREST`
+
+## Projector
+
 Create Strongly-Typed Projections from Structured Data
 
 This project was inspired by, and intends to replace, the DictionaryAdapter
